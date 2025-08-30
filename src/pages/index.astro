@@ -27,7 +27,7 @@ import Separator from "../components/Separator.astro";
     <Separator />
     <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <h3 class="text-2xl font-bold mt-8">Rooms</h3>
+        <h3>Rooms</h3>
         <p class="mt-4">Staying at The Red Cow</p>
         <img
           src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
@@ -38,7 +38,7 @@ import Separator from "../components/Separator.astro";
         />
       </div>
       <div>
-        <h3 class="text-2xl font-bold mt-8">Menu</h3>
+        <h3>Menu</h3>
         <p class="mt-4">Dining at The Red Cow</p>
         <img
           src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
@@ -47,6 +47,28 @@ import Separator from "../components/Separator.astro";
           loading="eager"
           decoding="async"
         />
+      </div>
+    </section>
+    <Separator />
+    <section>
+      <h3 class="text-center">Opening Hours</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center mt-4">
+        <div>
+          <p class="font-bold">Monday</p>
+          <p>Close</p>
+        </div>
+        <div>
+          <p class="font-bold">Tuesday to Friday</p>
+          <p>Midday - Late</p>
+        </div>
+        <div>
+          <p class="font-bold">Saturday</p>
+          <p>10am - Late</p>
+        </div>
+        <div>
+          <p class="font-bold">Sunday</p>
+          <p>10am - 4pm</p>
+        </div>
       </div>
     </section>
   </div>
