@@ -13,6 +13,9 @@
     "baseUrl": ".",
     "paths": {
         "@/*": ["./src/*"]
-    }
+    },
+    "moduleResolution": "bundler", 
+    "module": "esnext",
+    "types": ["node"]
   }
 } 
