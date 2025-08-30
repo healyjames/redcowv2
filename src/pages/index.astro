@@ -1,21 +1,7 @@
 ---
-import '../styles/global.css';
-// Component Imports
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import MainLayout from "../layouts/main.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
-
-	<body>
-    <p>Welcome to Astro + TailwindCSS</p>
-	</body>
-</html>
+<MainLayout content={{ title: "Home" }}>
+  <p>Welcome to Astro + TailwindCSS</p>
+</MainLayout>
