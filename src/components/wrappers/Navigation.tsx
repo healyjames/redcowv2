@@ -21,7 +21,7 @@ const navItems = [
 
 export default function Navigation() {
     return (
-        <nav className="w-full flex items-center justify-between p-4 border-b">
+        <nav className="w-full flex items-center justify-between px-4 py-1 border-b">
             {/* Logo */}
             <div className="text-xl font-bold">Restaurant</div>
 
