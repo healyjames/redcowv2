@@ -3,7 +3,7 @@ import "../styles/global.css";
 import Navigation from "../components/wrappers/Navigation";
 import Footer from "../components/Footer.astro";
 const { content } = Astro.props;
-const brand = 'redcow';
+const brand = process.env.BRAND || 'redcow';
 ---
 
 <html lang="en">
