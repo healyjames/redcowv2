@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Navigation from "../components/wrappers/Navigation";
+import Footer from "../components/Footer.astro";
 const { content } = Astro.props;
 ---
 
@@ -14,5 +15,6 @@ const { content } = Astro.props;
   <body>
     <Navigation client:load />
     <slot />
+    <Footer />
   </body>
 </html>

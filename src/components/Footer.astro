@@ -1,0 +1,61 @@
+---
+import Separator from "../components/Separator.astro";
+import { Facebook, Instagram, ExternalLink } from "@lucide/astro";
+---
+
+<footer>
+  <Separator />
+  <section class="px-4 py-8 md:grid md:grid-cols-2 max-w-4xl mx-auto"> 
+    <div class="grid grid-cols-3 gap-2 lg:gap-4">
+      <div>
+        <h4 class="font-bold">About</h4>
+        <p><a href="#">Home</a></p>
+        <p><a href="#">About</a></p>
+      </div>
+      <div>
+        <h4 class="font-bold">Menu</h4>
+        <p><a href="#">Breakfast</a></p>
+        <p><a href="#">Lunch</a></p>
+        <p><a href="#">Evening</a></p>
+        <p><a href="#">Sunday Lunch</a></p>
+        <p><a href="#">Wine List</a></p>
+        <p><a href="#">Drinks</a></p>
+      </div>
+      <div>
+        <h4 class="font-bold">Other</h4>
+        <p><a href="#">Rooms</a></p>
+        <p><a href="#">Events</a></p>
+        <p><a href="#">Contact</a></p>
+      </div>
+    </div>
+    <div class="hidden md:block">
+      <div>
+        <img
+          src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
+          alt="Logo"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="flex items-center justify-center space-x-4 mt-2">
+        <a href="#" aria-label="Facebook" class="icon">
+          <Facebook class="w-6 h-6" />
+        </a>
+        <a href="#" aria-label="Instagram" class="icon">
+          <Instagram class="w-6 h-6" />
+        </a>
+        <a href="#" aria-label="Tripadvisor" class="icon">
+          <ExternalLink class="w-6 h-6" />
+        </a>
+      </div>
+    </div>
+  </section>
+  <Separator />
+  <section class="px-4 pb-8 pt-6 flex md:justify-between">
+    <p>Red Cow, 51 Beam Street, Nantwich, CW5 5NF</p>
+    <p>01270 618 522</p>
+  </section>
+  <section class="px-4 py-2 bg-gray-800">
+    <p class="text-white">© Red Cow Nantwich 2025 - All Rights Reserved</p>
+  </section>
+</footer>

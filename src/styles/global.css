@@ -120,6 +120,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  h2 {
+    @apply text-2xl font-bold mt-8
+  }
+  h3 {
+    @apply text-2xl font-bold mt-8
+  }
 }
 
 .nav-link {
@@ -127,11 +133,7 @@
          hover:underline decoration-1 decoration-gray-900 underline-offset-4
          transition-all duration-300 ease-in-out;
 }
-
-h2 {
-  @apply text-2xl font-bold mt-8
-}
-
-h3 {
-  @apply text-2xl font-bold mt-8
+.icon {
+  @apply p-2 border border-2 rounded-full text-gray-600 hover:text-blue-600 border-gray-600 hover:border-blue-600
+         transition-all duration-300 ease-in-out
 }
