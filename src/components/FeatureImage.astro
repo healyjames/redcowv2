@@ -5,15 +5,10 @@ interface Props {
   headingText: string;
 }
 
-// Set default values for the props in case they aren't provided.
-const {
-  imageSrc = 'https://placehold.co/1920x1080/4a5568/ffffff?text=Feature+Image',
-  imageAlt = 'A placeholder feature image',
-  headingText = 'Welcome to Astro',
-} = Astro.props;
+const { imageSrc, imageAlt, headingText } = Astro.props;
 ---
 
-<section class="relative w-full h-screen md:h-[85vh] bg-gray-700">
+<section class="relative w-full h-screen md:h-[85vh]">
   <img
     src={imageSrc}
     alt={imageAlt}
@@ -21,7 +16,7 @@ const {
     loading="eager"
     decoding="async"
   />
-  <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+  <div class="absolute inset-0 bg-black/60"></div>
   <div class="relative h-full flex items-center justify-center text-center px-4">
     <h1 class="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold drop-shadow-lg">
       {headingText}
