@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import MobileNavigation from "../components/wrappers/MobileNavigation";
+import DesktopNavigation from "../components/DesktopNavigation.astro";
 import Footer from "../components/Footer.astro";
 const { content } = Astro.props;
 const brand = process.env.BRAND || 'redcow';
@@ -16,6 +17,7 @@ const brand = process.env.BRAND || 'redcow';
   </head>
   <body>
     <MobileNavigation client:media="(max-width: 767px)" />
+    <DesktopNavigation />
     <slot />
     <Footer />
   </body>

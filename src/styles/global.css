@@ -57,10 +57,8 @@
   }
 }
 
-.nav-link {
-  @apply px-3 py-2 text-sm
-         hover:underline decoration-1 decoration-gray-900 underline-offset-4
-         transition-all duration-300 ease-in-out;
+.nav-item {
+  @apply px-3 hover:underline decoration-1 decoration-gray-900 underline-offset-4 transition-all duration-300 ease-in-out text-center
 }
 .icon {
   @apply p-2 border border-2 rounded-full
