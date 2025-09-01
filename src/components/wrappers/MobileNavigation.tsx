@@ -19,34 +19,11 @@ const navItems = [
     { label: "Contact", href: "/contact" },
 ];
 
-export default function Navigation() {
+export default function MobileNavigation() {
     return (
-        <nav className="w-full flex items-center justify-between px-4 py-1 border-b">
-            {/* Logo */}
-            <div className="text-xl font-bold">Restaurant</div>
-
-            {/* Desktop Nav */}
-            <div className="hidden md:flex">
-                <NavigationMenu>
-                    <NavigationMenuList>
-                        {navItems.map((item) => (
-                            <NavigationMenuItem key={item.href}>
-                                <NavigationMenuLink asChild>
-                                    <a
-                                        href={item.href}
-                                        className="px-4 py-2 hover:text-primary"
-                                    >
-                                        {item.label}
-                                    </a>
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                        ))}
-                    </NavigationMenuList>
-                </NavigationMenu>
-            </div>
-
-            {/* Mobile Nav */}
-            <div className="md:hidden">
+        <nav className="md:hidden w-full flex items-center justify-between px-4 py-1 border-b">
+            <div className="text-xl font-bold">Logo</div>
+            <div>
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
