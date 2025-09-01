@@ -1,16 +1,25 @@
 ---
-interface Props {
-  imageSrc: string;
-  imageAlt: string;
-  headingText: string;
-}
+import { Picture } from 'astro:assets';
+import featureImage from "../assets/images/feature-image.webp";
 
-const { imageSrc, imageAlt, headingText } = Astro.props;
+const { 
+  imageAlt = "The Red Cow", 
+  headingText = "The Red Cow" 
+} = Astro.props;
+
+interface Props {
+  imageSrc?: string;
+  imageAlt?: string;
+  headingText?: string;
+}
 ---
 
 <section class="relative w-full h-screen md:h-[85vh]">
-  <img
-    src={imageSrc}
+  <Picture
+    src={featureImage}
+    widths={[480, 768, 1080, 1920]}
+    formats={['avif', 'webp']}
+    sizes="100vw"
     alt={imageAlt}
     class="absolute inset-0 w-full h-full object-cover"
     loading="eager"

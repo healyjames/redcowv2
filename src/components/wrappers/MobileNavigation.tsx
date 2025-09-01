@@ -30,7 +30,7 @@ export default function MobileNavigation() {
                             <MenuIcon className="h-6 w-6" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="p-4">
+                    <SheetContent side="right" className="p-4">
                         <div className="flex flex-col gap-4 mt-8">
                             {navItems.map((item) => (
                                 <a
