@@ -1,0 +1,14 @@
+---
+import { Image } from "astro:assets";
+import logoEmblem from "../assets/logo/emblem.svg";
+---
+<div class="md:hidden absolute z-10 w-full">
+  <a href="/" aria-label="Homepage">
+    <Image 
+      src={logoEmblem} 
+      alt="The Red Cow Nantwich Emblem"
+      width="160"
+      class="mx-auto"
+    />
+  </a>
+</div>
