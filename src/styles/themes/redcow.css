@@ -5,6 +5,22 @@
 @tailwind utilities;
 
 :root {
+  --primary: oklch(0.5535 0.1295 34.83);
+  --primary-light: oklch(0.6321 0.1194 34.74);
+  --primary-lighter: oklch(0.6969 0.0945 35.29);
+  --primary-lightest: oklch(0.7623 0.0711 34.24);
+  --primary-dark: oklch(0.4989 0.1149 34.9);
+  --primary-darker: oklch(0.4267 0.0949 34.98);
+  --primary-darkest: oklch(0.3529 0.0751 34.88)
+
+  --secondary: oklch(0.7511 0.0782 79.26);
+  --secondary-light: oklch(0.8153 0.0588 79.76);
+  --secondary-lighter: oklch(0.8675 0.0408 79.45);
+  --secondary-lightest: oklch(0.9222 0.0251 81.12);
+  --secondary-dark: oklch(0.7079 0.0911 78.31);
+  --secondary-darker: oklch(0.6493 0.0977 77.5);
+  --secondary-darkest: oklch(0.5683 0.0849 76.92);
+
   --radius: 0.625rem;
   --background: oklch(0.9642 0 0);
   --foreground: oklch(0.13 0.028 261.692);
@@ -12,9 +28,7 @@
   --card-foreground: oklch(0.13 0.028 261.692);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.13 0.028 261.692);
-  --primary: oklch(0.5535 0.1295 34.83);
   --primary-foreground: oklch(0.985 0.002 247.839);
-  --secondary: oklch(0.7511 0.0782 79.26);
   --secondary-foreground: oklch(0.21 0.034 264.665);
   --muted: oklch(0.967 0.003 264.542);
   --muted-foreground: oklch(0.551 0.027 264.364);
