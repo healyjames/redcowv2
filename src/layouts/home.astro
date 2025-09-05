@@ -1,10 +1,12 @@
 ---
-import "../styles/global.css";
+import "../assets/global.css";
+import "../assets/redcow/styles/theme.css";
+
 import DesktopNavigation from "../components/DesktopNavigation.astro";
 import HomeMobileHeader from "../components/HomeMobileHeader.astro";
 import Footer from "../components/Footer.astro";
+
 const { content } = Astro.props;
-const brand = process.env.BRAND || 'redcow';
 ---
 
 <html lang="en">
@@ -12,7 +14,6 @@ const brand = process.env.BRAND || 'redcow';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="stylesheet" href={`/src/styles/themes/${brand}.css`} />
     <title>{content.title}</title>
   </head>
   <body>
