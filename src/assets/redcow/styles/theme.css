@@ -11,7 +11,7 @@
   --primary-lightest: oklch(0.7623 0.0711 34.24);
   --primary-dark: oklch(0.4989 0.1149 34.9);
   --primary-darker: oklch(0.4267 0.0949 34.98);
-  --primary-darkest: oklch(0.3529 0.0751 34.88)
+  --primary-darkest: oklch(0.3529 0.0751 34.88);
 
   --secondary: oklch(0.7511 0.0782 79.26);
   --secondary-light: oklch(0.8153 0.0588 79.76);
