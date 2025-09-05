@@ -1,0 +1,34 @@
+name: Brand Theming
+
+on:
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: 'The brand name to apply'
+        required: true
+        default: ''
+        type: string
+
+env:
+  DEFAULT_BRAND: redcow
+
+jobs:
+  set-brand:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Clean up asset folders
+        run: |
+          echo "[INFO] Cleaning up asset folders in src/assets/..."
+          find src/assets -mindepth 1 -maxdepth 1 -type d -not -name "${{ github.event.inputs.brand }}" -exec rm -rf {} +
+          echo "[SUCCESS] Kept only the '${{ github.event.inputs.brand }}' asset folder."
+
+      - name: Replace brand name in files
+        run: |
+          echo "[INFO] Replacing brand name in files..."
+          grep -rl "${DEFAULT_BRAND}" ./src | xargs sed -i "s/${DEFAULT_BRAND}/${{ github.event.inputs.brand }}/g"
+          echo "[SUCCESS] Replaced all instances of '${DEFAULT_BRAND}' with '${{ github.event.inputs.brand }}' in the src directory."
+
+# Deploy
