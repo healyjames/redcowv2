@@ -18,14 +18,26 @@ dl, dd {
   margin: 0;
 }
 
+@font-face {
+  font-family: 'Body';
+  src: url('/src/assets/redcow/fonts/body.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Heading';
+  src: url('/src/assets/redcow/fonts/heading.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
 /* Set core body defaults */
 body {
   line-height: 1.5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: 'Body', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  color: #111827; /* Tailwind's gray-900 */
-  background-color: #fff;
   -webkit-text-size-adjust: 100%;
   -moz-tab-size: 4;
   tab-size: 4;
@@ -46,6 +58,7 @@ a {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
+  font-family: 'Heading', system-ui;
   font-size: inherit;
   font-weight: inherit;
 }
