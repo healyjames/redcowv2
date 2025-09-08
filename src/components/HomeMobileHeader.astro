@@ -2,13 +2,33 @@
 import { Image } from "astro:assets";
 import logoEmblem from "../assets/redcow/logo/emblem.svg";
 ---
-<div class="md:hidden absolute z-10 w-full">
+<style>
+  .mobile-logo {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-logo {
+      display: none;
+    }
+  }
+
+  .mobile-logo-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+</style>
+<div class="mobile-logo">
   <a href="/" aria-label="Homepage">
     <Image 
       src={logoEmblem} 
       alt="The Red Cow Nantwich Emblem"
       width="160"
-      class="mx-auto"
+      class="mobile-logo-image"
     />
   </a>
 </div>

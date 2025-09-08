@@ -13,21 +13,83 @@ interface Props {
   headingText?: string;
 }
 ---
+<style>
+  .hero-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
 
-<section class="relative w-full h-screen md:h-[85vh]">
+  @media (min-width: 768px) {
+    .hero-section {
+      height: 85vh;
+    }
+  }
+
+  .hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 75% 25%;
+  }
+
+  @media (min-width: 768px) {
+    .hero-image {
+      object-position: center;
+    }
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6); 
+  }
+
+  .hero-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hero-heading {
+    color: #FFFFFF;
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 640px) {
+  .hero-heading {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-heading {
+    font-size: 3.75rem;
+  }
+}
+</style>
+<section class="hero-section">
   <Picture
     src={featureImage}
     widths={[480, 768, 1080, 1920]}
     formats={['avif', 'webp']}
     sizes="100vw"
     alt={imageAlt}
-    class="absolute inset-0 w-full h-full object-cover object-[75%_25%] md:object-center"
+    class="hero-image"
     loading="eager"
     decoding="async"
   />
-  <div class="absolute inset-0 bg-black/60"></div>
-  <div class="relative h-full flex items-center justify-center text-center px-4">
-    <h1 class="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold drop-shadow-lg">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-heading">
       {headingText}
     </h1>
   </div>

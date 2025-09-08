@@ -2,73 +2,28 @@
 import HomeLayout from "../layouts/home.astro";
 import FeatureImage from "../components/FeatureImage.astro";
 import Separator from "../components/Separator.astro";
+import AboutSection from "../components/AboutSection.astro";
+import TwoImageSection from "../components/TwoImageSection.astro";
+import OpeningHours from "../components/OpeningHours.astro";
 ---
-
+<style>
+  .page-content {
+    padding: 2rem 1rem;
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
 <HomeLayout content={{ title: "Home" }}>
   <FeatureImage
     imageAlt="A placeholder feature image"
     headingText="The Red Cow"
   />
-  <div class="px-4 py-8 max-w-4xl mx-auto">
-    <section>
-      <h2 class="text-2xl font-bold mt-8">About The Red Cow</h2>
-      <p class="mt-4">
-        The TheRed Cow is a stunning 16th Century Old coaching inn. We’re located in the historic town of Nantwich, where we serve delicious food, great ale, wine & cocktails from our dedicated and passionate team
-      </p>
-      <img
-        src="https://placehold.co/1920x1080/4a5568/ffffff?text=Placeholder"
-        alt="A placeholder feature image"
-        class="mt-4"
-        loading="eager"
-        decoding="async"
-      />
-    </section>
+  <div class="page-content">
+    <AboutSection />
     <Separator />
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h3>Rooms</h3>
-        <p class="mt-4">Staying at The Red Cow</p>
-        <img
-          src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-          alt="A placeholder feature image"
-          class="mt-4"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-      <div>
-        <h3>Menu</h3>
-        <p class="mt-4">Dining at The Red Cow</p>
-        <img
-          src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-          alt="A placeholder feature image"
-          class="mt-4"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-    </section>
+    <TwoImageSection />
     <Separator />
-    <section>
-      <h3 class="text-center">Opening Hours</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center mt-4">
-        <div>
-          <p class="font-bold">Monday</p>
-          <p>Close</p>
-        </div>
-        <div>
-          <p class="font-bold">Tuesday to Friday</p>
-          <p>Midday - Late</p>
-        </div>
-        <div>
-          <p class="font-bold">Saturday</p>
-          <p>10am - Late</p>
-        </div>
-        <div>
-          <p class="font-bold">Sunday</p>
-          <p>10am - 4pm</p>
-        </div>
-      </div>
-    </section>
+    <OpeningHours />
   </div>
 </HomeLayout>

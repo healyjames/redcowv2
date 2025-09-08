@@ -1,0 +1,53 @@
+---
+
+---
+<style>
+  .opening-hours h3 {
+    text-align: center;
+  }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .day {
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    .hours-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hours-grid {
+      grid-template-columns: repeat(4, 1fr);
+      text-align: center;
+    }
+  }
+</style>
+<section class="opening-hours">
+  <h3>Opening Hours</h3>
+  <div class="hours-grid">
+    <div>
+      <p class="day">Monday</p>
+      <p>Close</p>
+    </div>
+    <div>
+      <p class="day">Tuesday to Friday</p>
+      <p>Midday - Late</p>
+    </div>
+    <div>
+      <p class="day">Saturday</p>
+      <p>10am - Late</p>
+    </div>
+    <div>
+      <p class="day">Sunday</p>
+      <p>10am - 4pm</p>
+    </div>
+  </div>
+</section>

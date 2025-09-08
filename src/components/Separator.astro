@@ -1,3 +1,21 @@
 ---
 ---
-<div data-orientation="horizontal" role="none" data-slot="separator" class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-4"></div>
+<style>
+  .separator {
+    background-color: var(--secondary-lightest);
+    flex-shrink: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .separator[data-orientation="horizontal"] {
+    height: 1px;
+    width: 100%;
+  }
+
+  .separator[data-orientation="vertical"] {
+    width: 1px;
+    height: 100%;
+  }
+</style>
+<div class="separator" role="none" data-orientation="horizontal" data-slot="separator"></div>

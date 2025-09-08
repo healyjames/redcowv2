@@ -4,18 +4,140 @@ import { Facebook, Instagram, ExternalLink } from "@lucide/astro";
 import Separator from "../components/Separator.astro";
 import Logo from "../assets/redcow/logo/black.svg"
 ---
+<style>
+  .site-footer {
+    margin-top: 2rem;
+  }
 
-<footer>
+  .footer-top {
+    padding: 2rem 1rem;
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 768px) {
+    .footer-top {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .footer-links {
+      gap: 1rem;
+    }
+  }
+
+  .footer-links p {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links p a {
+    display: block;
+    width: 100%;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  .footer-links p a:hover {
+    color: var(--primary);
+    background-color: var(--background-dark);
+  }
+
+  .footer-heading {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .footer-logo-wrapper {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .footer-logo-wrapper {
+      display: block;
+      text-align: center;
+    }
+  }
+
+  .footer-logo {
+    width: 200px;
+    height: auto;
+    margin: 0 auto 1rem auto;
+  }
+
+  .footer-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary);
+    transition: color 0.2s ease;
+    border-radius: 100%;
+    border: 2px solid var(--secondary);
+    padding: 0.25rem;
+  }
+  .social-icon:hover {
+    color: var(--secondary-darker);
+    border: 2px solid var(--secondary-darker);
+  }
+
+  .footer-info {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem 2rem 1rem;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .footer-info {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  .footer-legal {
+    padding: 0.5rem 1rem;
+    background-color: var(--secondary);
+  }
+
+  .footer-legal p {
+    color: #ffffff;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+</style>
+<footer class="site-footer">
   <Separator />
-  <section class="px-4 py-8 md:grid md:grid-cols-2 max-w-4xl mx-auto"> 
-    <div class="grid grid-cols-3 gap-2 lg:gap-4">
+  <section class="footer-top">
+    <div class="footer-links">
       <div>
-        <h4 class="font-bold">About</h4>
+        <h4 class="footer-heading">About</h4>
         <p><a href="#">Home</a></p>
         <p><a href="#">About</a></p>
       </div>
       <div>
-        <h4 class="font-bold">Menu</h4>
+        <h4 class="footer-heading">Menu</h4>
         <p><a href="#">Breakfast</a></p>
         <p><a href="#">Lunch</a></p>
         <p><a href="#">Evening</a></p>
@@ -24,41 +146,45 @@ import Logo from "../assets/redcow/logo/black.svg"
         <p><a href="#">Drinks</a></p>
       </div>
       <div>
-        <h4 class="font-bold">Other</h4>
+        <h4 class="footer-heading">Other</h4>
         <p><a href="#">Rooms</a></p>
         <p><a href="#">Events</a></p>
         <p><a href="#">Contact</a></p>
       </div>
     </div>
-    <div class="hidden md:block">
+    
+    <div class="footer-logo-wrapper">
       <div>
         <Image
           src={Logo}
           alt="Logo"
           loading="lazy"
           decoding="async"
-          class="w-50 h-auto mx-auto mb-4"
+          class="footer-logo"
         />
       </div>
-      <div class="flex items-center justify-center space-x-4 mt-2">
+      <div class="footer-social">
         <a href="#" aria-label="Facebook" class="social-icon">
-          <Facebook class="w-6 h-6" />
+          <Facebook class="icon" />
         </a>
         <a href="#" aria-label="Instagram" class="social-icon">
-          <Instagram class="w-6 h-6" />
+          <Instagram class="icon" />
         </a>
         <a href="#" aria-label="Tripadvisor" class="social-icon">
-          <ExternalLink class="w-6 h-6" />
+          <ExternalLink class="icon" />
         </a>
       </div>
     </div>
   </section>
+  
   <Separator />
-  <section class="px-4 pb-8 pt-6 flex md:justify-between">
+  
+  <section class="footer-info">
     <p>Red Cow, 51 Beam Street, Nantwich, CW5 5NF</p>
     <p>01270 618 522</p>
   </section>
-  <section class="px-4 py-2 bg-gray-800">
-    <p class="text-white">© Red Cow Nantwich 2025 - All Rights Reserved</p>
+  
+  <section class="footer-legal">
+    <p>© Red Cow Nantwich 2025 - All Rights Reserved</p>
   </section>
 </footer>
