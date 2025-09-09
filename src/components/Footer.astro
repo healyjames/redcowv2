@@ -108,10 +108,24 @@ const currentYear = new Date().getFullYear();
     flex-direction: column;
     padding: 1.5rem 1rem 2rem 1rem;
     gap: 0.5rem;
+    text-align: center;
+    p {
+      margin: 0;
+    }
+    .address {
+      font-size: 0.9rem;
+    }
+    .phone {
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 0.1rem;
+      font-family: 'SecondaryFont';
+    }
   }
 
   @media (min-width: 768px) {
     .footer-info {
+      text-align: left;
       flex-direction: row;
       justify-content: space-between;
     }
@@ -120,14 +134,17 @@ const currentYear = new Date().getFullYear();
   .footer-legal {
     padding: 0.5rem 1rem;
     background-color: var(--secondary);
-  }
-
-  .footer-legal p {
+    text-align: center;
     color: #ffffff;
     margin: 0;
     font-size: 0.875rem;
   }
 
+  @media (min-width: 768px) {
+    .footer-legal {
+      text-align: left;
+    }
+  }
 </style>
 <footer class="site-footer">
   <Separator color="--secondary-lighter" />
@@ -182,8 +199,8 @@ const currentYear = new Date().getFullYear();
   <Separator color="--secondary-lighter" />
   
   <section class="footer-info">
-    <p>Red Cow, 51 Beam Street, Nantwich, CW5 5NF</p>
-    <p>01270 618 522</p>
+    <p class="address">Red Cow, 51 Beam Street, Nantwich, CW5 5NF</p>
+    <p class="phone">01270 618 522</p>
   </section>
   
   <section class="footer-legal">
