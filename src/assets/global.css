@@ -209,3 +209,12 @@ p {
 .prose ol {
   list-style: decimal;
 }
+
+
+/* Sections */
+.section-inner {
+  padding: 2rem 1rem;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+}

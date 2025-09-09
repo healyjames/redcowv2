@@ -2,45 +2,56 @@
 
 ---
 <style>
-  .rooms-menu {
+  .two-image-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .rooms-menu div p {
+  .image-card-content p {
     margin-top: 1rem;
   }
 
-  .rooms-menu div img {
+  .image-card-content img {
     margin-top: 1rem;
+    width: 100%;
+    height: auto;
   }
 
   @media (min-width: 768px) {
-    .rooms-menu {
+    .two-image-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
-<section class="rooms-menu">
-  <div>
-    <h3>Rooms</h3>
-    <p>Staying at The Red Cow</p>
-    <img
-      src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-      alt="Rooms placeholder"
-      loading="eager"
-      decoding="async"
-    />
-  </div>
-  <div>
-    <h3>Menu</h3>
-    <p>Dining at The Red Cow</p>
-    <img
-      src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-      alt="Menu placeholder"
-      loading="eager"
-      decoding="async"
-    />
+
+<section class="two-image-section">
+  <div class="section-inner">
+    <div class="two-image-grid">
+      <div class="image-card">
+        <div class="image-card-content">
+          <h3>Rooms</h3>
+          <p>Staying at The Red Cow</p>
+          <img
+            src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
+            alt="Rooms placeholder"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+      <div class="image-card">
+        <div class="image-card-content">
+          <h3>Menu</h3>
+          <p>Dining at The Red Cow</p>
+          <img
+            src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
+            alt="Menu placeholder"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </section>
