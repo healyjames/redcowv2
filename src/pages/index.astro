@@ -6,6 +6,8 @@ import AboutSection from "../components/AboutSection.astro";
 import TwoImageSection from "../components/TwoImageSection.astro";
 import OpeningHours from "../components/OpeningHours.astro";
 import WelcomeQuoteSection from "../components/WelcomeQuoteSection.astro";
+import CallToBook from "../components/CallToBook.astro";
+
 ---
 <HomeLayout content={{ title: "Home" }}>
   <FeatureImage
@@ -13,6 +15,8 @@ import WelcomeQuoteSection from "../components/WelcomeQuoteSection.astro";
     headingText="The Red Cow"
   />
   <div>
+    <CallToBook />
+    <Separator />
     <WelcomeQuoteSection />
     <AboutSection />
     <TwoImageSection />

@@ -1,0 +1,33 @@
+---
+---
+<style>
+  .call-to-book {
+    text-align: center;
+    margin-top: 0.5rem;
+    border-bottom: 2px solid transparent;
+    h2 {
+      display: inline;
+      font-size: 1.5rem;
+      margin: 0 auto;
+      strong {
+        display: block;
+      }
+      &:hover {
+        border-bottom: 2px solid var(--foreground);
+      }
+    }
+  }
+
+  @media (min-width: 767px) {
+  .call-to-book h2 strong {
+    display: inline;
+  }
+}
+</style>
+<section class="call-to-book">
+  <div class="section-inner">
+    <a href="tel:01270618522">
+      <h2>Call to book: <strong>01270 618 522</strong></h2>
+    </a>
+  </div>
+</section>

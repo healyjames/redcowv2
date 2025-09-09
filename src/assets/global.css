@@ -42,6 +42,7 @@ body {
   -moz-tab-size: 4;
   tab-size: 4;
   background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* Headings */
@@ -49,6 +50,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'SecondaryFont', system-ui;
   font-size: inherit;
   font-weight: inherit;
+  color: var(--foreground);
 }
 
 /* Remove list styles */
