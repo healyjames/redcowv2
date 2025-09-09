@@ -3,6 +3,8 @@ import { Image } from "astro:assets";
 import { Facebook, Instagram, ExternalLink } from "@lucide/astro";
 import Separator from "../components/Separator.astro";
 import Logo from "../assets/redcow/logo/black.svg"
+
+const currentYear = new Date().getFullYear();
 ---
 <style>
   .site-footer {
@@ -185,6 +187,6 @@ import Logo from "../assets/redcow/logo/black.svg"
   </section>
   
   <section class="footer-legal">
-    <p>© Red Cow Nantwich 2025 - All Rights Reserved</p>
+    <p>© Red Cow Nantwich {currentYear} - All Rights Reserved</p>
   </section>
 </footer>
