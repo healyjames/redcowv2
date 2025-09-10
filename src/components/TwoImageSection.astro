@@ -25,6 +25,14 @@ import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
       grid-template-columns: repeat(2, 1fr);
     }
   }
+
+  .image-card-button-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+  }
 </style>
 
 <section class="two-image-section">
@@ -33,7 +41,7 @@ import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
       <div class="image-card">
         <div class="image-card-content">
           <h3>Rooms</h3>
-          <p>Staying at The Red Cow</p>
+          <p>Our kitchen celebrates the best of local produce, crafting a menu that changes with the seasons. Expect freshly prepared dishes, traditional flavours, and a taste of the countryside with every bite.</p>
           <Picture
             src={imageOne}
             widths={[480, 768, 1080, 1920]}
@@ -43,12 +51,20 @@ import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
             loading="lazy"
             decoding="async"
           />
+          <div class="image-card-button-container">
+            <a class="button-primary" href="/menu#book">
+              Book a table
+            </a>
+            <a class="button-secondary" href="/menu">
+              View sample menus
+            </a>
+          </div>
         </div>
       </div>
       <div class="image-card">
         <div class="image-card-content">
           <h3>Menu</h3>
-          <p>Dining at The Red Cow</p>
+          <p>Make yourself at home in one of our inviting rooms. Whether you're here for a quiet break, a celebration, or simply passing through, our accommodation blends rustic charm with modern comforts for a restful night's sleep.</p>
           <Picture
             src={imageTwo}
             widths={[480, 768, 1080, 1920]}
@@ -58,6 +74,14 @@ import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
             loading="lazy"
             decoding="async"
           />
+          <div class="image-card-button-container">
+            <a class="button-primary" href="/rooms#book">
+              Book a Room
+            </a>
+            <a class="button-secondary" href="/rooms">
+              Find out more
+            </a>
+          </div>
         </div>
       </div>
     </div>
