@@ -1,5 +1,7 @@
 ---
-
+import { Picture } from "astro:assets";
+import imageOne from "../assets/redcow/images/two-image-section-1.jpg";
+import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
 ---
 <style>
   .two-image-grid {
@@ -32,10 +34,13 @@
         <div class="image-card-content">
           <h3>Rooms</h3>
           <p>Staying at The Red Cow</p>
-          <img
-            src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-            alt="Rooms placeholder"
-            loading="eager"
+          <Picture
+            src={imageOne}
+            widths={[480, 768, 1080, 1920]}
+            formats={['avif', 'webp']}
+            sizes="100vw"
+            alt={""}
+            loading="lazy"
             decoding="async"
           />
         </div>
@@ -44,10 +49,13 @@
         <div class="image-card-content">
           <h3>Menu</h3>
           <p>Dining at The Red Cow</p>
-          <img
-            src="https://placehold.co/1080x1080/4a5568/ffffff?text=Placeholder"
-            alt="Menu placeholder"
-            loading="eager"
+          <Picture
+            src={imageTwo}
+            widths={[480, 768, 1080, 1920]}
+            formats={['avif', 'webp']}
+            sizes="100vw"
+            alt={""}
+            loading="lazy"
             decoding="async"
           />
         </div>
