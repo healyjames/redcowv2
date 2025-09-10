@@ -19,9 +19,6 @@ interface Props {
     width: 100%;
     height: 100vh;
   }
-  .hero-button {
-    margin-top: 1rem;
-  }
 
   @media (min-width: 768px) {
     .hero-section {
@@ -70,16 +67,30 @@ interface Props {
   }
 
   @media (min-width: 640px) {
-  .hero-heading {
-    font-size: 3rem;
+    .hero-heading {
+      font-size: 3rem;
+    }
   }
-}
 
-@media (min-width: 768px) {
-  .hero-heading {
-    font-size: 3.75rem;
+  @media (min-width: 768px) {
+    .hero-heading {
+      font-size: 3.75rem;
+    }
   }
-}
+
+  .feature-image-button {
+      margin-top: 1rem;
+      padding: 0.25rem 1rem;
+      border: 2px solid var(--primary);
+      background-color: var(--primary);
+      color: var(--background);
+    }
+
+    .feature-image-button:hover {
+      border: 2px solid var(--primary);
+      background-color: var(--background);
+      color: var(--primary);
+    }
 </style>
 <section class="hero-section">
   <Picture
@@ -97,7 +108,7 @@ interface Props {
     <h1 class="hero-heading">
       {headingText}
     </h1>
-    <a class="btn-primary hero-button" href="/menu">
+    <a class="feature-image-button" href="/menu">
       View Menus
     </a>
   </div>
