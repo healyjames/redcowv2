@@ -1,5 +1,6 @@
 ---
-
+import { Picture } from "astro:assets";
+import aboutImage from "../assets/redcow/images/about-section-image-1.jpg";
 ---
 <style>
   .about-section {
@@ -28,10 +29,12 @@
       historic town of Nantwich, where we serve delicious food, great ale, wine & cocktails
       from our dedicated and passionate team
     </p>
-    <img
-      src="https://placehold.co/1920x1080/4a5568/ffffff?text=Placeholder"
-      alt="A placeholder feature image"
-      loading="eager"
+    <Picture
+      src={aboutImage}
+      widths={[480, 768, 1080, 1920]}
+      formats={['avif', 'webp']}
+      alt={""}
+      loading="lazy"
       decoding="async"
     />
   </div>
