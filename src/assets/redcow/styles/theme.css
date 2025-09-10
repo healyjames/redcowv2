@@ -57,16 +57,3 @@
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
 }
-
-.btn-primary {
-  padding: 0.25rem 1rem;
-  border: 2px solid var(--primary);
-  background-color: var(--primary);
-  color: var(--background);
-}
-
-.btn-primary:hover {
-  border: 2px solid var(--primary);
-  background-color: var(--background);
-  color: var(--primary);
-}

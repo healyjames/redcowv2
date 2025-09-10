@@ -220,3 +220,25 @@ p {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* Buttons */
+.button-primary {
+  padding: 0.25rem 1rem;
+  border: 1px solid var(--secondary);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.button-primary:hover {
+  border: 1px solid var(--primary);
+  box-shadow: -0.1em 0.1em 0em 0em var(--primary);
+}
+
+.button-secondary {
+  padding: 0.25rem 1rem;
+  border: 1px solid var(--foreground);
+}
+
+.button-secondary:hover {
+  box-shadow: -0.1em 0.1em 0em 0em var(--foreground);
+}
