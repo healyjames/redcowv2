@@ -1,12 +1,14 @@
 ---
 import BaseLayout from "./base.astro";
-import DesktopNavigation from "../components/DesktopNavigation.astro";
+import Navigation from "../components/MainNavigation.astro";
+import MobileNavigation from "../components/client/MobileNavigation/index";
 import Footer from "../components/Footer.astro";
 
 const { content } = Astro.props;
 ---
 <BaseLayout content={content}>
-  <DesktopNavigation />
+  <Navigation />
+  <MobileNavigation client:load />
   <slot />
   <Footer />
 </BaseLayout>
