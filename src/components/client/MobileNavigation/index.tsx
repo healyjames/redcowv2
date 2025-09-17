@@ -1,9 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChartNoAxesColumn as Menu, X } from "lucide-react";
 import "./MobileNavigation.css";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+      if (open) {
+          document.body.style.overflow = "hidden";
+      } else {
+          document.body.style.overflow = "visible";
+      }
+
+      return () => {
+          document.body.style.overflow = "visible";
+      };
+  }, [open]);
+
 
   return (
       <nav className="mobile-nav">
