@@ -212,6 +212,10 @@ p {
   list-style: decimal;
 }
 
+/* Pages */
+.page-container {
+  padding: 1rem;
+}
 
 /* Sections */
 .section-inner {

@@ -2,6 +2,39 @@
 import MainLayout from "../../layouts/main.astro";
 
 ---
+<style>
+  .menu-container {
+    padding: 20px;
+  }
+</style>
 <MainLayout content={{ title: "Home" }}>
-  <p>Hello world</p>
+  <div class="page-container">
+    <div class="menu-disclaimer">
+      <p>Our menu changes frequently. Below are sample menus.</p>
+    </div>
+    <div>
+      <h1>Menus</h1>
+      <p>We believe great food starts with the freshest ingredients. Our chefs create delicious dishes that celebrate the best of each season, with menus that change regularly to bring you new flavours and the finest produce available. Whether you're joining us for a hearty meal or something lighter, you'll always find something fresh, tasty, and made with care.</p>
+    </div>
+    <section class="menus">
+      <a href="/menu/christmas.pdf">
+        <p>Christmas Day Menu</p>
+      </a>
+      <a href="/menu/festive.pdf">
+        <p>Festive Menu</p>
+      </a>
+      <a href="/menu/lunch.pdf">
+        <p>Lunch Menu</p>
+      </a>
+      <a href="/menu/evening.pdf">
+        <p>Evening Menu</p>
+      </a>
+      <a href="/menu/sunday.pdf">
+        <p>Sunday Lunch Menu</p>
+      </a>
+      <a href="/menu/drinks.pdf">
+        <p>Wine &amp; Drinks Menu</p>
+      </a>
+    </section>
+  </div>
 </MainLayout>
