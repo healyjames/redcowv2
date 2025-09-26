@@ -5,18 +5,38 @@ import MainLayout from "../../layouts/main.astro";
 
 ---
 <style>
-  
+  .hero-image {
+    filter: brightness(0.6);
+  }
+  .hero-content {
+    position: absolute;
+    top: 35%;
+    width: 100%;
+    text-align: center;
+    color: var(--background);
+    h1 {
+      font-family: 'PrimaryFont';
+      color: var(--background);
+      font-size: 3.5rem;
+      font-weight: normal;
+    }
+  }
 </style>
 <MainLayout content={{ title: "Rooms" }} transparentNavigation={true}>
-  <div>
+  <div class="hero-container">
     <Picture
-          src={aboutImage}
-          widths={[480, 768, 1080, 1920]}
-          formats={['avif', 'webp']}
-          alt={""}
-          loading="lazy"
-          decoding="async"
-        />
+      src={aboutImage}
+      widths={[480, 768, 1080, 1920]}
+      formats={['avif', 'webp']}
+      alt={""}
+      loading="lazy"
+      decoding="async"
+      class="hero-image"
+    />
+  </div>
+  <div class="hero-content">
+    <h1>Rooms</h1>
+    <p>At The Red Cow</p>
   </div>
   <div class="page-container">
     <section class="rooms">
