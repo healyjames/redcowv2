@@ -1,15 +1,27 @@
 ---
+import { Picture } from "astro:assets";
+import aboutImage from "../../assets/redcow/images/about-section-image-1.jpg";
 import MainLayout from "../../layouts/main.astro";
 
 ---
 <style>
   
 </style>
-<MainLayout content={{ title: "Rooms" }}>
+<MainLayout content={{ title: "Rooms" }} transparentNavigation={true}>
+  <div>
+    <Picture
+          src={aboutImage}
+          widths={[480, 768, 1080, 1920]}
+          formats={['avif', 'webp']}
+          alt={""}
+          loading="lazy"
+          decoding="async"
+        />
+  </div>
   <div class="page-container">
     <section class="rooms">
       <div class="section-inner">
-        <p>Hello Worlds!</p>
+        <p>Hello World!</p>
       </div>
     </section>
   </div>

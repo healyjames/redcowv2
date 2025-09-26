@@ -1,4 +1,5 @@
 ---
+const { transparent } = Astro.props;
 ---
 <style>
   .main-nav {
@@ -27,27 +28,45 @@
   .nav-item {
     color: var(--foreground);
     border-bottom: 1px solid transparent;
-    min-width: 3rem;
     text-align: center;
-  }
-
-  .nav-item:hover {
-    color: var(--primary);
-    border-bottom: 1px solid var(--primary);
+    &:hover {
+      color: var(--primary);
+      border-bottom: 1px solid var(--primary);
+    }
+    a {
+      display: block;
+      min-width: 3rem;
+    }
   }
 
   .nav-logo {
     font-size: 2rem;
     margin: 0 1rem;
+    &:hover {
+      color: var(--primary);
+    }
   }
 
-  .nav-logo:hover {
-    color: var(--primary);
+  .main-nav-transparent {
+    position: absolute;
+    width: 100%;
+    .nav-item {
+      color: var(--background);
+      &:hover {
+        color: var(--secondary);
+        border-bottom: 1px solid var(--secondary);
+      }
+    }
+    .nav-logo {
+      color: var(--background);
+      &:hover {
+        color: var(--secondary);
+      }
+    }
   }
-
 </style>
 
-<nav aria-label="Main navigation" class="main-nav">
+<nav aria-label="Main navigation" class:list={{ "main-nav": true, "main-nav-transparent": transparent }} >
   <ul class="nav-list">
     <li class="nav-item"><a href="/dine">Dine</a></li>
     <li class="nav-item"><a href="/stay">Stay</a></li>

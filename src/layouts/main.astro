@@ -4,10 +4,10 @@ import Navigation from "../components/MainNavigation.astro";
 import MobileNavigation from "../components/client/MobileNavigation/index";
 import Footer from "../components/Footer.astro";
 
-const { content } = Astro.props;
+const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
-  <Navigation />
+  <Navigation transparent={transparentNavigation} />
   <MobileNavigation client:load />
   <slot />
   <Footer />
