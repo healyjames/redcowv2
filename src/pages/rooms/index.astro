@@ -5,12 +5,12 @@ import MainLayout from "../../layouts/main.astro";
 
 ---
 <style>
-  .hero-image {
+  .rooms-hero-image {
     filter: brightness(0.6);
   }
-  .hero-content {
+  .rooms-hero-content {
     position: absolute;
-    top: 35%;
+    top: 10rem;
     width: 100%;
     text-align: center;
     color: var(--background);
@@ -21,9 +21,18 @@ import MainLayout from "../../layouts/main.astro";
       font-weight: normal;
     }
   }
+  .rooms-hero-container {
+    max-height: 75vh;
+    overflow: hidden;
+  }
+  @media (min-width: 1000px) {
+    .rooms-hero-content {
+      top: 12rem;
+    }
+  }
 </style>
 <MainLayout content={{ title: "Rooms" }} transparentNavigation={true}>
-  <div class="hero-container">
+  <div class="rooms-hero-container">
     <Picture
       src={aboutImage}
       widths={[480, 768, 1080, 1920]}
@@ -31,10 +40,10 @@ import MainLayout from "../../layouts/main.astro";
       alt={""}
       loading="lazy"
       decoding="async"
-      class="hero-image"
+      class="rooms-hero-image"
     />
   </div>
-  <div class="hero-content">
+  <div class="rooms-hero-content">
     <h1>Rooms</h1>
     <p>At The Red Cow</p>
   </div>
