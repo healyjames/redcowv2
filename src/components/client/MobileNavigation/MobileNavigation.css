@@ -4,8 +4,21 @@
   }
 }
 
+.mobile-nav-transparent {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+
+.mobile-nav-transparent .mobile-nav-logo, .mobile-nav-transparent .mobile-menu-toggle {
+  color: var(--background)
+}
+
+.mobile-nav-open {
+  background-color: var(--background);
+}
+
 .mobile-nav-header {
-  background: var(--background);
   padding: 1rem;
   display: flex;
   align-items: center;

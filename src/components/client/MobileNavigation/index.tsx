@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { ChartNoAxesColumn as Menu, X } from "lucide-react";
 import "./MobileNavigation.css";
 
-export default function MobileNav() {
+interface MobileNavProps {
+    transparent?: boolean;
+}
+
+export default function MobileNav({ transparent }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -17,9 +21,8 @@ export default function MobileNav() {
       };
   }, [open]);
 
-
   return (
-      <nav className="mobile-nav">
+      <nav className={`mobile-nav ${transparent && !open ? "mobile-nav-transparent" : ""} ${open ? "mobile-nav-open" : ""}`}>
           <div className="mobile-nav-header">
               <a href="/" className="mobile-nav-logo">
                   The Red Cow

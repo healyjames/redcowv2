@@ -8,7 +8,7 @@ const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
   <Navigation transparent={transparentNavigation} />
-  <MobileNavigation client:load />
+  <MobileNavigation transparent={transparentNavigation} client:load />
   <slot />
   <Footer />
 </BaseLayout>
