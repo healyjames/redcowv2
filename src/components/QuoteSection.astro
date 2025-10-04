@@ -1,0 +1,33 @@
+---
+interface Props {
+  quote: string;
+}
+
+const { quote } = Astro.props;
+---
+<style>
+  .quote-section {
+    padding: 2rem;
+  }
+  .quote {
+    font-family: 'Heading';
+    font-style: italic;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .quote {
+      font-size: 2rem;
+    }
+    .quote-section {
+      padding: 4rem 2rem;
+    }
+  }
+</style>
+<section class="quote-section">
+  <div class="section-inner">
+    <blockquote class="quote">
+      {quote}
+    </blockquote>
+  </div>
+</section>

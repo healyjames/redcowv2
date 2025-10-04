@@ -10,7 +10,7 @@ interface Card {
     text: string;
     href: string;
   };
-  secondaryButton: {
+  secondaryButton?: {
     text: string;
     href: string;
   };
@@ -72,12 +72,16 @@ const { cards } = Astro.props;
               decoding="async"
             />
             <div class="image-card-button-container">
-              <a class="button-primary" href={card.primaryButton.href}>
-                {card.primaryButton.text}
-              </a>
-              <a class="button-secondary" href={card.secondaryButton.href}>
-                {card.secondaryButton.text}
-              </a>
+              {card.primaryButton?.text &&  card.primaryButton?.href && (
+                <a class="button-primary" href={card.primaryButton.href}>
+                  {card.primaryButton.text}
+                </a>
+              )}
+              {card.secondaryButton?.text && card.secondaryButton?.href && (
+                <a class="button-secondary" href={card.secondaryButton.href}>
+                  {card.secondaryButton.text}
+                </a>
+              )}
             </div>
           </div>
         </div>

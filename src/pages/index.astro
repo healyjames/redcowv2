@@ -5,7 +5,7 @@ import Separator from "../components/Separator.astro";
 import AboutSection from "../components/AboutSection.astro";
 import TwoImageSection from "../components/TwoImageSection.astro";
 import OpeningHours from "../components/OpeningHours.astro";
-import WelcomeQuoteSection from "../components/WelcomeQuoteSection.astro";
+import WelcomeQuoteSection from "../components/QuoteSection.astro";
 import CallToBook from "../components/CallToBook.astro";
 
 // TwoImageSection Content
@@ -52,7 +52,7 @@ const twoImageSectionCards = [
   <div>
     <CallToBook />
     <Separator />
-    <WelcomeQuoteSection />
+    <WelcomeQuoteSection quote="Passionate about exceptional food, warm hospitality, and creating a welcoming space for all in the heart of Cheshire." />
     <AboutSection />
     <TwoImageSection cards={twoImageSectionCards} />
     <Separator />
