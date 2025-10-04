@@ -8,6 +8,41 @@ import OpeningHours from "../components/OpeningHours.astro";
 import WelcomeQuoteSection from "../components/WelcomeQuoteSection.astro";
 import CallToBook from "../components/CallToBook.astro";
 
+// TwoImageSection Content
+import imageOne from "../assets/redcow/images/two-image-section-1.jpg";
+import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
+
+const twoImageSectionCards = [
+  {
+    title: "Menu",
+    description: "Our kitchen celebrates the best of local produce, crafting a menu that changes with the seasons. Expect freshly prepared dishes, traditional flavours, and a taste of the countryside with every bite.",
+    image: imageOne,
+    imageAlt: "Restaurant menu showcase",
+    primaryButton: {
+      text: "Book a table",
+      href: "/menu#book"
+    },
+    secondaryButton: {
+      text: "View sample menus",
+      href: "/menu"
+    }
+  },
+  {
+    title: "Rooms",
+    description: "Make yourself at home in one of our inviting rooms. Whether you're here for a quiet break, a celebration, or simply passing through, our accommodation blends rustic charm with modern comforts for a restful night's sleep.",
+    image: imageTwo,
+    imageAlt: "Comfortable guest room",
+    primaryButton: {
+      text: "Book a Room",
+      href: "/rooms#book"
+    },
+    secondaryButton: {
+      text: "Find out more",
+      href: "/rooms"
+    }
+  }
+];
+
 ---
 <HomeLayout content={{ title: "Home" }}>
   <FeatureImage
@@ -19,7 +54,7 @@ import CallToBook from "../components/CallToBook.astro";
     <Separator />
     <WelcomeQuoteSection />
     <AboutSection />
-    <TwoImageSection />
+    <TwoImageSection cards={twoImageSectionCards} />
     <Separator />
     <OpeningHours />
   </div>

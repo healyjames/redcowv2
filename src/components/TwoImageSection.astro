@@ -1,7 +1,26 @@
 ---
 import { Picture } from "astro:assets";
-import imageOne from "../assets/redcow/images/two-image-section-1.jpg";
-import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
+
+interface Card {
+  title: string;
+  description: string;
+  image: ImageMetadata;
+  imageAlt: string;
+  primaryButton: {
+    text: string;
+    href: string;
+  };
+  secondaryButton: {
+    text: string;
+    href: string;
+  };
+}
+
+interface Props {
+  cards: Card[];
+}
+
+const { cards } = Astro.props;
 ---
 <style>
   .two-image-grid {
@@ -38,52 +57,31 @@ import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
 <section class="two-image-section">
   <div class="section-inner">
     <div class="two-image-grid">
-      <div class="image-card">
-        <div class="image-card-content">
-          <h3>Menu</h3>
-          <p>Our kitchen celebrates the best of local produce, crafting a menu that changes with the seasons. Expect freshly prepared dishes, traditional flavours, and a taste of the countryside with every bite.</p>
-          <Picture
-            src={imageOne}
-            widths={[480, 768, 1080, 1920]}
-            formats={['avif', 'webp']}
-            sizes="100vw"
-            alt={""}
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="image-card-button-container">
-            <a class="button-primary" href="/menu#book">
-              Book a table
-            </a>
-            <a class="button-secondary" href="/menu">
-              View sample menus
-            </a>
+      {cards.map((card) => (
+        <div class="image-card">
+          <div class="image-card-content">
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+            <Picture
+              src={card.image}
+              widths={[480, 768, 1080, 1920]}
+              formats={['avif', 'webp']}
+              sizes="100vw"
+              alt={card.imageAlt}
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="image-card-button-container">
+              <a class="button-primary" href={card.primaryButton.href}>
+                {card.primaryButton.text}
+              </a>
+              <a class="button-secondary" href={card.secondaryButton.href}>
+                {card.secondaryButton.text}
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="image-card">
-        <div class="image-card-content">
-          <h3>Rooms</h3>
-          <p>Make yourself at home in one of our inviting rooms. Whether you're here for a quiet break, a celebration, or simply passing through, our accommodation blends rustic charm with modern comforts for a restful night's sleep.</p>
-          <Picture
-            src={imageTwo}
-            widths={[480, 768, 1080, 1920]}
-            formats={['avif', 'webp']}
-            sizes="100vw"
-            alt={""}
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="image-card-button-container">
-            <a class="button-primary" href="/rooms#book">
-              Book a Room
-            </a>
-            <a class="button-secondary" href="/rooms">
-              Find out more
-            </a>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>
