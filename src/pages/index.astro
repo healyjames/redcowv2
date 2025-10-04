@@ -1,5 +1,5 @@
 ---
-import HomeLayout from "../layouts/home.astro";
+import MainLayout from "../layouts/main.astro";
 import FeatureImage from "../components/FeatureImage.astro";
 import Separator from "../components/Separator.astro";
 import AboutSection from "../components/AboutSection.astro";
@@ -8,9 +8,17 @@ import OpeningHours from "../components/OpeningHours.astro";
 import WelcomeQuoteSection from "../components/QuoteSection.astro";
 import CallToBook from "../components/CallToBook.astro";
 
+// FeatureImage Content
+import featureImage from "../assets/redcow/images/home-feature-image.jpg";
+
+const featureImageLinks = [
+  { text: "View Menu", href: "/menu" },
+  { text: "Book Room", href: "/rooms" }
+];
+
 // TwoImageSection Content
-import imageOne from "../assets/redcow/images/two-image-section-1.jpg";
-import imageTwo from "../assets/redcow/images/two-image-section-2.jpg";
+import imageOne from "../assets/redcow/images/home-two-image-section-1.jpg";
+import imageTwo from "../assets/redcow/images/home-two-image-section-2.jpg";
 
 const twoImageSectionCards = [
   {
@@ -44,11 +52,8 @@ const twoImageSectionCards = [
 ];
 
 ---
-<HomeLayout content={{ title: "Home" }}>
-  <FeatureImage
-    imageAlt="A placeholder feature image"
-    headingText="The Red Cow"
-  />
+<MainLayout content={{ title: "Home" }} transparentNavigation={true}>
+  <FeatureImage title="The Red Cow" image={featureImage} links={featureImageLinks} />
   <div>
     <CallToBook />
     <Separator />
@@ -58,4 +63,4 @@ const twoImageSectionCards = [
     <Separator />
     <OpeningHours />
   </div>
-</HomeLayout>
+</MainLayout>

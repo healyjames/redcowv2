@@ -248,3 +248,12 @@ p {
 .button-secondary:hover {
   box-shadow: -0.1em 0.1em 0em 0em var(--foreground);
 }
+
+.link {
+  color: var(--background);
+}
+
+.link:hover {
+  color: var(--secondary);
+  border-bottom: 1px solid var(--secondary);
+}
