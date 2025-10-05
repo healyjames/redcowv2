@@ -37,58 +37,54 @@ import MainLayout from "../../layouts/main.astro";
   }
 
   @media screen and (min-width: 768px) {
-    .menus-inner {
-      display: flex;
-      flex-direction: row-reverse;
-      gap: 4rem;
-      justify-content: center;
-      align-items: center;
-      max-width: 640px;
-      margin: 0 auto;
-    }
-    .menu-container a {
-      min-width: 118px;
+    .menu-heading h1 {
+      text-align: center;
     }
   }
 
   .menu-disclaimer {
     text-align: center;
+    background-color: var(--background-dark);
   }
 </style>
 <MainLayout content={{ title: "Menu" }}>
   <div class="page-container">
+    <section class="menu-heading">
+      <div class="section-inner">
+        <div>
+          <h1>Menus</h1>
+          <p>We believe great food starts with the freshest ingredients. Our chefs create delicious dishes that celebrate the best of each season, with menus that change regularly to bring you new flavours and the finest produce available. Whether you're joining us for a hearty meal or something lighter, you'll always find something fresh, tasty, and made with care.</p>
+        </div>
+      </div>
+    </section>
+  </div>
     <section class="menu-disclaimer">
       <div class="section-inner">
         <p>Our menu changes frequently. Below are sample menus.</p>
       </div>
     </section>
+  <div class="page-container">
     <section class="menus">
       <div class="section-inner">
-        <div class="menus-inner">
-          <div>
-            <h1>Menus</h1>
-            <p>We believe great food starts with the freshest ingredients. Our chefs create delicious dishes that celebrate the best of each season, with menus that change regularly to bring you new flavours and the finest produce available. Whether you're joining us for a hearty meal or something lighter, you'll always find something fresh, tasty, and made with care.</p>
-          </div>
-          <div class="menu-container">
-            <a href="/menu/christmas.pdf">
-              <p>Christmas Day Menu</p>
-            </a>
-            <a href="/menu/festive.pdf">
-              <p>Festive Menu</p>
-            </a>
-            <a href="/menu/lunch.pdf">
-              <p>Lunch Menu</p>
-            </a>
-            <a href="/menu/evening.pdf">
-              <p>Evening Menu</p>
-            </a>
-            <a href="/menu/sunday.pdf">
-              <p>Sunday Lunch Menu</p>
-            </a>
-            <a href="/menu/drinks.pdf">
-              <p>Wine &amp; Drinks Menu</p>
-            </a>
-          </div>
+        <div class="menu-container">
+          <a href="/menu/christmas.pdf">
+            <p>Christmas Day Menu</p>
+          </a>
+          <a href="/menu/festive.pdf">
+            <p>Festive Menu</p>
+          </a>
+          <a href="/menu/lunch.pdf">
+            <p>Lunch Menu</p>
+          </a>
+          <a href="/menu/evening.pdf">
+            <p>Evening Menu</p>
+          </a>
+          <a href="/menu/sunday.pdf">
+            <p>Sunday Lunch Menu</p>
+          </a>
+          <a href="/menu/drinks.pdf">
+            <p>Wine &amp; Drinks Menu</p>
+          </a>
         </div>
       </div>
     </section>
