@@ -65,22 +65,22 @@ import Separator from "../../../components/Separator.astro";
     
     <section class="booking-form">
       <div class="section-inner">
-        <form aria-labelledby="bookingFormTitle" novalidate>
+        <form aria-labelledby="bookingFormTitle" novalidate method="POST">
           <h2 id="bookingFormTitle" class="sr-only">Booking Form</h2>
 
           <div class="form-group">
             <label for="firstname">First Name <span aria-hidden="true">*</span></label>
-            <input id="firstname" name="firstname" type="text" autocomplete="given-name" required />
+            <input id="firstname" name="firstname" type="text" autocomplete="given-name" minlength="1" required />
           </div>
 
           <div class="form-group">
             <label for="surname">Surname <span aria-hidden="true">*</span></label>
-            <input id="surname" name="surname" type="text" autocomplete="family-name" required />
+            <input id="surname" name="surname" type="text" autocomplete="family-name" minlength="1" required />
           </div>
 
           <div class="form-group">
-            <label for="guests">Number of guests</label>
-            <select id="guests" name="guests">
+            <label for="guests">Number of guests <span aria-hidden="true">*</span></label>
+            <select id="guests" name="guests" required>
               <option value="">Select number of guests</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -96,7 +96,7 @@ import Separator from "../../../components/Separator.astro";
           </div>
 
           <div class="form-group">
-            <label for="date">Date<span aria-hidden="true">*</span></label>
+            <label for="date">Date <span aria-hidden="true">*</span></label>
             <input id="date" name="date" type="date" required />
           </div>
 
@@ -104,7 +104,7 @@ import Separator from "../../../components/Separator.astro";
             <label for="room">Room preference</label>
             <select id="room" name="room">
               <option value="">Select a room</option>
-              <option value="Any">Any</option>
+              <option value="Any" selected>Any</option>
               <option value="Red Angus">Red Angus</option>
               <option value="Limousin">Limousin</option>
               <option value="Corriente">Corriente</option>
@@ -113,8 +113,8 @@ import Separator from "../../../components/Separator.astro";
           </div>
 
           <div class="form-group">
-            <label for="nights">Number of nights</label>
-            <select id="nights" name="nights">
+            <label for="nights">Number of nights <span aria-hidden="true">*</span></label>
+            <select id="nights" name="nights" required>
               <option value="">Select nights</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -128,8 +128,8 @@ import Separator from "../../../components/Separator.astro";
           </div>
 
           <div class="form-group">
-            <label for="number">Contact Number</label>
-            <input id="number" name="number" type="tel" inputmode="tel" autocomplete="tel" />
+            <label for="number">Contact Number <span aria-hidden="true">*</span></label>
+            <input id="number" name="number" type="tel" inputmode="tel" autocomplete="tel" required />
           </div>
 
           <div class="form-group">
@@ -137,7 +137,7 @@ import Separator from "../../../components/Separator.astro";
             <input id="email" name="email" type="email" autocomplete="email" required />
           </div>
 
-          <button type="submit" class="button-secondary">Submit Booking</button>
+          <button type="submit" class="button-secondary">Submit</button>
         </form>
       </div>
     </section>
