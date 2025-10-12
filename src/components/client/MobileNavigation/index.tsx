@@ -44,10 +44,10 @@ export default function MobileNav({ transparent }: MobileNavProps) {
               <div className="mobile-nav-content">
                   <ul className="mobile-nav-list">
                       <li className="mobile-nav-item">
-                          <a href="/dine">Dine</a>
+                          <a href="/menu">Dine</a>
                       </li>
                       <li className="mobile-nav-item">
-                          <a href="/stay">Stay</a>
+                          <a href="/rooms">Stay</a>
                       </li>
                       <li className="mobile-nav-item">
                           <a href="/events">Events</a>
