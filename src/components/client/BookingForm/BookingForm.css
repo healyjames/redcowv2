@@ -1,0 +1,47 @@
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-family: 'SecondaryFont';
+}
+
+input, select {
+  padding: 0.5rem;
+  border: 1px solid var(--secondary-lighter);
+}
+
+input:focus, select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media screen and (min-width: 768px) {
+  form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem; /* row-gap column-gap */
+    align-items: start;
+  }
+
+  /* Make the submit button span both columns */
+  form button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

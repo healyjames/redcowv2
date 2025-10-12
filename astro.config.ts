@@ -8,4 +8,5 @@ export default defineConfig({
     },
     site: "https://example.com",
     integrations: [react(), sitemap()],
+    output: "static",
 });
