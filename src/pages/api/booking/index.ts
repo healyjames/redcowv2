@@ -61,7 +61,7 @@ async function sendEmailWithResend(data: any) {
       },
       body: JSON.stringify({
           from: "noreply@redcownantwich.co.uk",
-          to: data.email,
+          to: data.email, // TDO: Change to redcow info email
           subject: `New Booking Request - ${data.firstname} ${data.surname}`,
           html: generateEmailHTML(data),
       }),
