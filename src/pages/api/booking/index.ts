@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { generateEmailHTML } from "@/libs/email/generateEmailHTML";
 
 export const prerender = false;
 

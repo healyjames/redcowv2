@@ -1,20 +1,6 @@
 import { useState, type FormEvent } from "react";
+import type { FormData, FormErrors } from "@/libs/types/constants";
 import "./BookingForm.css";
-
-interface FormData {
-    firstname: string;
-    surname: string;
-    guests: string;
-    date: string;
-    room: string;
-    nights: string;
-    number: string;
-    email: string;
-}
-
-interface FormErrors {
-    [key: string]: string;
-}
 
 export default function BookingForm() {
     const [formData, setFormData] = useState<FormData>({
