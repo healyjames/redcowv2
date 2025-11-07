@@ -1,4 +1,4 @@
-import FormData from "@/libs/types/constants";
+import type { FormData } from "@/libs/types/constants";
 
 export function generateEmailHTML(data: FormData): string {
     return `
@@ -35,17 +35,13 @@ export function generateEmailHTML(data: FormData): string {
                 </tr>
                 <tr>
                   <td class="content" style="padding: 20px;">
-                    <p><strong>Name:</strong> ${data.firstname} ${
-        data.surname
-    }</p>
+                    <p><strong>Name:</strong> ${data.firstname} ${data.surname}</p>
                     <p><strong>Email:</strong> ${data.email}</p>
                     <p><strong>Contact Number:</strong> ${data.number}</p>
                     <p><strong>Date:</strong> ${data.date}</p>
                     <p><strong>Number of Nights:</strong> ${data.nights}</p>
                     <p><strong>Number of Guests:</strong> ${data.guests}</p>
-                    <p><strong>Room Preference:</strong> ${
-                        data.room || "Any"
-                    }</p>
+                    <p><strong>Room Preference:</strong> ${data.room || "Any"}</p>
                   </td>
                 </tr>
                 <tr>

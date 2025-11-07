@@ -1,12 +1,22 @@
 import type { APIRoute } from "astro";
 import type { FormData } from "@/libs/types/constants";
-import { generateEmailHTML } from "@/libs/email/generateEmailHtml";
+import { validateRequest } from "@/libs/utils/validateRequest";
+import { checkHoneypot } from "@/libs/utils/honeyPot";
+import { sendEmailWithResend } from "@/libs/email/sendEmailWithResend";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const validationResponse = await validateRequest(request);
+    if (validationResponse) return validationResponse;
+
     const data = await request.json();
+    if (checkHoneypot(data))
+        return new Response(JSON.stringify({ error: "Spam detected." }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+        });
 
     if (!data.firstname || !data.surname || !data.email || !data.date) {
       return new Response(
@@ -21,6 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
         }
       );
     }
+
+    console.log(data);
 
     const transformedData: FormData = {
         ...data,
@@ -60,25 +72,3 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
-
-async function sendEmailWithResend(data: FormData) {
-  const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
-
-  const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-          from: "noreply@redcownantwich.co.uk",
-          to: data.email, // TODO: Change to redcow info email
-          subject: `New Booking Request - ${data.firstname} ${data.surname}`,
-          html: generateEmailHTML(data),
-      }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to send email");
-  }
-}
