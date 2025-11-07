@@ -7,6 +7,7 @@ export interface FormData {
     nights: string;
     number: string;
     email: string;
+    additionaltext: string;
 }
 
 export interface FormErrors {

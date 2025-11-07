@@ -42,6 +42,8 @@ export function generateEmailHTML(data: FormData): string {
                     <p><strong>Number of Nights:</strong> ${data.nights}</p>
                     <p><strong>Number of Guests:</strong> ${data.guests}</p>
                     <p><strong>Room Preference:</strong> ${data.room || "Any"}</p>
+                    <p><strong>Room Preference:</strong> ${data.room || "Any"}</p>
+                    <p><strong>Additional Text:</strong> ${data.additionaltext || "N/A"}</p>
                   </td>
                 </tr>
                 <tr>

@@ -4,13 +4,17 @@
   flex-direction: column;
 }
 
+.full-width {
+  grid-column: 1 / -1;
+}
+
 label {
   font-weight: 600;
   margin-bottom: 0.25rem;
   font-family: 'SecondaryFont';
 }
 
-input, select {
+input, select, textarea {
   padding: 0.5rem;
   border: 1px solid var(--secondary-lighter);
 }

@@ -12,6 +12,7 @@ export default function BookingForm() {
         nights: "",
         number: "",
         email: "",
+        additionaltext: "",
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
@@ -89,6 +90,7 @@ export default function BookingForm() {
                 nights: "",
                 number: "",
                 email: "",
+                additionaltext: "",
             });
         } catch (error) {
             console.error("Submission error:", error);
@@ -99,15 +101,17 @@ export default function BookingForm() {
     };
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        // Clear error when user starts typing
+
         if (errors[name]) {
             setErrors((prev) => ({ ...prev, [name]: "" }));
         }
-    };
+    };      
 
     return (
         <div>
@@ -329,6 +333,17 @@ export default function BookingForm() {
                     )}
                 </div>
 
+                <div className="form-group full-width">
+                    <label htmlFor="additionaltext">Additional text</label>
+                    <textarea
+                        id="additionaltext"
+                        name="additionaltext"
+                        rows={4}
+                        value={formData.additionaltext}
+                        onChange={handleChange}
+                    />
+                </div>
+
                 {submitStatus === "success" && (
                     <div className="success-message" role="status">
                         Thank you! Your booking request has been submitted.
@@ -347,6 +362,7 @@ export default function BookingForm() {
                     type="submit"
                     className="button-secondary"
                     disabled={isSubmitting}
+                    style={{ width: "100%" }}
                 >
                     {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
