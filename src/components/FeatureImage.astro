@@ -78,7 +78,7 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
     {links && (
       <div class="feature-image-links">
         {links.map(link => (
-          <a href={link.href} class="link">
+          <a href={link.href} class="button-primary">
             {link.text}
           </a>
         ))}
