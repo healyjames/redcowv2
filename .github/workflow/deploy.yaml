@@ -1,4 +1,4 @@
-name: Brand Theming
+name: Brand Theming and Deploy
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ env:
   DEFAULT_BRAND: redcow
 
 jobs:
-  set-brand:
+  set-brand-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -31,4 +31,30 @@ jobs:
           grep -rl "${DEFAULT_BRAND}" ./src | xargs sed -i "s/${DEFAULT_BRAND}/${{ github.event.inputs.brand }}/g"
           echo "[SUCCESS] Replaced all instances of '${DEFAULT_BRAND}' with '${{ github.event.inputs.brand }}' in the src directory."
 
-# Deploy
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './dist'
+          production-branch: main
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions - Brand: ${{ github.event.inputs.brand }}"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
