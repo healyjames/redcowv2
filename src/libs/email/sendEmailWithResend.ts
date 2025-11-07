@@ -13,7 +13,7 @@ export async function sendEmailWithResend(data: FormData) {
         body: JSON.stringify({
             from: "noreply@redcownantwich.co.uk",
             to: data.email, // TODO: Change to redcow info email
-            subject: `New Booking Request - x${data.guests} ${data.date} ${date.time}`,
+            subject: `New Booking Request - ${data.date} (x${data.guests})`,
             html: generateEmailHTML(data),
         }),
     });

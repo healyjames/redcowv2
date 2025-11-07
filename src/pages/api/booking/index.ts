@@ -32,6 +32,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    console.log(data);
+
     const transformedData: FormData = {
         ...data,
         date: new Date(data.date).toLocaleDateString("en-GB", {
