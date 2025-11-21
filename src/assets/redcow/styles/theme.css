@@ -57,3 +57,18 @@
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
 }
+
+
+@font-face {
+  font-family: 'PrimaryFont';
+  src: url('../fonts/primary.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SecondaryFont';
+  src: url('../fonts/secondary.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-display: swap;
+}

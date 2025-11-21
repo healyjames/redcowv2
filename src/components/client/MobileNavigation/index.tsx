@@ -66,7 +66,7 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                           </li>
                       </ul>
                       <ul className="mobile-nav-footer-bottom">
-                          <p>Follow us on <a href="https://www.facebook.com/theredcow" target="_blank" rel="noopener noreferrer">Facebook</a>, <a href="https://www.instagram.com/theredcow" target="_blank" rel="noopener noreferrer">Instagram</a> &amp; <a href="https://www.tiktok.com/@theredcow" target="_blank" rel="noopener noreferrer">TikTok</a></p>
+                          <p>Follow us on <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>, <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a> &amp; <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer">TikTok</a></p>
                       </ul>
                   </div>
               </div>
