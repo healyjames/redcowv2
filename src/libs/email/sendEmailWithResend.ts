@@ -1,9 +1,8 @@
+import { RESEND_API_KEY } from "astro:env/server";
 import type { FormData } from "@/libs/types/constants";
 import { generateEmailHTML } from "@/libs/email/generateEmailHtml";
 
 export async function sendEmailWithResend(data: FormData) {
-    const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
-
     const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
