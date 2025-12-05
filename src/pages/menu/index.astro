@@ -1,5 +1,8 @@
 ---
+import { Picture } from "astro:assets";
 import MainLayout from "../../layouts/main.astro";
+import Separator from "../../components/Separator.astro";
+import menuImage from "@brand/images/menu-image.jpg";
 
 ---
 <style>
@@ -44,7 +47,15 @@ import MainLayout from "../../layouts/main.astro";
 
   .menu-disclaimer {
     text-align: center;
-    background-color: var(--background-dark);
+    font-size: 1.5rem;
+  }
+
+  .menu-image {
+    filter: brightness(0.6);
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    object-position: center;
   }
 </style>
 <MainLayout content={{ title: "Menu", description: "Explore the diverse and delicious menus at The Red Cow Nantwich. From hearty pub classics to seasonal specials, our offerings are crafted with fresh, local ingredients to satisfy every palate." }}>
@@ -58,11 +69,25 @@ import MainLayout from "../../layouts/main.astro";
       </div>
     </section>
   </div>
-    <section class="menu-disclaimer">
-      <div class="section-inner">
-        <p>Our menu changes frequently. Below are sample menus.</p>
-      </div>
-    </section>
+  <div>
+    <div class="feature-image-container">
+      <Picture
+        src={menuImage}
+        widths={[768, 1080, 1920]}
+        formats={['avif', 'webp']}
+        alt={"Freshly cooked beef burger with fries and an ice cold beer."}
+        loading="lazy"
+        decoding="async"
+        class="menu-image"
+      />
+    </div>
+  </div>
+  <section class="menu-disclaimer">
+    <div class="section-inner">
+      <p>Our menu changes frequently. Below are sample menus.</p>
+    </div>
+  </section>
+  <Separator />
   <div class="page-container">
     <section class="menus">
       <div class="section-inner">
@@ -94,5 +119,6 @@ import MainLayout from "../../layouts/main.astro";
         </div>
       </div>
     </section>
+    <div>
   </div>
 </MainLayout>
