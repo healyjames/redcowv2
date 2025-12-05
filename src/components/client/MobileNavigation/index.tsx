@@ -59,13 +59,13 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                       </li>
                   </ul>
                   <div>
-                    <a
-                        href="/booking"
-                        className="button-tertiary reservation-button"
-                        style={{ width: "100%" }}
-                    >
-                        Reservations
-                    </a>
+                      <a
+                          href="https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant"
+                          className="button-tertiary reservation-button"
+                          style={{ width: "100%" }}
+                      >
+                          Reservations
+                      </a>
                   </div>
                   <div className="mobile-nav-footer">
                       <ul className="mobile-nav-footer-top">
