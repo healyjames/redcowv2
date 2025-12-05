@@ -1,0 +1,13 @@
+---
+const { source } = Astro.props;
+---
+<style>
+  iframe {
+    box-shadow: -20px 20px 60px var(--background-darker), 20px -20px 60px white;
+    height: 100%;
+    width: 100%;
+    min-height: 400px;
+    opacity: 0.8;
+  }
+</style>
+<iframe src={source} loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin" fetchpriority="low"></iframe>

@@ -25,6 +25,7 @@
 
   --background: oklch(0.9432 0.007 88.64);
   --background-dark: oklch(91.595% 0.01112 89.721);
+  --background-darker: oklch(81.135% 0.01016 87.456);
   --foreground: oklch(0.13 0.028 261.692);
   --foreground-light: oklch(25.432% 0.07008 266.546);
 
