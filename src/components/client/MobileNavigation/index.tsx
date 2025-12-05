@@ -22,7 +22,9 @@ export default function MobileNav({ transparent }: MobileNavProps) {
   }, [open]);
 
   return (
-      <nav className={`mobile-nav ${transparent && !open ? "mobile-nav-transparent" : ""} ${open ? "mobile-nav-open" : ""}`}>
+      <nav
+          className={`mobile-nav ${transparent && !open ? "mobile-nav-transparent" : ""} ${open ? "mobile-nav-open" : ""}`}
+      >
           <div className="mobile-nav-header">
               <a href="/" className="mobile-nav-logo">
                   The Red Cow
@@ -56,6 +58,15 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                           <a href="/contact">Contact</a>
                       </li>
                   </ul>
+                  <div>
+                    <a
+                        href="/booking"
+                        className="button-tertiary reservation-button"
+                        style={{ width: "100%" }}
+                    >
+                        Reservations
+                    </a>
+                  </div>
                   <div className="mobile-nav-footer">
                       <ul className="mobile-nav-footer-top">
                           <li>
@@ -66,7 +77,32 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                           </li>
                       </ul>
                       <ul className="mobile-nav-footer-bottom">
-                          <p>Follow us on <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>, <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a> &amp; <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer">TikTok</a></p>
+                          <p>
+                              Follow us on{" "}
+                              <a
+                                  href="https://www.facebook.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                              >
+                                  Facebook
+                              </a>
+                              ,{" "}
+                              <a
+                                  href="https://www.instagram.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                              >
+                                  Instagram
+                              </a>{" "}
+                              &amp;{" "}
+                              <a
+                                  href="https://www.tiktok.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                              >
+                                  TikTok
+                              </a>
+                          </p>
                       </ul>
                   </div>
               </div>

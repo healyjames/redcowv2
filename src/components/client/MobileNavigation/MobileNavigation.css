@@ -94,3 +94,10 @@
   margin: 0 1rem;
   border-bottom: 1px solid var(--grey-lighter);
 }
+
+.reservation-button {
+  display: block;
+  margin: 0 auto;
+  max-width: max-content;
+  font-size: 1.2rem;
+}
