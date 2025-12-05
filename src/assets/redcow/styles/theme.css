@@ -23,6 +23,7 @@
   --grey-darker: oklch(0.6400 0.0042 84.57);
   --grey-darkest: oklch(0.5500 0.0035 84.57);
 
+  --background-light: oklch(97.308% 0.00401 91.461);
   --background: oklch(0.9432 0.007 88.64);
   --background-dark: oklch(91.595% 0.01112 89.721);
   --background-darker: oklch(81.135% 0.01016 87.456);
