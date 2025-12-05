@@ -3,6 +3,8 @@ import BaseLayout from "./base.astro";
 import Navigation from "../components/MainNavigation.astro";
 import MobileNavigation from "../components/client/MobileNavigation/index";
 import Footer from "../components/Footer.astro";
+import OpeningHours from "../components/OpeningHours.astro";
+import Separator from "../components/Separator.astro";
 
 const { content, transparentNavigation } = Astro.props;
 ---
@@ -10,5 +12,7 @@ const { content, transparentNavigation } = Astro.props;
   <Navigation transparent={transparentNavigation} />
   <MobileNavigation transparent={transparentNavigation} client:load />
   <slot />
+  <Separator />
+  <OpeningHours />
   <Footer />
 </BaseLayout>
