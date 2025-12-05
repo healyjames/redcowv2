@@ -5,10 +5,12 @@ import MobileNavigation from "../components/client/MobileNavigation/index";
 import Footer from "../components/Footer.astro";
 import OpeningHours from "../components/OpeningHours.astro";
 import Separator from "../components/Separator.astro";
+import Banner from "../components/Banner.astro";
 
 const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
+  <Banner />
   <Navigation transparent={transparentNavigation} />
   <MobileNavigation transparent={transparentNavigation} client:load />
   <slot />
