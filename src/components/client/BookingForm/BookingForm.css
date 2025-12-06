@@ -49,3 +49,201 @@ input:focus, select:focus {
     justify-self: start;
   }
 }
+
+/* ------ */
+
+.calendar-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: -20px 20px 60px var(--background-darker), 20px -20px 60px white;
+  margin-bottom: 32px;
+  font-family: 'SecondaryFont';
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--foreground);
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.calendar-nav button {
+  background: var(--background-light);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.calendar-nav button:hover {
+  background: var(--background);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day-name {
+  text-align: center;
+  font-weight: 600;
+  padding: 12px 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.calendar-day:not(.empty):not(.past):hover {
+  background: var(--primary-lightest);
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.calendar-day.selected {
+  background: var(--primary-lightest);
+  border-color: var(--primary);
+}
+
+.calendar-day.past {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #f0f0f0;
+}
+
+.calendar-day.empty {
+  border: none;
+  cursor: default;
+}
+
+.form-container {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: -20px 20px 60px var(--background-darker), 20px -20px 60px white;
+  animation: slideIn 0.3s ease-out;
+  font-family: 'SecondaryFont';
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-group input[aria-invalid="true"],
+.form-group select[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.success-message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.button-secondary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: var(--primary-darker);
+}
+
+.button-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.selected-date-display {
+  background: var(--grey-lightest);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.selected-date-display strong {
+  color: var(--primary);
+}
