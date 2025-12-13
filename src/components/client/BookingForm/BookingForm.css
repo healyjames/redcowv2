@@ -196,22 +196,46 @@ input:focus, select:focus {
 
 .form-group input[aria-invalid="true"],
 .form-group select[aria-invalid="true"] {
-  border-color: #dc2626;
+  border-color: var(--error-dark);
 }
 
 .error-message {
-  color: #dc2626;
-  font-size: 0.875rem;
-  margin-top: 4px;
-  display: block;
+  background-color: var(--error-light);
+  color: var(--error-dark);
 }
 
-.success-message {
-  background: #dcfce7;
-  color: #166534;
+.message {
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 20px;
+  font-family: 'SecondaryFont';
+  padding: 1.5rem 2.5rem;
+}
+
+.message-header {
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 600;
+  svg {
+    margin-right: 8px;
+  }
+}
+
+.success-message {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+.success-header {
+  h4 {
+    color: var(--success-dark);
+  }
+}
+
+.error-header {
+  h4 {
+    color: var(--error-dark);
+  }
 }
 
 .button-secondary {
