@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CircleCheck } from "lucide-react";
 import type { FormData, FormErrors } from "@/libs/types/constants";
 import "./BookingForm.css";
 
@@ -97,9 +98,17 @@ export default function BookingCalendarForm() {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) throw new Error("Submission failed");
+            if (!response.ok) {
+                setSubmitStatus("error");
+            } 
 
             setSubmitStatus("success");
+            setSelectedDate("");
+        } catch (error) {
+            console.error("Submission error:", error);
+            setSubmitStatus("error");
+        } finally {
+            setIsSubmitting(false);
             setFormData({
                 firstname: "",
                 surname: "",
@@ -111,12 +120,6 @@ export default function BookingCalendarForm() {
                 email: "",
                 additionaltext: "",
             });
-            setSelectedDate("");
-        } catch (error) {
-            console.error("Submission error:", error);
-            setSubmitStatus("error");
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -179,284 +182,318 @@ export default function BookingCalendarForm() {
 
     return (
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-            {!selectedDate && (
-                <div className="calendar-container">
-                    <div className="calendar-header">
-                        <h2>
-                            {monthNames[month]} {year}
-                        </h2>
-                        <div className="calendar-nav">
-                            <button onClick={previousMonth}>← Prev</button>
-                            <button onClick={nextMonth}>Next →</button>
-                        </div>
-                    </div>
-
-                    <div className="calendar-grid">
-                        {dayNames.map((day) => (
-                            <div key={day} className="day-name">
-                                {day}
-                            </div>
-                        ))}
-                        {calendarDays}
-                    </div>
+            {submitStatus === "success" && (
+            <div className="success-message message" role="status">
+                <div className="success-header message-header">
+                    <CircleCheck />
+                    <h4>Thank you!</h4>
                 </div>
+                <div className="success-body message-body">
+                    <p>
+                        Your booking request has been submitted. Please note,
+                        your is reservation is not confirmed until you receive
+                        confirmation.
+                    </p>
+                </div>
+                <div>
+                    <a href="/" className="success-button">
+                        Go home
+                    </a>
+                </div>
+            </div>
             )}
 
-            {selectedDate && (
-                <div className="form-container">
-                    <div className="selected-date-display">
-                        Selected date:{" "}
-                        <strong>
-                            {new Date(
-                                selectedDate + "T00:00:00"
-                            ).toLocaleDateString("en-GB", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })}
-                        </strong>
-                    </div>
-
-                    <div>
-                        <div className="form-group">
-                            <label htmlFor="firstname">
-                                First Name <span aria-hidden="true">*</span>
-                            </label>
-                            <input
-                                id="firstname"
-                                name="firstname"
-                                type="text"
-                                value={formData.firstname}
-                                onChange={handleChange}
-                                autoComplete="given-name"
-                                aria-invalid={!!errors.firstname}
-                                aria-describedby={
-                                    errors.firstname
-                                        ? "firstname-error"
-                                        : undefined
-                                }
-                            />
-                            {errors.firstname && (
-                                <span
-                                    id="firstname-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.firstname}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="surname">
-                                Surname <span aria-hidden="true">*</span>
-                            </label>
-                            <input
-                                id="surname"
-                                name="surname"
-                                type="text"
-                                value={formData.surname}
-                                onChange={handleChange}
-                                autoComplete="family-name"
-                                aria-invalid={!!errors.surname}
-                                aria-describedby={
-                                    errors.surname ? "surname-error" : undefined
-                                }
-                            />
-                            {errors.surname && (
-                                <span
-                                    id="surname-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.surname}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="guests">
-                                Number of guests{" "}
-                                <span aria-hidden="true">*</span>
-                            </label>
-                            <select
-                                id="guests"
-                                name="guests"
-                                value={formData.guests}
-                                onChange={handleChange}
-                                aria-invalid={!!errors.guests}
-                                aria-describedby={
-                                    errors.guests ? "guests-error" : undefined
-                                }
-                            >
-                                <option value="">
-                                    Select number of guests
-                                </option>
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                                    <option key={num} value={num}>
-                                        {num}
-                                    </option>
-                                ))}
-                                <option value="10+">10+</option>
-                            </select>
-                            {errors.guests && (
-                                <span
-                                    id="guests-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.guests}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="room">Room preference</label>
-                            <select
-                                id="room"
-                                name="room"
-                                value={formData.room}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select a room</option>
-                                <option value="Any">Any</option>
-                                <option value="Red Angus">Red Angus</option>
-                                <option value="Limousin">Limousin</option>
-                                <option value="Corriente">Corriente</option>
-                                <option value="Ankole-Watusi">
-                                    Ankole-Watusi
-                                </option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="nights">
-                                Number of nights{" "}
-                                <span aria-hidden="true">*</span>
-                            </label>
-                            <select
-                                id="nights"
-                                name="nights"
-                                value={formData.nights}
-                                onChange={handleChange}
-                                aria-invalid={!!errors.nights}
-                                aria-describedby={
-                                    errors.nights ? "nights-error" : undefined
-                                }
-                            >
-                                <option value="">Select nights</option>
-                                {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-                                    <option key={num} value={num}>
-                                        {num}
-                                    </option>
-                                ))}
-                                <option value="8+">8+</option>
-                            </select>
-                            {errors.nights && (
-                                <span
-                                    id="nights-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.nights}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="number">
-                                Contact Number <span aria-hidden="true">*</span>
-                            </label>
-                            <input
-                                id="number"
-                                name="number"
-                                type="tel"
-                                value={formData.number}
-                                onChange={handleChange}
-                                autoComplete="tel"
-                                aria-invalid={!!errors.number}
-                                aria-describedby={
-                                    errors.number ? "number-error" : undefined
-                                }
-                            />
-                            {errors.number && (
-                                <span
-                                    id="number-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.number}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="email">
-                                Email Address <span aria-hidden="true">*</span>
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                autoComplete="email"
-                                aria-invalid={!!errors.email}
-                                aria-describedby={
-                                    errors.email ? "email-error" : undefined
-                                }
-                            />
-                            {errors.email && (
-                                <span
-                                    id="email-error"
-                                    className="error-message"
-                                    role="alert"
-                                >
-                                    {errors.email}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="additionaltext">
-                                Additional text
-                            </label>
-                            <textarea
-                                id="additionaltext"
-                                name="additionaltext"
-                                rows={4}
-                                value={formData.additionaltext}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        {submitStatus === "success" && (
-                            <div className="success-message" role="status">
-                                Thank you! Your booking request has been
-                                submitted. You'll receive a confirmation email
-                                shortly.
-                            </div>
-                        )}
-
-                        {submitStatus === "error" && (
-                            <div className="error-message" role="alert">
-                                Sorry, there was an error submitting your
-                                booking. Please try again.
-                            </div>
-                        )}
-
-                        <button
-                            type="button"
-                            className="button-secondary"
-                            disabled={isSubmitting}
-                            onClick={handleSubmit}
-                        >
-                            {isSubmitting ? "Submitting..." : "Submit"}
-                        </button>
-                    </div>
+            {submitStatus === "error" && (
+            <div className="error-message message" role="alert">
+                <div className="error-header message-header">
+                    <CircleCheck />
+                    <h4>Something went wrong...</h4>
                 </div>
+                <div className="error-body message-body">
+                    <p>
+                        Sorry, there was an error submitting your booking.
+                        Please try again in a few moments or call us directly during opening hours.
+                    </p>
+                </div>
+            </div>
             )}
+            {!selectedDate &&
+                submitStatus === "idle" &&
+                submitStatus !== "success" && (
+                    <div className="calendar-container">
+                        <div className="calendar-header">
+                            <h2>
+                                {monthNames[month]} {year}
+                            </h2>
+                            <div className="calendar-nav">
+                                <button onClick={previousMonth}>← Prev</button>
+                                <button onClick={nextMonth}>Next →</button>
+                            </div>
+                        </div>
+
+                        <div className="calendar-grid">
+                            {dayNames.map((day) => (
+                                <div key={day} className="day-name">
+                                    {day}
+                                </div>
+                            ))}
+                            {calendarDays}
+                        </div>
+                    </div>
+                )}
+
+            {selectedDate &&
+                submitStatus === "idle" &&
+                submitStatus !== "success" && (
+                    <div className="form-container">
+                        <div className="selected-date-display">
+                            Selected date:{" "}
+                            <strong>
+                                {new Date(
+                                    selectedDate + "T00:00:00"
+                                ).toLocaleDateString("en-GB", {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <div className="form-group">
+                                <label htmlFor="firstname">
+                                    First Name <span aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    id="firstname"
+                                    name="firstname"
+                                    type="text"
+                                    value={formData.firstname}
+                                    onChange={handleChange}
+                                    autoComplete="given-name"
+                                    aria-invalid={!!errors.firstname}
+                                    aria-describedby={
+                                        errors.firstname
+                                            ? "firstname-error"
+                                            : undefined
+                                    }
+                                />
+                                {errors.firstname && (
+                                    <span
+                                        id="firstname-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.firstname}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="surname">
+                                    Surname <span aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    id="surname"
+                                    name="surname"
+                                    type="text"
+                                    value={formData.surname}
+                                    onChange={handleChange}
+                                    autoComplete="family-name"
+                                    aria-invalid={!!errors.surname}
+                                    aria-describedby={
+                                        errors.surname
+                                            ? "surname-error"
+                                            : undefined
+                                    }
+                                />
+                                {errors.surname && (
+                                    <span
+                                        id="surname-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.surname}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="guests">
+                                    Number of guests{" "}
+                                    <span aria-hidden="true">*</span>
+                                </label>
+                                <select
+                                    id="guests"
+                                    name="guests"
+                                    value={formData.guests}
+                                    onChange={handleChange}
+                                    aria-invalid={!!errors.guests}
+                                    aria-describedby={
+                                        errors.guests
+                                            ? "guests-error"
+                                            : undefined
+                                    }
+                                >
+                                    <option value="">
+                                        Select number of guests
+                                    </option>
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                                        <option key={num} value={num}>
+                                            {num}
+                                        </option>
+                                    ))}
+                                    <option value="10+">10+</option>
+                                </select>
+                                {errors.guests && (
+                                    <span
+                                        id="guests-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.guests}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="room">Room preference</label>
+                                <select
+                                    id="room"
+                                    name="room"
+                                    value={formData.room}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select a room</option>
+                                    <option value="Any">Any</option>
+                                    <option value="Red Angus">Red Angus</option>
+                                    <option value="Limousin">Limousin</option>
+                                    <option value="Corriente">Corriente</option>
+                                    <option value="Ankole-Watusi">
+                                        Ankole-Watusi
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="nights">
+                                    Number of nights{" "}
+                                    <span aria-hidden="true">*</span>
+                                </label>
+                                <select
+                                    id="nights"
+                                    name="nights"
+                                    value={formData.nights}
+                                    onChange={handleChange}
+                                    aria-invalid={!!errors.nights}
+                                    aria-describedby={
+                                        errors.nights
+                                            ? "nights-error"
+                                            : undefined
+                                    }
+                                >
+                                    <option value="">Select nights</option>
+                                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                                        <option key={num} value={num}>
+                                            {num}
+                                        </option>
+                                    ))}
+                                    <option value="8+">8+</option>
+                                </select>
+                                {errors.nights && (
+                                    <span
+                                        id="nights-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.nights}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="number">
+                                    Contact Number{" "}
+                                    <span aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    id="number"
+                                    name="number"
+                                    type="tel"
+                                    value={formData.number}
+                                    onChange={handleChange}
+                                    autoComplete="tel"
+                                    aria-invalid={!!errors.number}
+                                    aria-describedby={
+                                        errors.number
+                                            ? "number-error"
+                                            : undefined
+                                    }
+                                />
+                                {errors.number && (
+                                    <span
+                                        id="number-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.number}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="email">
+                                    Email Address{" "}
+                                    <span aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    autoComplete="email"
+                                    aria-invalid={!!errors.email}
+                                    aria-describedby={
+                                        errors.email ? "email-error" : undefined
+                                    }
+                                />
+                                {errors.email && (
+                                    <span
+                                        id="email-error"
+                                        className="error-message"
+                                        role="alert"
+                                    >
+                                        {errors.email}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="additionaltext">
+                                    Additional text
+                                </label>
+                                <textarea
+                                    id="additionaltext"
+                                    name="additionaltext"
+                                    rows={4}
+                                    value={formData.additionaltext}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                className="button-secondary"
+                                disabled={isSubmitting}
+                                onClick={handleSubmit}
+                            >
+                                {isSubmitting ? "Submitting..." : "Submit"}
+                            </button>
+                        </div>
+                    </div>
+                )}
         </div>
     );
 }
