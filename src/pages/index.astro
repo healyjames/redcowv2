@@ -4,17 +4,11 @@ import FeatureImage from "../components/FeatureImage.astro";
 import Separator from "../components/Separator.astro";
 import AboutSection from "../components/AboutSection.astro";
 import TwoImageSection from "../components/TwoImageSection.astro";
-import OpeningHours from "../components/OpeningHours.astro";
 import WelcomeQuoteSection from "../components/QuoteSection.astro";
 import CallToBook from "../components/CallToBook.astro";
 
 // FeatureImage Content
 import featureImage from "@brand/images/home-feature-image.jpg";
-
-const featureImageLinks = [
-  { text: "View Menu", href: "/menu" },
-  { text: "Book Room", href: "/rooms" }
-];
 
 // TwoImageSection Content
 import imageOne from "@brand/images/home-two-image-section-1.jpg";
@@ -53,7 +47,7 @@ const twoImageSectionCards = [
 
 ---
 <MainLayout content={{ title: "Home | The Red Cow", description: "Welcome to The Red Cow Nantwich - our treasured 15th Century Old Coaching Inn located in the historic town of Nantwich, in the heart of Cheshire." }} transparentNavigation={true}>
-  <FeatureImage title="The Red Cow" image={featureImage} links={featureImageLinks} />
+  <FeatureImage image={featureImage} />
   <div>
     <CallToBook />
     <Separator />

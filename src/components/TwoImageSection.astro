@@ -39,18 +39,18 @@ const { cards } = Astro.props;
     height: auto;
   }
 
-  @media (min-width: 768px) {
-    .two-image-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
   .image-card-button-container {
     margin-top: 1rem;
     display: flex;
     flex-direction: row;
     gap: 1rem;
     align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .two-image-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
 
