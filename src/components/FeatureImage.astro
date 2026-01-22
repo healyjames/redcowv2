@@ -6,10 +6,9 @@ interface Props {
   image: ImageMetadata;
   text?: string;
   alt?: string;
-  links?: Array<{ text: string; href: string; }>;
 }
 
-const { image, text, alt = "", links = [] } = Astro.props;
+const { image, text, alt = "" } = Astro.props;
 
 ---
 <style>
