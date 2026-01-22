@@ -35,6 +35,39 @@ export default defineConfig({
                 context: "server",
                 access: "secret",
             }),
+            SMTP_HOST: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_PORT: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_SECURE: envField.string({
+                context: "server",
+                access: "secret",
+                default: "false",
+            }),
+            SMTP_USER: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_PASS: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_FROM_NAME: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_FROM_EMAIL: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            SMTP_ADMIN_EMAIL: envField.string({
+                context: "server",
+                access: "secret",
+            }),
 
             // Client
             PUBLIC_BRAND: envField.string({
