@@ -99,16 +99,13 @@ export default function BookingCalendarForm() {
             });
 
             if (!response.ok) {
-                setSubmitStatus("error");
-            } 
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Server error");
+            }
 
             setSubmitStatus("success");
             setSelectedDate("");
-        } catch (error) {
-            console.error("Submission error:", error);
-            setSubmitStatus("error");
-        } finally {
-            setIsSubmitting(false);
+
             setFormData({
                 firstname: "",
                 surname: "",
@@ -120,6 +117,11 @@ export default function BookingCalendarForm() {
                 email: "",
                 additionaltext: "",
             });
+        } catch (error) {
+            console.error("Submission error:", error);
+            setSubmitStatus("error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
