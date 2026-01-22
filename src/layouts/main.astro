@@ -10,7 +10,7 @@ import Banner from "../components/Banner.astro";
 const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
-  <Banner />
+  <Banner text={"Book now for Easter!"} />
   <Navigation transparent={transparentNavigation} />
   <MobileNavigation transparent={transparentNavigation} client:load />
   <slot />
