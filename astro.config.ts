@@ -27,10 +27,6 @@ export default defineConfig({
     env: {
         schema: {
             // Server
-            RESEND_API_KEY: envField.string({
-                context: "server",
-                access: "secret",
-            }),
             ALLOWED_ORIGINS: envField.string({
                 context: "server",
                 access: "secret",
