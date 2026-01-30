@@ -4,11 +4,13 @@ import type { ImageMetadata } from "astro";
 
 interface Props {
   image: ImageMetadata;
+  title?: string;
   text?: string;
   alt?: string;
+  links?: Array<{ text: string; href: string; }>;
 }
 
-const { image, text, alt = "" } = Astro.props;
+const { image, title, text, alt = "", links = [] } = Astro.props;
 
 ---
 <style>
@@ -21,17 +23,19 @@ const { image, text, alt = "" } = Astro.props;
   }
 
   .feature-image-content {
-    position: absolute;
+    position: relative;
     padding: 0 2rem;
-    top: 12rem;
-    width: 100%;
-    text-align: center;
-    color: var(--background);
+    bottom: 8rem;
     h1 {
-      font-family: 'PrimaryFont';
       color: var(--background);
-      font-size: 3.5rem;
+      font-size: 1.75rem;
       font-weight: normal;
+      font-family: 'PrimaryFont';
+      line-height: 2.5;
+    }
+    p {
+      color: var(--background);
+      line-height: 0;
     }
   }
 
@@ -41,16 +45,14 @@ const { image, text, alt = "" } = Astro.props;
   }
 
   .feature-image-links {
-    margin-top: 1rem;
     display: flex;
-    justify-content: center;
     gap: 0.5rem;
     flex-direction: row;
     flex-wrap: nowrap;
   }
 
-  h1 span {
-    font-size: 2rem;
+  .feature-image-wrapper {
+    margin-bottom: -6rem;
   }
 
   @media screen and (min-width: 768px) {
@@ -60,11 +62,18 @@ const { image, text, alt = "" } = Astro.props;
       object-position: unset;
     }
     .feature-image-content {
-      top: 15rem;
+      bottom: 10rem;
+      h1 {
+        font-size: 3rem;
+        line-height: 2;
+      }
+    }
+    .feature-image-btn {
+      font-size: 1.2rem;
     }
   }
 </style>
-<div>
+<div class="feature-image-wrapper">
   <div class="feature-image-container">
     <Picture
       src={image}
@@ -77,9 +86,24 @@ const { image, text, alt = "" } = Astro.props;
     />
   </div>
   <div class="feature-image-content">
-    <h1>Graze <span>&bull;</span> Gather <span>&bull;</span> Stay</h1>
+    {title && (
+      <h1>{title}</h1>
+    )}
     {text && (
       <p>{text}</p>
+    )}
+    {links && links.length > 0 && (
+      <div class="feature-image-links">
+        {links.map(link => (
+          <a
+            href={link.href}
+            class="btn btn-tertiary feature-image-btn"
+            style={{ marginRight: '0.5rem' }}
+          >
+            {link.text}
+          </a>
+        ))}
+      </div>
     )}
   </div>
 </div>

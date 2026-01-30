@@ -3,7 +3,6 @@
 <style>
   .reservations-banner {
     text-align: center;
-    margin-top: 0.5rem;
     border-bottom: 2px solid transparent;
     h2 {
       display: inline;
@@ -16,6 +15,13 @@
         border-bottom: 2px solid var(--foreground);
       }
     }
+  }
+
+  .reservation-button {
+    display: block;
+    margin: 0 auto;
+    max-width: max-content;
+    font-size: 1.2rem;
   }
 
   @media (min-width: 768px) {
@@ -32,19 +38,19 @@
 <section class="reservations-banner">
   <div class="section-inner reservations-banner-inner">
     <div>
-      <a
+      <!-- <a
         href="https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant"
-        class="button-tertiary reservation-button"
+        class="btn btn-primary reservation-button"
       >
         Book a table
       </a>
       <a
         href="/rooms"
-        class="button-tertiary reservation-button"
+        class="btn btn-primary reservation-button"
         style={{  marginTop: "0.5rem" }}
       >
         Book a room
-      </a>
+      </a> -->
     </div>
     <a href="tel:01270618522">
       <h2>Call to book: <strong>01270 618 522</strong></h2>
