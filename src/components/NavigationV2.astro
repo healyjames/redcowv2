@@ -23,17 +23,6 @@ import logoEmblem from "@brand/logo/emblem.svg";
     display: none;
   }
 
-  @media (min-width: 768px) {
-    .main-nav {
-      display: block;
-      margin-top: -170px;
-    }
-    .logo-image {
-      position: relative;
-      z-index: 10;
-    }
-  }
-
   .nav-list {
     display: flex;
     justify-content: center;
@@ -63,6 +52,16 @@ import logoEmblem from "@brand/logo/emblem.svg";
     border-bottom: 1px solid var(--primary);
   }
 
+  @media (min-width: 768px) {
+    .main-nav {
+      display: block;
+      margin-top: -170px;
+    }
+    .logo-image {
+      position: relative;
+      z-index: 10;
+    }
+  }
 </style>
 <div class="logo-container">
   <a href="/" aria-label="Homepage">

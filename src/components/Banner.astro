@@ -1,7 +1,12 @@
 ---
+interface Props {
+  link?: string;
+  text: string;
+}
+
+const { link, text } = Astro.props;
 ---
 <style>
-  
   .banner div {
     background-color: var(--primary);
     padding: 0.25rem 1rem;
@@ -22,8 +27,16 @@
     font-weight: 900;
   }
 </style>
-<a href="#" class="banner">
-  <div>
-    <p>Festive menu now available!</p>
+{link ? (
+  <a href={link} class="banner">
+    <div>
+      <p>{text}</p>
+    </div>
+  </a>
+) : (
+  <div class="banner">
+    <div>
+      <p>{text}</p>
+    </div>
   </div>
-</a>
+)}

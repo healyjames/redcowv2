@@ -6,7 +6,7 @@ interface Card {
   description: string;
   image: ImageMetadata;
   imageAlt: string;
-  primaryButton: {
+  primaryButton?: {
     text: string;
     href: string;
   };
@@ -39,18 +39,18 @@ const { cards } = Astro.props;
     height: auto;
   }
 
-  @media (min-width: 768px) {
-    .two-image-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
   .image-card-button-container {
     margin-top: 1rem;
     display: flex;
     flex-direction: row;
     gap: 1rem;
     align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .two-image-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
 
@@ -73,12 +73,12 @@ const { cards } = Astro.props;
             />
             <div class="image-card-button-container">
               {card.primaryButton?.text &&  card.primaryButton?.href && (
-                <a class="button-primary" href={card.primaryButton.href}>
+                <a class="btn btn-primary" href={card.primaryButton.href}>
                   {card.primaryButton.text}
                 </a>
               )}
               {card.secondaryButton?.text && card.secondaryButton?.href && (
-                <a class="button-secondary" href={card.secondaryButton.href}>
+                <a class="btn btn-secondary" href={card.secondaryButton.href}>
                   {card.secondaryButton.text}
                 </a>
               )}
