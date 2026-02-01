@@ -10,13 +10,10 @@ export function generateEmailHTML(data: FormData): string {
         <title>Simple Transactional Email</title>
         <style media="all" type="text/css">
     @media all {
-      .btn-primary table td:hover {
-        background-color: #5c2b1f !important;
-      }
 
       .btn-primary a:hover {
-        background-color: #5c2b1f !important;
-        border-color: #5c2b1f !important;
+        background-color: #132044 !important;
+        border-color: #132044 !important;
       }
     }
     @media only screen and (max-width: 640px) {
@@ -122,9 +119,9 @@ export function generateEmailHTML(data: FormData): string {
                               <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
                                 <tbody>
                                   <tr>
-                                    <td style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; text-align: center; background-color: #b1523b;" valign="top" align="center" bgcolor="#b1523b"> <a href="mailto:${data.email}" target="_blank" style="border: solid 2px #b1523b; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 10px 15px; text-decoration: none; text-transform: capitalize; background-color: #b1523b; border-color: #b1523b; color: #ffffff;">Reply</a></td>
-                                    <td style="padding: 4px"></td>
-                                    <td style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; text-align: center; background-color: #b1523b;" valign="top" align="center" bgcolor="#b1523b"> <a href="tel:${data.number}" target="_blank" style="border: solid 2px #b1523b; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 10px 15px; text-decoration: none; text-transform: capitalize; background-color: #b1523b; border-color: #b1523b; color: #ffffff;">Call</a></td>
+                                    <td style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; text-align: center; background-color: #030712; border-radius: 8px" valign="top" align="center" bgcolor="#030712"> <a href="mailto:${data.email}" target="_blank" style="border: solid 2px #030712; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 10px 15px; text-decoration: none; text-transform: capitalize; background-color: #030712; border-color: #030712; color: #ffffff; border-radius: 8px">Reply</a></td>
+                                    <td style="padding: 4px;"></td>
+                                    <td style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; text-align: center; background-color: #030712; border-radius: 8px" valign="top" align="center" bgcolor="#030712"> <a href="tel:${data.number}" target="_blank" style="border: solid 2px #030712; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 10px 15px; text-decoration: none; text-transform: capitalize; background-color: #030712; border-color: #030712; color: #ffffff; border-radius: 8px">Call</a></td>
                                   </tr>
                                 </tbody>
                               </table>
