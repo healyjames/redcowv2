@@ -2,7 +2,8 @@ import type { APIRoute } from "astro";
 import type { FormData } from "@/libs/types/constants";
 import { validateRequest } from "@/libs/utils/validateRequest";
 import { checkHoneypot } from "@/libs/utils/honeyPot";
-import { sendEmailWithSMTP } from "@/libs/email/sendEmailWithSmtp";
+import { sendAdminBookingEmail } from "@/libs/email/sendAdminBookingEmail";
+import { sendCustomerConfirmation } from "@/libs/email/sendCustomerConfirmation";
 
 export const prerender = false;
 
@@ -32,18 +33,21 @@ export const POST: APIRoute = async ({ request }) => {
             );
         }
 
-        console.log(data); // Optional: Remove or keep for debugging
-
         const transformedData: FormData = {
             ...data,
             date: new Date(data.date).toLocaleDateString("en-GB", {
                 weekday: "short",
                 day: "2-digit",
                 month: "short",
+                year: "numeric",
             }),
+            logo: "", // TODO: host this in public folder and reference here: `${new URL(request.url).origin}/assets/redcow/logo/black.svg`
         };
 
-        await sendEmailWithSMTP(transformedData);
+        await Promise.all([
+            sendAdminBookingEmail(transformedData),
+            sendCustomerConfirmation(transformedData),
+        ]);
 
         return new Response(
             JSON.stringify({

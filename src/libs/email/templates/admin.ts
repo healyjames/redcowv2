@@ -1,6 +1,6 @@
 import type { FormData } from "@/libs/types/constants";
 
-export function generateEmailHTML(data: FormData): string {
+export function adminBookingHtml(data: FormData) {
     return `
     <!doctype html>
     <html lang="en">

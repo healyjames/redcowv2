@@ -8,6 +8,7 @@ export interface FormData {
     number: string;
     email: string;
     additionaltext: string;
+    logo?: string
 }
 
 export interface FormErrors {
