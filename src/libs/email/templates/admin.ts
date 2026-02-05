@@ -1,4 +1,3 @@
-// src/libs/email/templates/adminBooking.ts
 import type { FormData } from "@/libs/types/constants";
 
 export function adminBookingHtml(data: FormData) {
