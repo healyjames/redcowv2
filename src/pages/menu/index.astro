@@ -4,6 +4,10 @@ import MainLayout from "../../layouts/main.astro";
 import Separator from "../../components/Separator.astro";
 import menuImage from "@brand/images/menu-image.jpg";
 
+import mainMenu from "@brand/menus/menu.pdf";
+import sundayMenu from "@brand/menus/sunday-lunch-menu.pdf";
+import wineMenu from "@brand/menus/wine-list.pdf";
+
 ---
 <style>
   .menu-container {
@@ -92,16 +96,16 @@ import menuImage from "@brand/images/menu-image.jpg";
     <section class="menus">
       <div class="section-inner">
         <div class="menu-container">
-          <a href="/menus/lunch.pdf">
+          <a href={mainMenu}>
             <p>Lunch Menu</p>
           </a>
-          <a href="/menus/main.pdf">
+          <a href={mainMenu}>
             <p>Evening Menu</p>
           </a>
-          <a href="/menus/sunday.pdf">
+          <a href={sundayMenu}>
             <p>Sunday Menu</p>
           </a>
-          <a href="/menus/wine.pdf">
+          <a href={wineMenu}>
             <p>Wine Menu</p>
           </a>
         </div>
