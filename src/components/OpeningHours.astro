@@ -2,14 +2,14 @@
 
 ---
 <style>
-  .opening-hours h2 {
-    text-align: center;
+  .opening-hours {
+    padding: 0 2rem;
   }
 
   .hours-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 2.5rem;
     margin-top: 2.5rem;
   }
 
@@ -17,9 +17,28 @@
     font-weight: 700;
   }
 
+  .times {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    p {
+      margin: 0;
+    }
+  }
+
   @media (min-width: 768px) {
+    .opening-hours h2 {
+      text-align: center;
+    }
+
     .hours-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .times {
+      justify-content: center;
+      gap: 0.5rem;
     }
   }
 
@@ -36,19 +55,55 @@
     <div class="hours-grid">
       <div>
         <h4 class="day">Monday</h4>
-        <p>Close</p>
+        <div class="times">
+          <div>
+            <p><strong>Bar</strong></p>
+            <p>Closed</p>
+          </div>
+          <div>
+            <p><strong>Food</strong></p>
+            <p>Closed</p>
+          </div>
+        </div>
       </div>
       <div>
-        <h4 class="day">Tuesday to Friday</h4>
-        <p>Midday - Late</p>
+        <h4 class="day">Tue - Thur</h4>
+        <div class="times">
+          <div>
+            <p><strong>Bar</strong></p>
+            <p>12 noon - 11pm</p>
+          </div>
+          <div>
+            <p><strong>Food</strong></p>
+            <p>12 noon - 8pm</p>
+          </div>
+        </div>
       </div>
       <div>
-        <h4 class="day">Saturday</h4>
-        <p>10am - Late</p>
+        <h4 class="day">Fri - Sat</h4>
+        <div class="times">
+          <div>
+            <p><strong>Bar</strong></p>
+            <p>12 noon - Late</p>
+          </div>
+          <div>
+            <p><strong>Food</strong></p>
+            <p>12 noon - 9pm</p>
+          </div>
+        </div>
       </div>
       <div>
         <h4 class="day">Sunday</h4>
-        <p>10am - 4pm</p>
+        <div class="times">
+          <div>
+            <p><strong>Bar</strong></p>
+            <p>12 noon - 6pm</p>
+          </div>
+          <div>
+            <p><strong>Food</strong></p>
+            <p>12 noon - 4pm</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
