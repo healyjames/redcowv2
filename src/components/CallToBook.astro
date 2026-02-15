@@ -1,3 +1,6 @@
+---
+import { contact } from "@/assets/redcow/content/data";
+---
 <style>
   .call-to-book {
     text-align: center;
@@ -24,8 +27,8 @@
 </style>
 <section class="call-to-book">
   <div class="section-inner">
-    <a href="tel:01270618522">
-      <h2>Call to book: <strong>01270 618 522</strong></h2>
+    <a href={`tel:${contact.phone}`}>
+      <h2>Call to book: <strong>{contact.phoneFormatted}</strong></h2>
     </a>
   </div>
 </section>

@@ -4,66 +4,37 @@ import TwoImageSection from "../../components/TwoImageSection.astro";
 import Separator from "../../components/Separator.astro";
 import RoomsQuoteSection from "../../components/QuoteSection.astro";
 import FeatureImage from "../../components/FeatureImage.astro";
+import { pageMetadata, quotes, rooms } from "@/assets/redcow/content/data";
 
 import roomsImage from "@brand/images/rooms-feature-image.jpg";
-
-// TwoImageSection Content
 import roomOneImage from "@brand/images/room-1.jpg";
 import roomTwoImage from "@brand/images/room-2.jpg";
 import roomThreeImage from "@brand/images/room-3.jpg";
 import roomFourImage from "@brand/images/room-4.jpg";
 
-const roomCardsRow1 = [
-  {
-    title: "Red Angus",
-    description: "The Red Angus which derives from the black Aberdeen Angus cattle of Scotland, and apart from its coat colour is identical to it. Twin En-suite Room.",
-    image: roomOneImage,
-    imageAlt: "Red Angus Room",
-    primaryButton: {
-      text: "Book Room",
-      href: "/rooms/book"
-    }
-  },
-  {
-    title: "Limousin",
-    description: "The Limousin is a French breed of “Red Cow” from the Limousin and March’s regions of France. Double En-Suite Room.",
-    image: roomTwoImage,
-    imageAlt: "Comfortable guest room",
-    primaryButton: {
-      text: "Book Room",
-      href: "/rooms/book"
-    }
-  }
-];
+const roomImages = [roomOneImage, roomTwoImage, roomThreeImage, roomFourImage];
 
-const roomCardsRow2 = [
-  {
-    title: "Corriente",
-    description: "The Corriente cattle are a breed of Criollo cattle descended from Spanish cows brought to the Americas as early as 1493. Double En-Suite Room.",
-    image: roomThreeImage,
-    imageAlt: "Corriente Room",
-    primaryButton: {
-      text: "Book Room",
-      href: "/rooms/book"
-    }
-  },
-  {
-    title: "Ankole-Watusi",
-    description: "Modern US breed, derived from the Ankole group of Santa cattle breeds (East & Central Africa), characterised by very large horns. Double En-Suite Room.",
-    image: roomFourImage,
-    imageAlt: "Comfortable guest room",
-    primaryButton: {
-      text: "Book Room",
-      href: "/rooms/book"
-    }
+const displayedRooms = rooms.filter(room => room.name !== "Any");
+
+const roomCards = displayedRooms.map((room, index) => ({
+  title: room.name,
+  description: room.description,
+  image: roomImages[index],
+  imageAlt: `${room.name} Room`,
+  primaryButton: {
+    text: "Book Room",
+    href: "/rooms/book"
   }
-];
+}));
+
+const roomCardsRow1 = roomCards.slice(0, 2);
+const roomCardsRow2 = roomCards.slice(2, 4);
 
 ---
-<MainLayout content={{ title: "Rooms", description: "Stay at The Red Cow. Take the weight off your feet and rest up in one our our beautiful B&B rooms." }} transparentNavigation={true}>
+<MainLayout content={pageMetadata.rooms} transparentNavigation={true}>
   <FeatureImage title="Rooms" text="At The Red Cow" image={roomsImage} />
   <div class="page-container">
-    <RoomsQuoteSection quote="Four stunning en-suite B&B rooms named &amp; designed around the theme of “Red Cow” breeds across the world." />
+    <RoomsQuoteSection quote={quotes.rooms} />
     <Separator />
     <TwoImageSection cards={roomCardsRow1} />
     <TwoImageSection cards={roomCardsRow2} />

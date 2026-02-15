@@ -1,3 +1,6 @@
+---
+import { contact } from "@/assets/redcow/content/data";
+---
 <style>
   .reservations-banner {
     text-align: center;
@@ -35,8 +38,8 @@
 </style>
 <section class="reservations-banner">
   <div class="section-inner reservations-banner-inner">
-    <a href="tel:01270618522">
-      <h2>Call to book: <strong>01270 618 522</strong></h2>
+    <a href={`tel:${contact.phone}`}>
+      <h2>Call to book: <strong>{contact.phoneFormatted}</strong></h2>
     </a>
   </div>
 </section>

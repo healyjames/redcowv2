@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import { Facebook, Instagram, Music2 } from "@lucide/astro";
 import Separator from "../components/Separator.astro";
 import Logo from "@brand/logo/black.svg"
+import { contact, socialLinks, footerNavigation, businessInfo } from "@/assets/redcow/content/data";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -146,23 +147,21 @@ const currentYear = new Date().getFullYear();
     <div class="footer-links">
       <div>
         <h4 class="footer-heading">About</h4>
-        <p><a href="/">Home</a></p>
-        <p><a href="/about">About</a></p>
+        {footerNavigation.about.map(link => (
+          <p><a href={link.href}>{link.text}</a></p>
+        ))}
       </div>
       <div>
         <h4 class="footer-heading">Menu</h4>
-        <p><a href="/menus/breakfast.pdf">Breakfast</a></p>
-        <p><a href="/menus/lunch.pdf">Lunch</a></p>
-        <p><a href="/menus/main.pdf">Evening</a></p>
-        <p><a href="/menus/sunday.pdf">Sunday Lunch</a></p>
-        <p><a href="/menus/wine.pdf">Wine List</a></p>
-        <p><a href="/menus/drinks.pdf">Drinks</a></p>
+        {footerNavigation.menu.map(link => (
+          <p><a href={link.href}>{link.text}</a></p>
+        ))}
       </div>
       <div>
         <h4 class="footer-heading">Other</h4>
-        <p><a href="/rooms">Rooms</a></p>
-        <p><a href="/events">Events</a></p>
-        <p><a href="/contact">Contact</a></p>
+        {footerNavigation.other.map(link => (
+          <p><a href={link.href}>{link.text}</a></p>
+        ))}
       </div>
     </div>
     
@@ -177,15 +176,13 @@ const currentYear = new Date().getFullYear();
         />
       </div>
       <div class="footer-social">
-        <a href="https://facebook.com/redcownantwich" aria-label="Facebook" class="social-icon">
-          <Facebook class="icon" />
-        </a>
-        <a href="https://instagram.com/redcownantwich" aria-label="Instagram" class="social-icon">
-          <Instagram class="icon" />
-        </a>
-        <a href="https://www.tiktok.com/discover/the-red-cow-nantwich" aria-label="Tripadvisor" class="social-icon">
-          <Music2 class="icon" />
-        </a>
+        {socialLinks.map(social => (
+          <a href={social.url} aria-label={social.ariaLabel} class="social-icon">
+            {social.name === "Facebook" && <Facebook class="icon" />}
+            {social.name === "Instagram" && <Instagram class="icon" />}
+            {social.name === "TikTok" && <Music2 class="icon" />}
+          </a>
+        ))}
       </div>
     </div>
   </section>
@@ -193,11 +190,11 @@ const currentYear = new Date().getFullYear();
   <Separator color="--secondary-lighter" />
   
   <section class="footer-info">
-    <p class="address">Red Cow, 51 Beam Street, Nantwich, CW5 5NF</p>
-    <p class="phone">01270 618 522</p>
+    <p class="address">{contact.address.full}</p>
+    <p class="phone">{contact.phoneFormatted}</p>
   </section>
-  
+
   <section class="footer-legal">
-    <p>© Red Cow Nantwich {currentYear} - All Rights Reserved</p>
+    <p>© {businessInfo.name} {currentYear} - All Rights Reserved</p>
   </section>
 </footer>
