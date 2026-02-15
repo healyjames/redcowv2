@@ -61,8 +61,7 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                   <div>
                       <a
                           href="https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant"
-                          className="btn btn-primary reservation-button"
-                          style={{ width: "100%", display: "block", margin: "0 auto", maxWidth: "max-content", fontSize: "1.2rem" }}
+                          className="btn btn-primary reservation-button mobile-nav-reservation-button"
                       >
                           Reservations
                       </a>

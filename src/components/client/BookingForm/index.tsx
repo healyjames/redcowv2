@@ -219,9 +219,7 @@ export default function BookingCalendarForm() {
                 </div>
             </div>
             )}
-            {!selectedDate &&
-                submitStatus === "idle" &&
-                submitStatus !== "success" && (
+            {!selectedDate && submitStatus === "idle" && (
                     <div className="calendar-container">
                         <div className="calendar-header">
                             <h2>
@@ -244,9 +242,7 @@ export default function BookingCalendarForm() {
                     </div>
                 )}
 
-            {selectedDate &&
-                submitStatus === "idle" &&
-                submitStatus !== "success" && (
+            {selectedDate && submitStatus === "idle" && (
                     <div className="form-container">
                         <div className="selected-date-display">
                             Selected date:{" "}

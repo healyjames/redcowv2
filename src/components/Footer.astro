@@ -118,31 +118,25 @@ const currentYear = new Date().getFullYear();
       flex-direction: row;
       justify-content: space-between;
     }
-  }
 
-  @media (min-width: 768px) {
     .footer-legal {
       text-align: left;
     }
-  }
 
-  @media (min-width: 768px) {
     .footer-logo-wrapper {
       display: block;
       text-align: center;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
     .footer-links {
       gap: 1rem;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .footer-top {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
