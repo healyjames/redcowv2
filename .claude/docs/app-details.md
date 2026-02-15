@@ -1,0 +1,1 @@
+This app is a astrojs applicaion tha focuses on simplicity and performance. It uses as little packages as possible. Styling comes from pure modern CCS. Client side functionality is handles with react/nectjs typescript files. This application is a multi-tenant whitelabel static web site hosting information for a given restaurant.
