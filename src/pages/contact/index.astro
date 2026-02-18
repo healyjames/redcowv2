@@ -1,6 +1,7 @@
 ---
 import MainLayout from "../../layouts/main.astro";
 import Map from "../../components/Map.astro";
+import { pageMetadata, contact, contactContent, businessInfo } from "@/assets/redcow/content/data";
 ---
 <style>
   .contact-heading .section-inner {
@@ -57,20 +58,20 @@ import Map from "../../components/Map.astro";
 
 </style>
 
-<MainLayout content={{ title: "Contact us", description: "Get in touch with us. Find our contact details, location, and opening hours for our beautiful pub." }}>
+<MainLayout content={pageMetadata.contact}>
   <div class="page-container">
     <section class="contact-heading">
       <div class="section-inner">
         <div>
-          <h1>Get in touch</h1>
-          <p class="address">The Red Cow,<br /> 51 Beam Street,<br /> Nantwich<br /> <span style="font-weight: 600;">CW5 5NF</span></p>
-          <a href="tel:01270618522" class="telephone">+44 (0)1270 618 522</a>
-          <p class="tel-text">Our telephones are open inline with our normal opening hours.</p>
-          <a href="mailto:info@redcownantwich.co.uk" class="email">info@redcownantwich.co.uk</a>
-          <p>Car parking facilities are available next to the restaurant</p>
+          <h1>{contactContent.heading}</h1>
+          <p class="address">{businessInfo.name},<br /> {contact.address.street},<br /> {contact.address.town}<br /> <span style="font-weight: 600;">{contact.address.postcode}</span></p>
+          <a href={`tel:${contact.phone}`} class="telephone">+44 (0){contact.phoneFormatted}</a>
+          <p class="tel-text">{contactContent.phoneNote}</p>
+          <a href={`mailto:${contact.email}`} class="email">{contact.email}</a>
+          <p>{contactContent.parkingNote}</p>
         </div>
         <div>
-          <Map source="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2397.292096883859!2d-2.5223156841719816!3d53.069025979921875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487af466de17fa59%3A0xf7f6c29e33d95164!2sRed%20Cow!5e0!3m2!1sen!2suk!4v1643299285974!5m2!1sen!2suk" />
+          <Map source={businessInfo.mapEmbedUrl} />
         </div>
       </div>
     </section>

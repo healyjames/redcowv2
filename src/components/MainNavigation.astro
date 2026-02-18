@@ -1,4 +1,10 @@
 ---
+import { mainNavigation, businessInfo } from "@/assets/redcow/content/data";
+
+interface Props {
+  transparent?: boolean;
+}
+
 const { transparent } = Astro.props;
 ---
 <style>
@@ -69,10 +75,18 @@ const { transparent } = Astro.props;
 
 <nav aria-label="Main navigation" class:list={{ "main-nav": true, "main-nav-transparent": transparent }} >
   <ul class="nav-list">
-    <li class="nav-item"><a href="/menu">Dine</a></li>
-    <li class="nav-item"><a href="/rooms">Stay</a></li>
-    <li class="nav-logo"><a href="/">The Red Cow</a></li>
-    <li class="nav-item"><a href="/events">Events</a></li>
-    <li class="nav-item"><a href="/contact">Contact</a></li>
+    {mainNavigation.map((link, index) => (
+      <>
+        {index === 2 && (
+          <li class="nav-logo">
+            <a href="/">{businessInfo.logoText}</a>
+          </li>
+        )}
+
+        <li class="nav-item">
+          <a href={link.href}>{link.text}</a>
+        </li>
+      </>
+    ))}
   </ul>
 </nav>

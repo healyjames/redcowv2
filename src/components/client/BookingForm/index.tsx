@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CircleCheck } from "lucide-react";
 import type { FormData, FormErrors } from "@/libs/types/constants";
+import { rooms } from "@/assets/redcow/content/data";
 import "./BookingForm.css";
 
 export default function BookingCalendarForm() {
@@ -219,9 +220,7 @@ export default function BookingCalendarForm() {
                 </div>
             </div>
             )}
-            {!selectedDate &&
-                submitStatus === "idle" &&
-                submitStatus !== "success" && (
+            {!selectedDate && submitStatus === "idle" && (
                     <div className="calendar-container">
                         <div className="calendar-header">
                             <h2>
@@ -244,9 +243,7 @@ export default function BookingCalendarForm() {
                     </div>
                 )}
 
-            {selectedDate &&
-                submitStatus === "idle" &&
-                submitStatus !== "success" && (
+            {selectedDate && submitStatus === "idle" && (
                     <div className="form-container">
                         <div className="selected-date-display">
                             Selected date:{" "}
@@ -368,13 +365,11 @@ export default function BookingCalendarForm() {
                                     onChange={handleChange}
                                 >
                                     <option value="">Select a room</option>
-                                    <option value="Any">Any</option>
-                                    <option value="Red Angus">Red Angus</option>
-                                    <option value="Limousin">Limousin</option>
-                                    <option value="Corriente">Corriente</option>
-                                    <option value="Ankole-Watusi">
-                                        Ankole-Watusi
-                                    </option>
+                                    {rooms.map(room => (
+                                        <option key={room.name} value={room.name}>
+                                            {room.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

@@ -6,47 +6,28 @@ import AboutSection from "../components/AboutSection.astro";
 import TwoImageSection from "../components/TwoImageSection.astro";
 import WelcomeQuoteSection from "../components/QuoteSection.astro";
 import ReservationsBanner from "../components/ReservationsBanner.astro";
+import { pageMetadata, quotes, homeContent, businessInfo } from "@/assets/redcow/content/data";
 
-// FeatureImage Content
 import featureImage from "@brand/images/home-feature-image.jpg";
-
-const featureImageLinks = [
-  { text: "View Menu", href: "/menu" },
-  { text: "Book Room", href: "/rooms" }
-];
-
-// TwoImageSection Content
 import imageOne from "@brand/images/home-two-image-section-1.jpg";
 import imageTwo from "@brand/images/home-two-image-section-2.jpg";
 
 const twoImageSectionCards = [
   {
-    title: "Menu",
-    description: "Our kitchen celebrates the best of local produce, crafting a menu that changes with the seasons. Expect freshly prepared dishes, traditional flavours, and a taste of the countryside with every bite.",
+    ...homeContent.menuCard,
     image: imageOne,
-    imageAlt: "Restaurant menu showcase",
-    primaryButton: {
-      text: "Book a table",
-      href: "https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant"
-    },
   },
   {
-    title: "Rooms",
-    description: "Make yourself at home in one of our inviting rooms. Whether you're here for a quiet break, a celebration, or simply passing through, our accommodation blends rustic charm with modern comforts for a restful night's sleep.",
+    ...homeContent.roomsCard,
     image: imageTwo,
-    imageAlt: "Comfortable guest room",
-    secondaryButton: {
-      text: "Find out more",
-      href: "/rooms"
-    }
   }
 ];
 
 ---
-<MainLayout content={{ title: "Home", description: "Welcome to The Red Cow Nantwich - our treasured 15th Century Old Coaching Inn located in the historic town of Nantwich, in the heart of Cheshire." }} transparentNavigation={true}>
-  <FeatureImage image={featureImage} links={featureImageLinks} title="Graze. Gather. Stay" />
+<MainLayout content={pageMetadata.home} transparentNavigation={true}>
+  <FeatureImage image={featureImage} links={homeContent.featureLinks} title={businessInfo.tagline} />
   <div>
-    <WelcomeQuoteSection quote="Passionate about exceptional food, warm hospitality, and creating a welcoming space for all in the heart of Cheshire." />
+    <WelcomeQuoteSection quote={quotes.home} />
     <Separator />
     <TwoImageSection cards={twoImageSectionCards} />
     <Separator />

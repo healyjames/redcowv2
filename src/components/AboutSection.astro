@@ -1,6 +1,5 @@
 ---
-import { Picture } from "astro:assets";
-import aboutImage from "@brand/images/about-image.jpg";
+import { businessInfo } from "@/assets/redcow/content/data";
 ---
 <style>
   .about-section h2 {
@@ -29,11 +28,7 @@ import aboutImage from "@brand/images/about-image.jpg";
   <div>
     <div class="section-inner">
       <h2>About The Red Cow</h2>
-      <p>
-        The Red Cow is a stunning 16th Century Old coaching inn. We're located in the
-        historic town of Nantwich, where we serve delicious food, great ale, wine & cocktails
-        from our dedicated and passionate team
-      </p>
+      <p>{businessInfo.shortDescription}</p>
     </div>
   </div>
 </section>

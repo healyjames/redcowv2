@@ -19,7 +19,7 @@ export default defineConfig({
         },
     },
 
-    site: "https://example.com",
+    site: process.env.PUBLIC_SITE_URL,
     integrations: [react(), sitemap()],
     output: "static",
     adapter: netlify(),

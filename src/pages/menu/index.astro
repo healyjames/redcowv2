@@ -2,6 +2,7 @@
 import { Picture } from "astro:assets";
 import MainLayout from "../../layouts/main.astro";
 import Separator from "../../components/Separator.astro";
+import { pageMetadata, menuContent } from "@/assets/redcow/content/data";
 import menuImage from "@brand/images/menu-image.jpg";
 
 import mainMenu from "@brand/menus/menu.pdf";
@@ -62,13 +63,13 @@ import wineMenu from "@brand/menus/wine-list.pdf";
     object-position: center;
   }
 </style>
-<MainLayout content={{ title: "Menu", description: "Explore the diverse and delicious menus at The Red Cow Nantwich. From hearty pub classics to seasonal specials, our offerings are crafted with fresh, local ingredients to satisfy every palate." }}>
+<MainLayout content={pageMetadata.menu}>
   <div class="page-container">
     <section class="menu-heading">
       <div class="section-inner">
         <div>
-          <h1>Menus</h1>
-          <p>We believe great food starts with the freshest ingredients. Our chefs create delicious dishes that celebrate the best of each season, with menus that change regularly to bring you new flavours and the finest produce available. Whether you're joining us for a hearty meal or something lighter, you'll always find something fresh, tasty, and made with care.</p>
+          <h1>{menuContent.heading}</h1>
+          <p>{menuContent.description}</p>
         </div>
       </div>
     </section>
@@ -79,7 +80,7 @@ import wineMenu from "@brand/menus/wine-list.pdf";
         src={menuImage}
         widths={[768, 1080, 1920]}
         formats={['avif', 'webp']}
-        alt={"Freshly cooked beef burger with fries and an ice cold beer."}
+        alt={menuContent.imageAlt}
         loading="lazy"
         decoding="async"
         class="menu-image"
@@ -88,7 +89,7 @@ import wineMenu from "@brand/menus/wine-list.pdf";
   </div>
   <section class="menu-disclaimer">
     <div class="section-inner">
-      <p>Our menu changes frequently. Below are sample menus.</p>
+      <p>{menuContent.disclaimer}</p>
     </div>
   </section>
   <Separator />

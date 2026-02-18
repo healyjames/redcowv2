@@ -1,5 +1,5 @@
 ---
-
+import { openingHours } from "@/assets/redcow/content/data";
 ---
 <style>
   .opening-hours {
@@ -65,58 +65,21 @@
   <div class="section-inner">
     <h2>Opening Hours</h2>
     <div class="hours-grid">
-      <div>
-        <h4 class="day">Monday</h4>
-        <div class="times">
-          <div>
-            <p><strong>Bar</strong></p>
-            <p>Closed</p>
-          </div>
-          <div>
-            <p><strong>Food</strong></p>
-            <p>Closed</p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h4 class="day">Tue - Thur</h4>
-        <div class="times">
-          <div>
-            <p><strong>Bar</strong></p>
-            <p>12 noon - 11pm</p>
-          </div>
-          <div>
-            <p><strong>Food</strong></p>
-            <p>12 noon - 8pm</p>
+      {openingHours.map(hours => (
+        <div>
+          <h4 class="day">{hours.day}</h4>
+          <div class="times">
+            <div>
+              <p><strong>Bar</strong></p>
+              <p>{hours.barHours}</p>
+            </div>
+            <div>
+              <p><strong>Food</strong></p>
+              <p>{hours.foodHours}</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h4 class="day">Fri - Sat</h4>
-        <div class="times">
-          <div>
-            <p><strong>Bar</strong></p>
-            <p>12 noon - Late</p>
-          </div>
-          <div>
-            <p><strong>Food</strong></p>
-            <p>12 noon - 9pm</p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h4 class="day">Sunday</h4>
-        <div class="times">
-          <div>
-            <p><strong>Bar</strong></p>
-            <p>12 noon - 6pm</p>
-          </div>
-          <div>
-            <p><strong>Food</strong></p>
-            <p>12 noon - 4pm</p>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>
