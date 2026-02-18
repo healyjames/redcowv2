@@ -266,3 +266,33 @@ export const contactContent = {
   phoneNote:
     "Our telephones are open inline with our normal opening hours.",
 };
+
+export const homeComponentData = {
+  twoImageCards: [
+    {
+      ...homeContent.menuCard,
+      image: 'home-two-image-section-1.jpg',
+      imageAlt: homeContent.menuCard.imageAlt
+    },
+    {
+      ...homeContent.roomsCard,
+      image: 'home-two-image-section-2.jpg',
+      imageAlt: homeContent.roomsCard.imageAlt
+    }
+  ]
+};
+
+export const roomsComponentData = {
+  roomCards: rooms
+    .filter(room => room.name !== "Any")
+    .map((room, index) => ({
+      title: room.name,
+      description: room.description,
+      image: `room-${index + 1}.jpg`,
+      imageAlt: `${room.name} Room`,
+      primaryButton: {
+        text: "Book Room",
+        href: "/rooms/book"
+      }
+    }))
+};
