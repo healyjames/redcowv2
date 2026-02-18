@@ -1,5 +1,9 @@
 ---
-const { source } = Astro.props;
+interface Props {
+  src: string;
+}
+
+const { src } = Astro.props;
 ---
 <style>
   iframe {
@@ -10,4 +14,4 @@ const { source } = Astro.props;
     opacity: 0.8;
   }
 </style>
-<iframe src={source} loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin" fetchpriority="low"></iframe>
+<iframe src={src} loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin" fetchpriority="low"></iframe>

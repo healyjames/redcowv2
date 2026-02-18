@@ -1,0 +1,73 @@
+---
+import Separator from './Separator.astro';
+import { menuContent } from "@/assets/redcow/content/data";
+
+interface Props {
+  links: Array<{ text: string; href: string }>;
+}
+
+const { links } = Astro.props;
+---
+
+<style>
+  .menu-disclaimer {
+    text-align: center;
+    font-size: 1.5rem;
+  }
+
+  .menu-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    a {
+      width: 100%;
+      height: 100%;
+      padding: 0 1rem;
+      border: 1px solid var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-self: center;
+      text-align: center;
+
+      &:hover {
+        background-color: var(--secondary);
+        color: var(--background);
+      }
+
+      p {
+        font-family: 'SecondaryFont', sans-serif;
+        width: 100%;
+      }
+    }
+  }
+
+  @media screen and (min-width: 480px) {
+    .menu-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+
+<section class="menu-disclaimer">
+  <div class="section-inner">
+    <p>{menuContent.disclaimer}</p>
+  </div>
+</section>
+<Separator />
+<div class="page-container">
+  <section class="menus">
+    <div class="section-inner">
+      <div class="menu-container">
+        {links.map(link => (
+          <a href={link.href}>
+            <p>{link.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</div>

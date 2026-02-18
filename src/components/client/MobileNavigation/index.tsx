@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChartNoAxesColumn as Menu, X } from "lucide-react";
+import { mainNavigation, socialLinks, businessInfo } from "@/assets/redcow/content/data";
 import "./MobileNavigation.css";
 
 interface MobileNavProps {
@@ -27,7 +28,7 @@ export default function MobileNav({ transparent }: MobileNavProps) {
       >
           <div className="mobile-nav-header">
               <a href="/" className="mobile-nav-logo">
-                  The Red Cow
+                  {businessInfo.logoText}
               </a>
               <button
                   className="mobile-menu-toggle"
@@ -45,24 +46,16 @@ export default function MobileNav({ transparent }: MobileNavProps) {
           {open && (
               <div className="mobile-nav-content">
                   <ul className="mobile-nav-list">
-                      <li className="mobile-nav-item">
-                          <a href="/menu">Dine</a>
-                      </li>
-                      <li className="mobile-nav-item">
-                          <a href="/rooms">Stay</a>
-                      </li>
-                      <li className="mobile-nav-item">
-                          <a href="/events">Events</a>
-                      </li>
-                      <li className="mobile-nav-item">
-                          <a href="/contact">Contact</a>
-                      </li>
+                      {mainNavigation.map(link => (
+                          <li key={link.href} className="mobile-nav-item">
+                              <a href={link.href}>{link.text}</a>
+                          </li>
+                      ))}
                   </ul>
                   <div>
                       <a
-                          href="https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant"
-                          className="btn btn-primary reservation-button"
-                          style={{ width: "100%", display: "block", margin: "0 auto", maxWidth: "max-content", fontSize: "1.2rem" }}
+                          href={businessInfo.reservationsUrl}
+                          className="btn btn-primary reservation-button mobile-nav-reservation-button"
                       >
                           Reservations
                       </a>
@@ -79,29 +72,18 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                       <ul className="mobile-nav-footer-bottom">
                           <p>
                               Follow us on{" "}
-                              <a
-                                  href="https://www.facebook.com"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                              >
-                                  Facebook
-                              </a>
-                              ,{" "}
-                              <a
-                                  href="https://www.instagram.com"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                              >
-                                  Instagram
-                              </a>{" "}
-                              &amp;{" "}
-                              <a
-                                  href="https://www.tiktok.com"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                              >
-                                  TikTok
-                              </a>
+                              {socialLinks.map((social, index) => (
+                                  <span key={social.name}>
+                                      <a
+                                          href={social.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                      >
+                                          {social.name}
+                                      </a>
+                                      {index < socialLinks.length - 1 && (index === socialLinks.length - 2 ? " & " : ", ")}
+                                  </span>
+                              ))}
                           </p>
                       </ul>
                   </div>

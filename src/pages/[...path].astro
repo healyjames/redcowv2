@@ -1,0 +1,183 @@
+---
+import type { GetStaticPaths } from 'astro';
+import MainLayout from '../layouts/main.astro';
+import { getAllRoutes } from '@/assets/redcow/content/routes';
+import type { ComponentConfig } from '@/assets/redcow/content/page-components';
+
+import FeatureImage from '../components/FeatureImage.astro';
+import TwoImageSection from '../components/TwoImageSection.astro';
+import QuoteSection from '../components/QuoteSection.astro';
+import AboutSection from '../components/AboutSection.astro';
+import Separator from '../components/Separator.astro';
+import PageHeading from '../components/PageHeading.astro';
+import MenuImage from '../components/MenuImage.astro';
+import MenuLinks from '../components/MenuLinks.astro';
+import BookingForm from '../components/client/BookingForm';
+import MapComponent from '../components/Map.astro';
+import ContactInfo from '../components/ContactInfo.astro';
+import ReservationsBanner from '../components/ReservationsBanner.astro';
+
+import * as data from '@/assets/redcow/content/data';
+
+const brand = import.meta.env.PUBLIC_BRAND || 'redcow';
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+
+const componentMap = {
+  FeatureImage,
+  TwoImageSection,
+  QuoteSection,
+  AboutSection,
+  Separator,
+  PageHeading,
+  MenuImage,
+  MenuLinks,
+  BookingForm,
+  Map: MapComponent,
+  ContactInfo,
+  ReservationsBanner
+};
+
+export const getStaticPaths = (() => {
+  const allRoutes = getAllRoutes();
+
+  return allRoutes.map(route => {
+    const normalizedPath = route.slug === '/' ? undefined : route.slug.slice(1);
+
+    return {
+      params: {
+        path: normalizedPath
+      },
+      props: {
+        route
+      }
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { route } = Astro.props;
+
+if (!route) {
+  return Astro.redirect('/404');
+}
+
+function loadImage(imagePath: string) {
+  const imageKey = `/src/assets/${brand}/images/${imagePath}`;
+  const imageModule = images[imageKey];
+
+  if (!imageModule) {
+    console.error(`Failed to load image: ${imagePath}. Looking for key: ${imageKey}`);
+    console.error('Available keys:', Object.keys(images).filter(k => k.includes(brand)));
+    return null;
+  }
+
+  return imageModule.default;
+}
+
+function resolveDataRef(value: any): any {
+  if (typeof value === 'string' && value.startsWith('dataRef:')) {
+    const path = value.slice(8);
+
+    const arrayMatch = path.match(/^(.+)\[(\d+),(\d+)\]$/);
+    if (arrayMatch) {
+      const [, dataPath, startIdx, endIdx] = arrayMatch;
+      const arrayData = dataPath.split('.').reduce((obj, key) => obj?.[key], data);
+      return arrayData.slice(parseInt(startIdx), parseInt(endIdx) + 1);
+    }
+
+    return path.split('.').reduce((obj, key) => obj?.[key], data);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(resolveDataRef);
+  }
+
+  if (value && typeof value === 'object') {
+    const resolved: any = {};
+    for (const [key, val] of Object.entries(value)) {
+      resolved[key] = resolveDataRef(val);
+    }
+    return resolved;
+  }
+
+  return value;
+}
+
+function resolveComponentProps(config: ComponentConfig) {
+  const props = { ...config };
+
+  for (const [key, value] of Object.entries(props)) {
+    if (key !== 'type') {
+      props[key] = resolveDataRef(value);
+    }
+  }
+
+  if ('image' in props && typeof props.image === 'string') {
+    props.image = loadImage(props.image);
+  }
+
+  if ('cards' in props && Array.isArray(props.cards)) {
+    props.cards = props.cards.map((card) => ({
+      ...card,
+      image: card.image ? loadImage(card.image) : card.image
+    }));
+  }
+
+  return props;
+}
+
+const resolvedComponents = route.components.map(config => resolveComponentProps(config));
+---
+
+<style>
+  .error-message {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .success-message {
+    background-color: #d1fae5;
+    border: 1px solid #34d399;
+    color: #065f46;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<MainLayout
+  content={route.metadata}
+  transparentNavigation={route.transparentNavigation}
+>
+  {resolvedComponents.map((props, index) => {
+    const Component = componentMap[props.type];
+    if (!Component) {
+      console.warn(`Unknown component type: ${props.type}`);
+      return null;
+    }
+
+    if (props.type === 'BookingForm') {
+      return (
+        <div class="page-container" key={index}>
+          <section class="booking-form">
+            <div>
+              <BookingForm client:load />
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    return <Component {...props} key={index} />;
+  })}
+</MainLayout>
