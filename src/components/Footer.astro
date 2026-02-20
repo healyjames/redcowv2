@@ -190,8 +190,8 @@ const currentYear = new Date().getFullYear();
   <Separator color="--secondary-lighter" />
   
   <section class="footer-info">
-    <p class="address">{contact.address.full}</p>
-    <p class="phone">{contact.phoneFormatted}</p>
+    <p class="address">{contact.address.street}, {contact.address.town}, {contact.address.postcode}</p>
+    <p class="phone">{contact.phone_formatted}</p>
   </section>
 
   <section class="footer-legal">

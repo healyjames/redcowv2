@@ -5,15 +5,21 @@ export type {
   OpeningHoursDay,
   RoomData,
   PageMetadata,
-} from './index';
+} from '../../types';
 
 export {
   contact,
   socialLinks,
   businessInfo,
   openingHours,
+} from './business';
+
+export {
   mainNavigation,
   footerNavigation,
+} from './navigation';
+
+export {
   pageMetadata,
   quotes,
   aboutContent,
@@ -21,7 +27,10 @@ export {
   menuContent,
   homeContent,
   contactContent,
+} from './pages';
+
+export {
   rooms,
   homeComponentData,
   roomsComponentData,
-} from './index';
+} from './components';

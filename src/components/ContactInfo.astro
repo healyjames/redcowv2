@@ -63,7 +63,7 @@ import { contact, contactContent, businessInfo } from "@/assets/redcow/content/d
       <div>
         <h1>{contactContent.heading}</h1>
         <p class="address">{businessInfo.name},<br /> {contact.address.street},<br /> {contact.address.town}<br /> <span style="font-weight: 600;">{contact.address.postcode}</span></p>
-        <a href={`tel:${contact.phone}`} class="telephone">+44 (0){contact.phoneFormatted}</a>
+        <a href={`tel:${contact.phone}`} class="telephone">+44 (0){contact.phone_formatted}</a>
         <p class="tel-text">{contactContent.phoneNote}</p>
         <a href={`mailto:${contact.email}`} class="email">{contact.email}</a>
         <p>{contactContent.parkingNote}</p>
