@@ -80,11 +80,11 @@ function resolveDataRef(value: any): any {
     const arrayMatch = path.match(/^(.+)\[(\d+),(\d+)\]$/);
     if (arrayMatch) {
       const [, dataPath, startIdx, endIdx] = arrayMatch;
-      const arrayData = dataPath.split('.').reduce((obj, key) => obj?.[key], data);
-      return arrayData.slice(parseInt(startIdx), parseInt(endIdx) + 1);
+      const arrayData = dataPath.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
+      return Array.isArray(arrayData) ? arrayData.slice(parseInt(startIdx), parseInt(endIdx) + 1) : arrayData;
     }
 
-    return path.split('.').reduce((obj, key) => obj?.[key], data);
+    return path.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
   }
 
   if (Array.isArray(value)) {
@@ -103,7 +103,7 @@ function resolveDataRef(value: any): any {
 }
 
 function resolveComponentProps(config: ComponentConfig) {
-  const props = { ...config };
+  const props: Record<string, any> = { ...config };
 
   for (const [key, value] of Object.entries(props)) {
     if (key !== 'type') {
@@ -112,14 +112,23 @@ function resolveComponentProps(config: ComponentConfig) {
   }
 
   if ('image' in props && typeof props.image === 'string') {
-    props.image = loadImage(props.image);
+    const loadedImage = loadImage(props.image);
+    if (loadedImage) {
+      props.image = loadedImage;
+    }
   }
 
   if ('cards' in props && Array.isArray(props.cards)) {
-    props.cards = props.cards.map((card) => ({
-      ...card,
-      image: card.image ? loadImage(card.image) : card.image
-    }));
+    props.cards = props.cards.map((card: any) => {
+      if (card.image && typeof card.image === 'string') {
+        const loadedImage = loadImage(card.image);
+        return {
+          ...card,
+          image: loadedImage || card.image
+        };
+      }
+      return card;
+    });
   }
 
   return props;
@@ -160,7 +169,8 @@ const resolvedComponents = route.components.map(config => resolveComponentProps(
   transparentNavigation={route.transparentNavigation}
 >
   {resolvedComponents.map((props, index) => {
-    const Component = componentMap[props.type];
+    const componentType = props.type as keyof typeof componentMap;
+    const Component = componentMap[componentType];
     if (!Component) {
       console.warn(`Unknown component type: ${props.type}`);
       return null;
@@ -168,7 +178,7 @@ const resolvedComponents = route.components.map(config => resolveComponentProps(
 
     if (props.type === 'BookingForm') {
       return (
-        <div class="page-container" key={index}>
+        <div class="page-container">
           <section class="booking-form">
             <div>
               <BookingForm client:load />
@@ -178,6 +188,6 @@ const resolvedComponents = route.components.map(config => resolveComponentProps(
       );
     }
 
-    return <Component {...props} key={index} />;
+    return <Component {...props as any} />;
   })}
 </MainLayout>
