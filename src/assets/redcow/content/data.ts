@@ -1,14 +1,11 @@
 export interface ContactInfo {
   phone: string;
-  phoneFormatted: string;
-  secondaryPhone?: string;
-  secondaryPhoneFormatted?: string;
+  phone_formatted: string;
   email: string;
   address: {
     street: string;
     town: string;
     postcode: string;
-    full: string;
   };
 }
 
@@ -46,15 +43,12 @@ export interface PageMetadata {
 
 export const contact: ContactInfo = {
   phone: "01270618522",
-  phoneFormatted: "01270 618 522",
-  secondaryPhone: "01270297785",
-  secondaryPhoneFormatted: "01270 297 785",
+  phone_formatted: "01270 618 522",
   email: "info@redcownantwich.co.uk",
   address: {
-    street: "51 Beam Street",
+    street: "Red Cow, 51 Beam Street",
     town: "Nantwich",
     postcode: "CW5 5NF",
-    full: "Red Cow, 51 Beam Street, Nantwich, CW5 5NF",
   },
 };
 
@@ -89,12 +83,10 @@ export const footerNavigation = {
     { text: "About", href: "/about" },
   ],
   menu: [
-    { text: "Breakfast", href: "/menus/breakfast.pdf" },
     { text: "Lunch", href: "/menus/lunch.pdf" },
     { text: "Evening", href: "/menus/main.pdf" },
     { text: "Sunday Lunch", href: "/menus/sunday.pdf" },
     { text: "Wine List", href: "/menus/wine.pdf" },
-    { text: "Drinks", href: "/menus/drinks.pdf" },
   ],
   other: [
     { text: "Rooms", href: "/rooms" },
