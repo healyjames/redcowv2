@@ -3,6 +3,7 @@ import { pageMetadata } from './data';
 
 export const routes: RouteConfig[] = [
   {
+    name: 'Home',
     slug: '/',
     metadata: pageMetadata.home,
     transparentNavigation: true,
@@ -33,6 +34,7 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
+    name: 'About',
     slug: '/about',
     metadata: pageMetadata.about,
     components: [
@@ -45,6 +47,7 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
+    name: 'Menu',
     slug: '/menu',
     metadata: pageMetadata.menu,
     components: [
@@ -71,6 +74,7 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
+    name: 'Contact',
     slug: '/contact',
     metadata: pageMetadata.contact,
     components: [
@@ -80,6 +84,7 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
+    name: 'Events',
     slug: '/events',
     metadata: pageMetadata.events,
     components: [
@@ -92,6 +97,7 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
+    name: 'Rooms',
     slug: '/rooms',
     metadata: pageMetadata.rooms,
     transparentNavigation: true,
@@ -118,8 +124,9 @@ export const routes: RouteConfig[] = [
         cards: 'dataRef:roomsComponentData.roomCards[2,3]'
       }
     ],
-    nested: [
+    children: [
       {
+        name: 'Booking',
         slug: '/rooms/book',
         metadata: {
           title: "Book a room",
