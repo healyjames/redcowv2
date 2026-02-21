@@ -16,6 +16,7 @@ import ContactInfo from '../components/ContactInfo.astro';
 import ReservationsBanner from '../components/ReservationsBanner.astro';
 
 import * as data from '@brand/content';
+import { getAllPages, resolveComponentProps } from '@/libs/utils/routing';
 
 const componentMap = {
   FeatureImage,
@@ -33,29 +34,29 @@ const componentMap = {
 };
 
 export const getStaticPaths = (() => {
-  const routes = getAllRoutes(data.routes);
+  const allPages = getAllPages(data.pages);
 
-  return routes.map(route => {
-    const path = route.slug === '/' ? undefined : route.slug.slice(1);
+  return allPages.map(page => {
+    const path = page.slug === '/' ? undefined : page.slug.slice(1);
 
     return {
       params: {
         path
       },
       props: {
-        route
+        page
       }
     };
   });
 }) satisfies GetStaticPaths;
 
-const { route } = Astro.props;
+const { page } = Astro.props;
 
-if (!route) {
+if (!page) {
   return Astro.redirect('/404');
 }
 
-const resolvedComponents = route.components.map(config => resolveComponentProps(config));
+const resolvedComponents = page.components.map(config => resolveComponentProps(config));
 ---
 
 <style>
@@ -86,8 +87,11 @@ const resolvedComponents = route.components.map(config => resolveComponentProps(
 </style>
 
 <MainLayout
-  content={route.metadata}
-  transparentNavigation={route.transparentNavigation}
+  content={{
+    title: page.title,
+    description: page.description
+  }}
+  transparentNavigation={page.transparentNavigation}
 >
   {resolvedComponents.map((props, index) => {
     const componentType = props.type as keyof typeof componentMap;

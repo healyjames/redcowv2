@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import { Facebook, Instagram, Music2 } from "@lucide/astro";
 import Separator from "../components/Separator.astro";
 import Logo from "@brand/logo/black.svg"
-import { contact, socialLinks, footerNavigation, businessInfo } from "@/assets/redcow/content/data";
+import { contact, socialLinks, footerNavigation, businessInfo } from "@brand/content";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -191,7 +191,7 @@ const currentYear = new Date().getFullYear();
   
   <section class="footer-info">
     <p class="address">{contact.address.street}, {contact.address.town}, {contact.address.postcode}</p>
-    <p class="phone">{contact.phone_formatted}</p>
+    <p class="phone">{contact.phoneFormatted}</p>
   </section>
 
   <section class="footer-legal">

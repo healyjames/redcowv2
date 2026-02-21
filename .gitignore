@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # netlify generated config
 .netlify/
+
+# ai temp files
+claude/

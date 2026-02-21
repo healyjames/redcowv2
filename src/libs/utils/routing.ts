@@ -1,4 +1,4 @@
-import type { ComponentConfig, RouteConfig } from '@/libs/types';
+import type { ComponentConfig, RouteConfig, Page } from '@/libs/types';
 
 const brand = import.meta.env.PUBLIC_BRAND;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
@@ -80,17 +80,32 @@ export function resolveComponentProps(config: ComponentConfig) {
   return props;
 }
 
-export function getAllRoutes(routes): RouteConfig[] {
+export function getAllPages(pages: Page[]): Page[] {
+  const flatPages: Page[] = [];
+  for (const page of pages) {
+    flatPages.push(page);
+    if (page.children) {
+      flatPages.push(...page.children);
+    }
+  }
+  return flatPages;
+}
+
+export function getAllRoutes(routes: RouteConfig[]): RouteConfig[] {
   const flatRoutes: RouteConfig[] = [];
   for (const route of routes) {
     flatRoutes.push(route);
-    if (route.nested) {
-      flatRoutes.push(...route.nested);
+    if (route.children) {
+      flatRoutes.push(...route.children);
     }
   }
   return flatRoutes;
 }
 
+export function getPageBySlug(pages: Page[], slug: string): Page | undefined {
+  return getAllPages(pages).find(page => page.slug === slug);
+}
+
 export function getRouteBySlug(slug: string): RouteConfig | undefined {
-  return getAllRoutes().find(route => route.slug === slug);
+  return getAllRoutes([]).find(route => route.slug === slug);
 }

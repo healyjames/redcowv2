@@ -5,6 +5,7 @@ export type {
   OpeningHoursDay,
   RoomData,
   PageMetadata,
+  Page,
 } from '@/libs/types';
 
 export {
@@ -12,25 +13,9 @@ export {
   socialLinks,
   businessInfo,
   openingHours,
-} from './business';
-
-export {
   mainNavigation,
   footerNavigation,
-} from './navigation';
-
-export {
-  pageMetadata,
-  quotes,
-  aboutContent,
-  eventsContent,
-  menuContent,
-  homeContent,
-  contactContent,
-} from './pages';
-
-export {
   rooms,
-  homeComponentData,
-  roomsComponentData,
-} from './components';
+  contactContent,
+  pages,
+} from './data';

@@ -28,7 +28,7 @@ export interface BusinessInfo {
 
 export interface ContactInfo {
   phone: string;
-  phone_formatted: string;
+  phoneFormatted: string;
   email: string;
   address: {
     street: string;
@@ -155,4 +155,14 @@ export interface RouteConfig {
   transparentNavigation?: boolean;
   components: ComponentConfig[];
   children?: RouteConfig[];
+}
+
+export interface Page {
+  name: string;
+  slug: string;
+  title: string;
+  description: string;
+  transparentNavigation?: boolean;
+  components: ComponentConfig[];
+  children?: Page[];
 }
