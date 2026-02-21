@@ -2,7 +2,7 @@
 import type { GetStaticPaths } from 'astro';
 import MainLayout from '../layouts/main.astro';
 import { getAllRoutes } from '@/assets/redcow/content/routes';
-import type { ComponentConfig } from '@/assets/redcow/content/page-components';
+import type { ComponentConfig } from '@/assets/types';
 
 import FeatureImage from '../components/FeatureImage.astro';
 import TwoImageSection from '../components/TwoImageSection.astro';
@@ -38,14 +38,14 @@ const componentMap = {
 };
 
 export const getStaticPaths = (() => {
-  const allRoutes = getAllRoutes();
+  const routes = getAllRoutes();
 
-  return allRoutes.map(route => {
-    const normalizedPath = route.slug === '/' ? undefined : route.slug.slice(1);
+  return routes.map(route => {
+    const path = route.slug === '/' ? undefined : route.slug.slice(1);
 
     return {
       params: {
-        path: normalizedPath
+        path
       },
       props: {
         route
