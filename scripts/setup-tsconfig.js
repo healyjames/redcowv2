@@ -11,11 +11,12 @@ if (!brand) {
   process.exit(1);
 }
 
-const tsconfigPath = resolve("tsconfig.json");
-const tsconfig = JSON.parse(readFileSync(tsconfigPath, "utf-8"));
+const basePath = resolve("tsconfig.base.json");
+const targetPath = resolve("tsconfig.json");
+const tsconfig = JSON.parse(readFileSync(basePath, "utf-8"));
 
 tsconfig.compilerOptions.paths["@brand/*"] = [`src/assets/${brand}/*`];
 
-writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4) + "\n");
+writeFileSync(targetPath, JSON.stringify(tsconfig, null, 4) + "\n");
 
-console.log(`✓ Updated tsconfig.json with @brand -> src/assets/${brand}`);
+console.log(`✓ Generated tsconfig.json with @brand -> src/assets/${brand}`);
