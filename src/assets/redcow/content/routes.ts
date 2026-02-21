@@ -1,14 +1,5 @@
-import type { PageMetadata } from './data';
-import type { ComponentConfig } from './page-components';
+import type { RouteConfig } from '../../types';
 import { pageMetadata } from './data';
-
-export interface RouteConfig {
-  slug: string;
-  metadata: PageMetadata;
-  transparentNavigation?: boolean;
-  components: ComponentConfig[];
-  nested?: RouteConfig[];
-}
 
 export const routes: RouteConfig[] = [
   {
@@ -152,18 +143,3 @@ export const routes: RouteConfig[] = [
     ]
   }
 ];
-
-export function getAllRoutes(): RouteConfig[] {
-  const flatRoutes: RouteConfig[] = [];
-  for (const route of routes) {
-    flatRoutes.push(route);
-    if (route.nested) {
-      flatRoutes.push(...route.nested);
-    }
-  }
-  return flatRoutes;
-}
-
-export function getRouteBySlug(slug: string): RouteConfig | undefined {
-  return getAllRoutes().find(route => route.slug === slug);
-}
