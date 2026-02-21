@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# generated config
+tsconfig.json
+
 # dependencies
 node_modules/
 
