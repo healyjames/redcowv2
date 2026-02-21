@@ -1,4 +1,4 @@
-import type { ComponentConfig, RouteConfig } from '@/assets/types';
+import type { ComponentConfig, RouteConfig } from '@/libs/types';
 
 const brand = import.meta.env.PUBLIC_BRAND;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
@@ -80,7 +80,7 @@ export function resolveComponentProps(config: ComponentConfig) {
   return props;
 }
 
-export function getAllRoutes(): RouteConfig[] {
+export function getAllRoutes(routes): RouteConfig[] {
   const flatRoutes: RouteConfig[] = [];
   for (const route of routes) {
     flatRoutes.push(route);

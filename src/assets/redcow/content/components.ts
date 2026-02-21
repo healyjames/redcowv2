@@ -1,4 +1,4 @@
-import type { RoomData } from '../../types';
+import type { RoomData } from '@/libs/types';
 import { homeContent } from './pages';
 
 export const rooms: RoomData[] = [

@@ -1,4 +1,4 @@
-import type { PageMetadata } from '../../types';
+import type { PageMetadata } from '@/libs/types';
 
 export const pageMetadata: Record<string, PageMetadata> = {
   home: {

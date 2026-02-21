@@ -1,4 +1,4 @@
-import type { ContactInfo, SocialLink, OpeningHoursDay, BusinessInfo } from '../../types';
+import type { ContactInfo, SocialLink, OpeningHoursDay, BusinessInfo } from '@/libs/types';
 
 export const contact: ContactInfo = {
   phone: "01270618522",

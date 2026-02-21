@@ -1,4 +1,4 @@
-import type { NavigationLink } from '../../types';
+import type { NavigationLink } from '@/libs/types';
 
 export const mainNavigation: NavigationLink[] = [
   { text: "Dine", href: "/menu" },

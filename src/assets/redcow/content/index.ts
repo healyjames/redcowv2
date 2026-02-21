@@ -5,7 +5,7 @@ export type {
   OpeningHoursDay,
   RoomData,
   PageMetadata,
-} from '../../types';
+} from '@/libs/types';
 
 export {
   contact,

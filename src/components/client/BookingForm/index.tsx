@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CircleCheck } from "lucide-react";
-import type { FormData, FormErrors } from "@/libs/types/constants";
+import type { FormData, FormErrors } from "@/libs/types";
 import { rooms } from "@/assets/redcow/content/data";
 import "./BookingForm.css";
 
