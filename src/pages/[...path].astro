@@ -1,8 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import MainLayout from '../layouts/main.astro';
-import { getAllRoutes } from '@/assets/redcow/content/routes';
-import type { ComponentConfig } from '@/assets/types';
 
 import FeatureImage from '../components/FeatureImage.astro';
 import TwoImageSection from '../components/TwoImageSection.astro';
@@ -17,10 +15,7 @@ import MapComponent from '../components/Map.astro';
 import ContactInfo from '../components/ContactInfo.astro';
 import ReservationsBanner from '../components/ReservationsBanner.astro';
 
-import * as data from '@/assets/redcow/content/data';
-
-const brand = import.meta.env.PUBLIC_BRAND || 'redcow';
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+import * as data from '@brand/content/data';
 
 const componentMap = {
   FeatureImage,
@@ -38,7 +33,7 @@ const componentMap = {
 };
 
 export const getStaticPaths = (() => {
-  const routes = getAllRoutes();
+  const routes = getAllRoutes(data.routes);
 
   return routes.map(route => {
     const path = route.slug === '/' ? undefined : route.slug.slice(1);
@@ -58,80 +53,6 @@ const { route } = Astro.props;
 
 if (!route) {
   return Astro.redirect('/404');
-}
-
-function loadImage(imagePath: string) {
-  const imageKey = `/src/assets/${brand}/images/${imagePath}`;
-  const imageModule = images[imageKey];
-
-  if (!imageModule) {
-    console.error(`Failed to load image: ${imagePath}. Looking for key: ${imageKey}`);
-    console.error('Available keys:', Object.keys(images).filter(k => k.includes(brand)));
-    return null;
-  }
-
-  return imageModule.default;
-}
-
-function resolveDataRef(value: any): any {
-  if (typeof value === 'string' && value.startsWith('dataRef:')) {
-    const path = value.slice(8);
-
-    const arrayMatch = path.match(/^(.+)\[(\d+),(\d+)\]$/);
-    if (arrayMatch) {
-      const [, dataPath, startIdx, endIdx] = arrayMatch;
-      const arrayData = dataPath.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
-      return Array.isArray(arrayData) ? arrayData.slice(parseInt(startIdx), parseInt(endIdx) + 1) : arrayData;
-    }
-
-    return path.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
-  }
-
-  if (Array.isArray(value)) {
-    return value.map(resolveDataRef);
-  }
-
-  if (value && typeof value === 'object') {
-    const resolved: any = {};
-    for (const [key, val] of Object.entries(value)) {
-      resolved[key] = resolveDataRef(val);
-    }
-    return resolved;
-  }
-
-  return value;
-}
-
-function resolveComponentProps(config: ComponentConfig) {
-  const props: Record<string, any> = { ...config };
-
-  for (const [key, value] of Object.entries(props)) {
-    if (key !== 'type') {
-      props[key] = resolveDataRef(value);
-    }
-  }
-
-  if ('image' in props && typeof props.image === 'string') {
-    const loadedImage = loadImage(props.image);
-    if (loadedImage) {
-      props.image = loadedImage;
-    }
-  }
-
-  if ('cards' in props && Array.isArray(props.cards)) {
-    props.cards = props.cards.map((card: any) => {
-      if (card.image && typeof card.image === 'string') {
-        const loadedImage = loadImage(card.image);
-        return {
-          ...card,
-          image: loadedImage || card.image
-        };
-      }
-      return card;
-    });
-  }
-
-  return props;
 }
 
 const resolvedComponents = route.components.map(config => resolveComponentProps(config));
