@@ -10,7 +10,7 @@ import Banner from "../components/Banner.astro";
 const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
-  <Banner text={"Book now for Easter!"} />
+  <Banner text={"Book now for Easter!"} link="https://web.dojo.app/create_booking/vendor/_i5WYdjKa2QID8JUwfbYHRllSmUSt-BCNny3N3KVHJg_restaurant" />
   <Navigation transparent={transparentNavigation} />
   <MobileNavigation transparent={transparentNavigation} client:load />
   <slot />
