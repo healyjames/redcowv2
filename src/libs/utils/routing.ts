@@ -2,6 +2,7 @@ import type { ComponentConfig, Page } from '@/libs/types';
 
 const brand = import.meta.env.PUBLIC_BRAND;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const pdfs = import.meta.glob<string>('/src/assets/*/menus/*.pdf', { eager: true, query: '?url', import: 'default' });
 
 if (!brand) {
   throw new Error('PUBLIC_BRAND env var not set');
@@ -17,6 +18,18 @@ export function loadImage(path: string) {
   }
 
   return image.default;
+}
+
+export function loadPdf(path: string): string | null {
+  const pdf = pdfs[`/src/assets/${brand}/menus/${path}`];
+
+  if (!pdf) {
+    console.error(`Failed to load PDF: ${path}`);
+    console.error('Available PDFs:', Object.keys(pdfs).filter(k => k.includes(brand)));
+    return null;
+  }
+
+  return pdf;
 }
 
 export function resolveComponentProps(config: ComponentConfig) {
@@ -39,6 +52,20 @@ export function resolveComponentProps(config: ComponentConfig) {
         };
       }
       return card;
+    });
+  }
+
+  if ('links' in props && Array.isArray(props.links)) {
+    props.links = props.links.map((link: any) => {
+      if (link.href && typeof link.href === 'string' && link.href.endsWith('.pdf')) {
+        const filename = link.href.split('/').pop();
+        const loadedPdf = loadPdf(filename!);
+        return {
+          ...link,
+          href: loadedPdf || link.href
+        };
+      }
+      return link;
     });
   }
 
