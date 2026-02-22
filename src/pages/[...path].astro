@@ -56,7 +56,7 @@ if (!page) {
   return Astro.redirect('/404');
 }
 
-const resolvedComponents = page.components.map(config => resolveComponentProps(config));
+const components = page.components.map(config => resolveComponentProps(config));
 ---
 
 <style>
@@ -93,15 +93,15 @@ const resolvedComponents = page.components.map(config => resolveComponentProps(c
   }}
   transparentNavigation={page.transparentNavigation}
 >
-  {resolvedComponents.map((props, index) => {
-    const componentType = props.type as keyof typeof componentMap;
+  {components.map((block) => {
+    const componentType = block.type as keyof typeof componentMap;
     const Component = componentMap[componentType];
     if (!Component) {
-      console.warn(`Unknown component type: ${props.type}`);
+      console.warn(`Unknown component type: ${block.type}`);
       return null;
     }
 
-    if (props.type === 'BookingForm') {
+    if (block.type === 'BookingForm') {
       return (
         <div class="page-container">
           <section class="booking-form">
@@ -113,6 +113,6 @@ const resolvedComponents = page.components.map(config => resolveComponentProps(c
       );
     }
 
-    return <Component {...props as any} />;
+    return <Component {...block as any} />;
   })}
 </MainLayout>

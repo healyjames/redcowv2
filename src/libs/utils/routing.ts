@@ -1,13 +1,13 @@
-import type { ComponentConfig, RouteConfig, Page } from '@/libs/types';
+import type { ComponentConfig, Page } from '@/libs/types';
 
 const brand = import.meta.env.PUBLIC_BRAND;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
 
 if (!brand) {
-    throw new Error('PUBLIC_BRAND env var not set');
+  throw new Error('PUBLIC_BRAND env var not set');
 }
 
-export function loadImage(path: string) {;
+export function loadImage(path: string) {
   const image = images[`/src/assets/${brand}/images/${path}`];
 
   if (!image) {
@@ -19,43 +19,8 @@ export function loadImage(path: string) {;
   return image.default;
 }
 
-export function resolveDataRef(value: any, data: any): any {
-  if (typeof value === 'string' && value.startsWith('dataRef:')) {
-    const path = value.slice(8);
-
-    const arrayMatch = path.match(/^(.+)\[(\d+),(\d+)\]$/);
-    if (arrayMatch) {
-      const [, dataPath, startIdx, endIdx] = arrayMatch;
-      const arrayData = dataPath.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
-      return Array.isArray(arrayData) ? arrayData.slice(parseInt(startIdx), parseInt(endIdx) + 1) : arrayData;
-    }
-
-    return path.split('.').reduce((obj: any, key) => obj?.[key], data as Record<string, any>);
-  }
-
-  if (Array.isArray(value)) {
-    return value.map(resolveDataRef);
-  }
-
-  if (value && typeof value === 'object') {
-    const resolved: any = {};
-    for (const [key, val] of Object.entries(value)) {
-      resolved[key] = resolveDataRef(val);
-    }
-    return resolved;
-  }
-
-  return value;
-}
-
 export function resolveComponentProps(config: ComponentConfig) {
   const props: Record<string, any> = { ...config };
-
-  for (const [key, value] of Object.entries(props)) {
-    if (key !== 'type') {
-      props[key] = resolveDataRef(value);
-    }
-  }
 
   if ('image' in props && typeof props.image === 'string') {
     const loadedImage = loadImage(props.image);
@@ -91,21 +56,6 @@ export function getAllPages(pages: Page[]): Page[] {
   return flatPages;
 }
 
-export function getAllRoutes(routes: RouteConfig[]): RouteConfig[] {
-  const flatRoutes: RouteConfig[] = [];
-  for (const route of routes) {
-    flatRoutes.push(route);
-    if (route.children) {
-      flatRoutes.push(...route.children);
-    }
-  }
-  return flatRoutes;
-}
-
 export function getPageBySlug(pages: Page[], slug: string): Page | undefined {
   return getAllPages(pages).find(page => page.slug === slug);
-}
-
-export function getRouteBySlug(slug: string): RouteConfig | undefined {
-  return getAllRoutes([]).find(route => route.slug === slug);
 }

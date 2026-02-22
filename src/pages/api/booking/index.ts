@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import type { FormData } from "@/libs/types/constants";
+import type { FormData } from "@/libs/types";
 import { validateRequest } from "@/libs/utils/validateRequest";
 import { checkHoneypot } from "@/libs/utils/honeyPot";
 import { sendAdminBookingEmail } from "@/libs/email/sendAdminBookingEmail";
