@@ -122,6 +122,10 @@ export const contactContent = {
   phoneNote: "Our telephones are open inline with our normal opening hours.",
 };
 
+export const menuContent = {
+  disclaimer: "Our menu changes frequently. Below are sample menus.",
+};
+
 export const pages: Page[] = [
   {
     name: 'Home',
@@ -248,7 +252,7 @@ export const pages: Page[] = [
       {
         type: 'PageHeading',
         heading: 'The Byre Suite',
-        paragraphs: ['The Byre Suite is our private and truly unique event space, designed to bring people together in comfort and style. Whether you're hosting an intimate gathering, a milestone celebration, or a professional event, the Byre offers the perfect balance of charm and sophistication. With its warm character, beautiful décor, and inviting atmosphere, it provides a memorable backdrop for any occasion.'],
+        paragraphs: ["The Byre Suite is our private and truly unique event space, designed to bring people together in comfort and style. Whether you're hosting an intimate gathering, a milestone celebration, or a professional event, the Byre offers the perfect balance of charm and sophistication. With its warm character, beautiful décor, and inviting atmosphere, it provides a memorable backdrop for any occasion."],
         className: 'events-heading'
       }
     ]
@@ -268,7 +272,7 @@ export const pages: Page[] = [
       },
       {
         type: 'QuoteSection',
-        quote: 'Four stunning en-suite B&B rooms named &amp; designed around the theme of 'Red Cow' breeds across the world.'
+        quote: "Four stunning en-suite B&B rooms named &amp; designed around the theme of 'Red Cow' breeds across the world."
       },
       {
         type: 'Separator'

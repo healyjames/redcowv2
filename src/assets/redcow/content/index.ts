@@ -17,5 +17,6 @@ export {
   footerNavigation,
   rooms,
   contactContent,
+  menuContent,
   pages,
 } from './data';
