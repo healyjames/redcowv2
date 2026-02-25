@@ -1,0 +1,118 @@
+---
+import type { GetStaticPaths } from 'astro';
+import MainLayout from '../layouts/main.astro';
+
+import FeatureImage from '../components/FeatureImage.astro';
+import TwoImageSection from '../components/TwoImageSection.astro';
+import QuoteSection from '../components/QuoteSection.astro';
+import AboutSection from '../components/AboutSection.astro';
+import Separator from '../components/Separator.astro';
+import PageHeading from '../components/PageHeading.astro';
+import MenuImage from '../components/MenuImage.astro';
+import MenuLinks from '../components/MenuLinks.astro';
+import BookingForm from '../components/client/BookingForm';
+import MapComponent from '../components/Map.astro';
+import ContactInfo from '../components/ContactInfo.astro';
+import ReservationsBanner from '../components/ReservationsBanner.astro';
+
+import * as data from '@brand/content';
+import { getAllPages, resolveComponentProps } from '@/libs/utils/routing';
+
+const componentMap = {
+  FeatureImage,
+  TwoImageSection,
+  QuoteSection,
+  AboutSection,
+  Separator,
+  PageHeading,
+  MenuImage,
+  MenuLinks,
+  BookingForm,
+  Map: MapComponent,
+  ContactInfo,
+  ReservationsBanner
+};
+
+export const getStaticPaths = (() => {
+  const allPages = getAllPages(data.pages);
+
+  return allPages.map(page => {
+    const path = page.slug === '/' ? undefined : page.slug.slice(1);
+
+    return {
+      params: {
+        path
+      },
+      props: {
+        page
+      }
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+
+if (!page) {
+  return Astro.redirect('/404');
+}
+
+const components = page.components.map(config => resolveComponentProps(config));
+---
+
+<style>
+  .error-message {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .success-message {
+    background-color: #d1fae5;
+    border: 1px solid #34d399;
+    color: #065f46;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<MainLayout
+  content={{
+    title: page.title,
+    description: page.description
+  }}
+  transparentNavigation={page.transparentNavigation}
+>
+  {components.map((block) => {
+    const componentType = block.type as keyof typeof componentMap;
+    const Component = componentMap[componentType];
+    if (!Component) {
+      console.warn(`Unknown component type: ${block.type}`);
+      return null;
+    }
+
+    if (block.type === 'BookingForm') {
+      return (
+        <div class="page-container">
+          <section class="booking-form">
+            <div>
+              <BookingForm client:load />
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    return <Component {...block as any} />;
+  })}
+</MainLayout>

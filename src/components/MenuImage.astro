@@ -1,0 +1,34 @@
+---
+import { Picture } from "astro:assets";
+
+interface Props {
+  image: any;
+  alt: string;
+}
+
+const { image, alt } = Astro.props;
+---
+
+<style>
+  .menu-image {
+    filter: brightness(0.6);
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    object-position: center;
+  }
+</style>
+
+<div>
+  <div class="feature-image-container">
+    <Picture
+      src={image}
+      widths={[768, 1080, 1920]}
+      formats={['avif', 'webp']}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      class="menu-image"
+    />
+  </div>
+</div>

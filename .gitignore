@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# generated config
+tsconfig.json
+
 # dependencies
 node_modules/
 
@@ -25,3 +28,6 @@ pnpm-debug.log*
 
 # netlify generated config
 .netlify/
+
+# ai temp files
+claude/

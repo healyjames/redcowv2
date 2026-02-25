@@ -1,0 +1,22 @@
+---
+interface Props {
+  heading: string;
+  paragraphs?: string[];
+  className?: string;
+}
+
+const { heading, paragraphs = [], className = 'page-heading' } = Astro.props;
+---
+
+<div class="page-container">
+  <section class={className}>
+    <div class="section-inner">
+      <div>
+        <h1>{heading}</h1>
+        {paragraphs.map(paragraph => (
+          <p set:html={paragraph} />
+        ))}
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChartNoAxesColumn as Menu, X } from "lucide-react";
-import { mainNavigation, socialLinks, businessInfo } from "@/assets/redcow/content/data";
+import { mainNavigation, socialLinks, businessInfo } from "@brand/content";
 import "./MobileNavigation.css";
 
 interface MobileNavProps {

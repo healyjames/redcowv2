@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import type { FormData } from "@/libs/types/constants";
+import type { FormData } from "@/libs/types";
 import { generateEmailHTML } from "@/libs/email/generateEmailHtml";
 import {
     SMTP_HOST,
@@ -42,7 +42,7 @@ export const sendEmailWithSMTP = async (data: FormData) => {
         from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
         to: SMTP_ADMIN_EMAIL,
         replyTo: email,
-        subject: `New Booking: ${data.date} (x${data.guests})`,
+        subject: `New Room Booking: ${data.date} (x${data.guests})`,
         text: `New Booking from ${firstname} ${surname} for ${date}. Contact: ${email}`,
         html: generateEmailHTML(data),
     });
