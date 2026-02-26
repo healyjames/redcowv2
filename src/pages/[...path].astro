@@ -14,6 +14,7 @@ import BookingForm from '../components/client/BookingForm';
 import MapComponent from '../components/Map.astro';
 import ContactInfo from '../components/ContactInfo.astro';
 import ReservationsBanner from '../components/ReservationsBanner.astro';
+import SimpleContent from '../components/SimpleContent.astro';
 
 import * as data from '@brand/content';
 import { getAllPages, resolveComponentProps } from '@/libs/utils/routing';
@@ -30,7 +31,8 @@ const componentMap = {
   BookingForm,
   Map: MapComponent,
   ContactInfo,
-  ReservationsBanner
+  ReservationsBanner,
+  SimpleContent
 };
 
 export const getStaticPaths = (() => {
