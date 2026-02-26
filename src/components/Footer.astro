@@ -111,6 +111,9 @@ const currentYear = new Date().getFullYear();
     color: #ffffff;
     margin: 0;
     font-size: 0.875rem;
+    a:hover {
+      border-bottom: 1px solid #ffffff;
+    }
   }
 
   @media (min-width: 768px) {
@@ -121,7 +124,9 @@ const currentYear = new Date().getFullYear();
     }
 
     .footer-legal {
-      text-align: left;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
     }
 
     .footer-logo-wrapper {
@@ -196,5 +201,6 @@ const currentYear = new Date().getFullYear();
 
   <section class="footer-legal">
     <p>© {businessInfo.name} {currentYear} - All Rights Reserved</p>
+    <p>Site by <a href="https://www.jameshealy.co.uk" target="_blank">James Healy</a></p>
   </section>
 </footer>

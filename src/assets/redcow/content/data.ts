@@ -77,15 +77,16 @@ export const footerNavigation = {
     { text: "About", href: "/about" },
   ],
   menu: [
-    { text: "Lunch", href: "/menus/lunch.pdf" },
-    { text: "Evening", href: "/menus/main.pdf" },
-    { text: "Sunday Lunch", href: "/menus/sunday.pdf" },
-    { text: "Wine List", href: "/menus/wine.pdf" },
+    { text: "Lunch", href: "/menus/menu.pdf" },
+    { text: "Evening", href: "/menus/menu.pdf" },
+    { text: "Sunday Lunch", href: "/menus/sunday-lunch-menu.pdf" },
+    { text: "Wine List", href: "/menus/wine-list.pdf" },
   ],
   other: [
     { text: "Rooms", href: "/rooms" },
     { text: "Events", href: "/events" },
     { text: "Contact", href: "/contact" },
+    { text: "Local Area", href: "/things-to-do" },
   ],
 };
 
@@ -254,6 +255,85 @@ export const pages: Page[] = [
         heading: 'The Byre Suite',
         paragraphs: ["The Byre Suite is our private and truly unique event space, designed to bring people together in comfort and style. Whether you're hosting an intimate gathering, a milestone celebration, or a professional event, the Byre offers the perfect balance of charm and sophistication. With its warm character, beautiful décor, and inviting atmosphere, it provides a memorable backdrop for any occasion."],
         className: 'events-heading'
+      }
+    ]
+  },
+  {
+    name: 'Things To Do',
+    slug: '/things-to-do',
+    title: 'Things To Do | The Red Cow',
+    description: 'Discover attractions and activities near The Red Cow Nantwich. Explore historic sites, local shops, outdoor activities, and nearby destinations in Cheshire and beyond.',
+    components: [
+      {
+        type: 'PageHeading',
+        heading: 'Things To Do',
+        paragraphs: ['Discover the best attractions and activities near The Red Cow in Nantwich.'],
+        className: 'things-to-do-heading'
+      },
+      {
+        type: 'Separator'
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Local Highlights & Attractions',
+        headingLevel: 'h3',
+        text: 'Explore Nantwich town centre — lovely independent shops along Pepper Street, The Square, Hospital Street & Pillory Street.'
+      },
+      {
+        type: 'SimpleContent',
+        heading: "St. Mary's Church",
+        headingLevel: 'h3',
+        text: "A Grade I listed medieval church known as the 'Cathedral of South Cheshire,' just a short walk from the pub."
+      },
+      {
+        type: 'SimpleContent',
+        heading: "Chatwin's Bakery",
+        headingLevel: 'h3',
+        text: '<a class="link" href="https://www.chatwins.co.uk/">Chatwins Iconic local bakery</a> with delicious cakes, pastries and the much-loved pork & apple pasty; shops on Pepper Street & The Square.'
+      },
+      {
+        type: 'SimpleContent',
+        heading: "Snugbury's Ice Cream Shop",
+        headingLevel: 'h3',
+        text: 'Famous ice cream with around 55 flavours located just outside Nantwich (Park Farm, Hurleston).',
+        cta: {
+          text: 'Learn more',
+          href: 'https://snugburys.co.uk/'
+        }
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Hack Green Secret Nuclear Bunker',
+        headingLevel: 'h3',
+        text: 'A large underground Cold War era bunker turned museum experience.',
+        cta: {
+          text: 'Find out more',
+          href: 'https://www.hackgreen.co.uk'
+        }
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Reaseheath Mini Zoo',
+        headingLevel: 'h3',
+        text: '<a class="link" href="https://www.reaseheath.ac.uk/mini-zoo/">Reaseheath mini zoo</a> has species from around the world, keeper talks, and zoo experiences.'
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Nantwich Museum',
+        headingLevel: 'h3',
+        text: '<a class="link" href="https://www.nantwichmuseum.org.uk/">Nantwich Museum</a> is a local history museum with trails and information about the town\'s past (located on Pillory Street).'
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Outdoor Activities & Walks',
+        headingLevel: 'h3',
+        text: 'Walks around Nantwich Lake, Delamere Forest, the canal and marina, and other scenic spots.'
+      },
+      {
+        type: 'SimpleContent',
+        heading: 'Further Afield / Day Trips',
+        headingLevel: 'h3',
+        text: 'Chester, <a class="link" href="https://www.chesterzoo.org" target="_blank" rel="noopener noreferrer">Chester Zoo</a>, <a class="link" href="https://www.blueplanetaquarium.com" target="_blank" rel="noopener noreferrer">Blue Planet Aquarium</a>, Cheshire Oaks Shopping, Stoke on Trent – Potteries, and day trips to Liverpool / Manchester.'
       }
     ]
   },

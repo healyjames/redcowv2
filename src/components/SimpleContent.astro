@@ -1,0 +1,41 @@
+---
+interface Props {
+  heading: string;
+  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  text: string | string[];
+  cta?: {
+    text: string;
+    href: string;
+  };
+  className?: string;
+}
+
+const {
+  heading,
+  headingLevel = 'h2',
+  text,
+  cta,
+  className = 'simple-content'
+} = Astro.props;
+
+const HeadingTag = headingLevel;
+const paragraphs = Array.isArray(text) ? text : [text];
+---
+
+<section class={className}>
+  <div class="section-inner">
+    <div>
+      <HeadingTag>{heading}</HeadingTag>
+      {paragraphs.map(paragraph => (
+        <p set:html={paragraph} />
+      ))}
+      {cta && (
+        <div class="cta-container">
+          <a class="btn btn-primary" href={cta.href}>
+            {cta.text}
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

@@ -133,6 +133,18 @@ export interface ReservationsBannerConfig {
   type: 'ReservationsBanner';
 }
 
+export interface SimpleContentConfig {
+  type: 'SimpleContent';
+  heading: string;
+  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  text: string | string[];
+  cta?: {
+    text: string;
+    href: string;
+  };
+  className?: string;
+}
+
 export type ComponentConfig =
   | FeatureImageConfig
   | TwoImageSectionConfig
@@ -145,7 +157,8 @@ export type ComponentConfig =
   | BookingFormConfig
   | MapConfig
   | ContactInfoConfig
-  | ReservationsBannerConfig;
+  | ReservationsBannerConfig
+  | SimpleContentConfig;
 
 // -- Other --
 export interface RouteConfig {
