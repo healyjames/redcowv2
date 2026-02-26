@@ -77,10 +77,10 @@ export const footerNavigation = {
     { text: "About", href: "/about" },
   ],
   menu: [
-    { text: "Lunch", href: "/menus/lunch.pdf" },
-    { text: "Evening", href: "/menus/main.pdf" },
-    { text: "Sunday Lunch", href: "/menus/sunday.pdf" },
-    { text: "Wine List", href: "/menus/wine.pdf" },
+    { text: "Lunch", href: "/menus/menu.pdf" },
+    { text: "Evening", href: "/menus/menu.pdf" },
+    { text: "Sunday Lunch", href: "/menus/sunday-lunch-menu.pdf" },
+    { text: "Wine List", href: "/menus/wine-list.pdf" },
   ],
   other: [
     { text: "Rooms", href: "/rooms" },
