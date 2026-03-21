@@ -2,6 +2,7 @@
 import "../assets/global.css";
 import "@brand/styles/theme.css";
 import favicon from "@brand/favicon.svg";
+import { SMTP_FROM_NAME } from "astro:env/server";
 
 const { content } = Astro.props;
 ---
@@ -13,7 +14,7 @@ const { content } = Astro.props;
     <meta name="description" content={content.description}>
     <link rel="icon" type="image/svg+xml" href={favicon.src} />
     <link rel="sitemap" href="/sitemap-0.xml" />
-    <title>{content.title} | The Red Cow</title>
+    <title>{content.title}{SMTP_FROM_NAME ? ` | ${SMTP_FROM_NAME}` : ''}</title>
   </head>
   <body>
     <slot /> 

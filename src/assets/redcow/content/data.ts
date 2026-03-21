@@ -131,7 +131,7 @@ export const pages: Page[] = [
   {
     name: 'Home',
     slug: '/',
-    title: 'Home | The Red Cow',
+    title: 'Home',
     description: 'Welcome to The Red Cow Nantwich - our treasured 15th Century Old Coaching Inn located in the historic town of Nantwich, in the heart of Cheshire.',
     transparentNavigation: true,
     components: [
@@ -187,7 +187,7 @@ export const pages: Page[] = [
   {
     name: 'About',
     slug: '/about',
-    title: 'About | The Red Cow',
+    title: 'About',
     description: 'Learn more about The Red Cow Nantwich, a historic 15th Century Coaching Inn in the heart of Cheshire. Meet the passionate team behind our exceptional hospitality and cuisine.',
     components: [
       {
@@ -208,7 +208,7 @@ export const pages: Page[] = [
   {
     name: 'Menu',
     slug: '/menu',
-    title: 'Menu | The Red Cow',
+    title: 'Menu',
     description: 'Explore the diverse and delicious menus at The Red Cow Nantwich. From hearty pub classics to seasonal specials, our offerings are crafted with fresh, local ingredients to satisfy every palate.',
     components: [
       {
@@ -236,7 +236,7 @@ export const pages: Page[] = [
   {
     name: 'Contact',
     slug: '/contact',
-    title: 'Contact | The Red Cow',
+    title: 'Contact',
     description: 'Get in touch with us. Find our contact details, location, and opening hours for our beautiful pub.',
     components: [
       {
@@ -247,7 +247,7 @@ export const pages: Page[] = [
   {
     name: 'Events',
     slug: '/events',
-    title: 'Events - Byre Suite | The Red Cow',
+    title: 'Events - Byre Suite',
     description: 'The Red Cow can host many different events using its Byre events space. Get in touch to find out more.',
     components: [
       {
@@ -261,7 +261,7 @@ export const pages: Page[] = [
   {
     name: 'Things To Do',
     slug: '/things-to-do',
-    title: 'Things To Do | The Red Cow',
+    title: 'Things To Do',
     description: 'Discover attractions and activities near The Red Cow Nantwich. Explore historic sites, local shops, outdoor activities, and nearby destinations in Cheshire and beyond.',
     components: [
       {
@@ -340,7 +340,7 @@ export const pages: Page[] = [
   {
     name: 'Rooms',
     slug: '/rooms',
-    title: 'Rooms | The Red Cow',
+    title: 'Rooms',
     description: 'Stay at The Red Cow. Take the weight off your feet and rest up in one our our beautiful B&B rooms.',
     transparentNavigation: true,
     components: [
