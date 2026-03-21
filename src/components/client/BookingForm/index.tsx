@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { CircleCheck } from "lucide-react";
 import type { FormData, FormErrors } from "@/libs/types";
 import { rooms } from "@brand/content";
 import "./BookingForm.css";
+
+const CircleCheckIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="m9 12 2 2 4-4"/>
+  </svg>
+);
 
 export default function BookingCalendarForm() {
     const [selectedDate, setSelectedDate] = useState<string>("");
@@ -188,7 +194,7 @@ export default function BookingCalendarForm() {
             {submitStatus === "success" && (
             <div className="success-message message" role="status">
                 <div className="success-header message-header">
-                    <CircleCheck />
+                    <CircleCheckIcon />
                     <h4>Thank you!</h4>
                 </div>
                 <div className="success-body message-body">
@@ -209,7 +215,7 @@ export default function BookingCalendarForm() {
             {submitStatus === "error" && (
             <div className="error-message message" role="alert">
                 <div className="error-header message-header">
-                    <CircleCheck />
+                    <CircleCheckIcon />
                     <h4>Something went wrong...</h4>
                 </div>
                 <div className="error-body message-body">

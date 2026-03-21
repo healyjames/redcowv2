@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
-import { ChartNoAxesColumn as Menu, X } from "lucide-react";
 import { mainNavigation, socialLinks, businessInfo } from "@brand/content";
 import "./MobileNavigation.css";
+
+const MenuIcon = ({ size = 24, style }: { size?: number; style?: React.CSSProperties }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <line x1="18" x2="18" y1="20" y2="10"/>
+    <line x1="12" x2="12" y1="20" y2="4"/>
+    <line x1="6" x2="6" y1="20" y2="14"/>
+  </svg>
+);
+
+const CloseIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 6 6 18"/>
+    <path d="m6 6 12 12"/>
+  </svg>
+);
 
 interface MobileNavProps {
     transparent?: boolean;
@@ -36,9 +50,9 @@ export default function MobileNav({ transparent }: MobileNavProps) {
                   aria-label="Toggle menu"
               >
                   {open ? (
-                      <X size={28} />
+                      <CloseIcon size={28} />
                   ) : (
-                      <Menu size={28} style={{ transform: "rotate(-90deg)" }} />
+                      <MenuIcon size={28} style={{ transform: "rotate(-90deg)" }} />
                   )}
               </button>
           </div>
