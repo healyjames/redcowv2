@@ -1,5 +1,5 @@
 import { defineConfig, envField } from "astro/config";
-import netlify from "@astrojs/netlify";
+import cloudflare from "@astrojs/cloudflare";
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import path from "node:path";
@@ -10,7 +10,13 @@ const brand = process.env.PUBLIC_BRAND;
 
 export default defineConfig({
     vite: {
-        plugins: [],
+        plugins: [
+            cloudflare({
+                config: () => ({
+                compatibility_flags: ["nodejs_compat"]
+                })
+            })
+        ],
         resolve: {
             alias: {
                 "@": path.resolve("./src"),
@@ -22,7 +28,7 @@ export default defineConfig({
     site: process.env.PUBLIC_SITE_URL,
     integrations: [react(), sitemap()],
     output: "static",
-    adapter: netlify(),
+    adapter: cloudflare(),
 
     env: {
         schema: {
