@@ -1,3 +1,5 @@
+import { ALLOWED_ORIGINS as ALLOWED_ORIGINS_ENV } from "astro:env/server";
+
 const BLOCKED_UA_LIST = [
     "GPTBot",
     "GPT-4o",
@@ -22,16 +24,11 @@ export function isUserAgentBlocked(ua?: string | null) {
     return BLOCKED_UA_LIST.some((frag) => lower.includes(frag.toLowerCase()));
 }
 
-export const ALLOWED_ORIGINS = (import.meta.env.ALLOWED_ORIGINS ?? "")
-    .split(",")
+const allowedOrigins = ALLOWED_ORIGINS_ENV.split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
-if (!ALLOWED_ORIGINS.length) {
-    throw new Error("ALLOWED_ORIGINS not set");
-}
-
 export function isOriginAllowed(origin?: string | null) {
     if (!origin) return false;
-    return ALLOWED_ORIGINS.includes(origin);
+    return allowedOrigins.includes(origin);
 }

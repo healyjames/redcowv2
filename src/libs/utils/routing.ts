@@ -1,11 +1,7 @@
 import type { ComponentConfig, Page } from '@/libs/types';
+import { PUBLIC_BRAND as brand } from "astro:env/client";
 
-const brand = import.meta.env.PUBLIC_BRAND;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
-
-if (!brand) {
-  throw new Error('PUBLIC_BRAND env var not set');
-}
 
 export function loadImage(path: string) {
   const image = images[`/src/assets/${brand}/images/${path}`];

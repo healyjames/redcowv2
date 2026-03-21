@@ -30,14 +30,6 @@ export const sendEmailWithSMTP = async (data: FormData) => {
         date,
     } = data;
 
-    console.log("SMTP_HOST:", import.meta.env.SMTP_HOST);
-    console.log("SMTP_PORT:", import.meta.env.SMTP_PORT);
-    console.log("Environment check:", {
-        host: import.meta.env.SMTP_HOST || "MISSING",
-        port: import.meta.env.SMTP_PORT || "MISSING",
-        user: import.meta.env.SMTP_USER || "MISSING",
-    });
-
     const info = await transporter.sendMail({
         from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
         to: SMTP_ADMIN_EMAIL,
