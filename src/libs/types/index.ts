@@ -145,6 +145,10 @@ export interface SimpleContentConfig {
   className?: string;
 }
 
+export interface BookingIframeConfig {
+  type: 'BookingIframe';
+}
+
 export type ComponentConfig =
   | FeatureImageConfig
   | TwoImageSectionConfig
@@ -158,7 +162,8 @@ export type ComponentConfig =
   | MapConfig
   | ContactInfoConfig
   | ReservationsBannerConfig
-  | SimpleContentConfig;
+  | SimpleContentConfig
+  | BookingIframeConfig;
 
 // -- Other --
 export interface RouteConfig {

@@ -1,0 +1,21 @@
+---
+import { PUBLIC_BRAND as brand } from "astro:env/client";
+---
+<style>
+  iframe {
+    height: 100vh;
+    width: 80%;
+    border-radius: 10px;
+  }
+  .iframe-container {
+    display: flex;
+    justify-content: center;
+  }
+</style>
+<section class="reservations-iframe">
+  <div class="section-inner iframe-container">
+    <iframe
+      src={`https://maximum-bookings.jameshealydesign.workers.dev/?tenant=${brand}`}
+    />
+  </div>
+</section>
