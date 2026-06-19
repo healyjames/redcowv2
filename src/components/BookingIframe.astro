@@ -3,9 +3,20 @@ import { PUBLIC_BRAND as brand } from "astro:env/client";
 ---
 <style>
   iframe {
-    height: 100vh;
-    width: 80%;
+    height: 350px;
     border-radius: 10px;
+  }
+  @media (min-width: 768px) {
+    iframe {
+      height: 445px;
+      width: 475px;
+    }
+  }
+  @media (min-width: 1200px) {
+    iframe {
+      height: 600px;
+      width: 675px;
+    }
   }
   .iframe-container {
     display: flex;
@@ -15,7 +26,7 @@ import { PUBLIC_BRAND as brand } from "astro:env/client";
 <section class="reservations-iframe">
   <div class="section-inner iframe-container">
     <iframe
-      src={`https://maximum-bookings.jameshealydesign.workers.dev/?tenant=${brand}`}
+      src={`https://maximum-bookings.jameshealydesign.workers.dev/?tenant=${brand}&user-journey=widget`}
     />
   </div>
 </section>
