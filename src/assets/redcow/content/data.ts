@@ -432,9 +432,9 @@ export const pages: Page[] = [
         ],
         children: [
             {
-                name: "Booking",
+                name: "Book a Room",
                 slug: "/rooms/book",
-                title: "Book a room",
+                title: "Book a Room",
                 description:
                     "Complete the form to book a room at The Red Cow Nantwich. Enjoy a comfortable stay in our charming B&B rooms.",
                 components: [
@@ -455,11 +455,18 @@ export const pages: Page[] = [
                 ],
             },
             {
-                name: "Test Booking",
-                slug: "/rdcn/test-booking",
-                title: "Test Booking",
-                description: "",
+                name: "Book a table",
+                slug: "/reservations",
+                title: "Book a table",
+                description:
+                    "Book your table at The Red Cow Nantwich. Enjoy best of local produce with a menu that changes with the seasons.",
                 components: [
+                    {
+                        type: "SimpleContent",
+                        heading: "Reservations",
+                        headingLevel: "h1",
+                        text: "Book your table at The Red Cow Nantwich. Enjoy best of local produce with a menu that changes with the seasons. <p>Select a date below to make your reservation:</p>",
+                    },
                     {
                         type: "BookingIframe",
                     },
