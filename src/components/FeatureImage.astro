@@ -80,7 +80,7 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
       widths={[768, 1080, 1920]}
       formats={['avif', 'webp']}
       alt={alt}
-      loading="lazy"
+      loading="eager"
       decoding="async"
       class="feature-image"
     />
