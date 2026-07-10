@@ -135,9 +135,9 @@ export interface ReservationsBannerConfig {
 
 export interface SimpleContentConfig {
   type: 'SimpleContent';
-  heading: string;
+  heading?: string;
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-  text: string | string[];
+  text?: string | string[];
   cta?: {
     text: string;
     href: string;
