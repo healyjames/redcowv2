@@ -26,8 +26,8 @@ This document describes everything required to move this Astro whitelabel site o
   - `astro.config.ts` aliases `@brand → src/assets/${brand}` and reads `process.env.PUBLIC_BRAND`.
   - `scripts/setup-tsconfig.js` (run via `npm run setup` before dev/build) writes `tsconfig.json`, and copies `src/assets/<brand>/menus/*.pdf` into `public/menus`.
   - `src/libs/utils/routing.ts` reads `PUBLIC_BRAND` from `astro:env/client` to resolve brand images.
-- The deploy workflow additionally prunes non-target brand asset folders and `sed`-replaces the default brand string (`redcow`) across `src/` before building.
-- **Implication for Cloudflare:** `PUBLIC_BRAND` must be present as a **build-time environment variable** in the Cloudflare Pages build (and in the GitHub Action if we keep building in CI). Nothing about the whitelabel mechanism is Netlify-specific, but it depends on the build environment being configured per brand.
+- The deploy workflow additionally prunes non-target brand asset folders and `sed`-replaces the default brand string (`redcow`) across `src/` before building. **This workflow is being removed** (see Section 7) — these steps are either unnecessary (the `sed` replace) or move into the build (asset scoping).
+- **Implication for Cloudflare:** `PUBLIC_BRAND` must be present as a **build-time environment variable** on each Cloudflare Pages project. Nothing about the whitelabel mechanism is Netlify-specific, but it depends on the build environment being configured per brand.
 
 ---
 
@@ -169,21 +169,32 @@ headers.get("true-client-ip") ||
 
 ---
 
-## 7. CI/CD Changes (`.github/workflow/deploy.yaml`)
+## 7. Deployment — Cloudflare Pages Git Integration (auto-deploy on push to `main`)
 
-Replace the Netlify deploy step. Two viable models:
+**No GitHub Actions CI/CD.** Cloudflare Pages connects directly to the GitHub repo and builds + deploys automatically on every push to `main`. **Delete `.github/workflow/deploy.yaml`** entirely.
 
-**A. Keep building in GitHub Actions, deploy artefact to Cloudflare (closest to current workflow):**
-- Keep the existing brand-theming steps (asset pruning, `sed` replace, `npm ci`, `npm run build`).
-- Ensure `PUBLIC_BRAND` (and `PUBLIC_SITE_URL`) are exported into the build step's env, driven by the `brand` workflow input.
-- Replace the `nwtgck/actions-netlify` step with **`cloudflare/wrangler-action`** running `wrangler pages deploy ./dist --project-name <project>`.
-- Replace secrets: remove `NETLIFY_AUTH_TOKEN` / `NETLIFY_SITE_ID`; add `CLOUDFLARE_API_TOKEN` (Pages edit permission) and `CLOUDFLARE_ACCOUNT_ID`.
-- Server config (`ALLOWED_ORIGINS`, `EMAIL_*` addressing) is set on the Cloudflare Pages project (dashboard or `wrangler pages secret put`), **not** committed. There is **no email API key** to manage — the `send_email` binding replaces it. Ensure the `send_email` binding and the onboarded sending domain exist on the project before first deploy.
+### Setup (per brand)
+This is a whitelabel site, so create **one Cloudflare Pages project per brand**, all connected to the **same repo** with **production branch = `main`**:
+- **Build command:** `npm run build`
+- **Build output directory:** `dist`
+- **Production branch:** `main` → a push to `main` triggers a production deploy for every brand project.
+- **Build environment variables (per project):** `PUBLIC_BRAND` (the brand for that project), `PUBLIC_SITE_URL`, and `NODE_VERSION` (e.g. `20`).
+- **Runtime env vars / secrets (per project):** `ALLOWED_ORIGINS`, `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN`.
+- **Bindings (per project):** the `send_email` binding (`EMAIL`) — declared in `wrangler.toml` and/or under **Settings → Functions → Bindings**.
 
-**B. Let Cloudflare Pages build from Git (Git integration):**
-- Connect the repo in the Cloudflare dashboard; build command `npm run build`, output `dist`.
-- Set `PUBLIC_BRAND`, `PUBLIC_SITE_URL`, and secrets as Pages environment variables.
-- **Caveat:** the current per-brand `sed`/asset-pruning theming happens in the GitHub workflow, not in `npm run build`. If we let Cloudflare build directly, that whitelabel theming logic must be moved into the build (e.g. a `prebuild` script) or handled per-project. Model **A** preserves current behaviour with the least change and is recommended.
+A single push to `main` fans out to all brand projects; each rebuilds with its own `PUBLIC_BRAND`.
+
+### Whitelabel theming without the workflow
+The old `.github/workflow/deploy.yaml` did two brand steps that must now be handled by the build itself:
+
+1. **`sed` replace of `redcow` → brand:** **Not needed for correctness.** Brand selection is already driven by `PUBLIC_BRAND` at build time (`astro.config.ts` `@brand` alias, `scripts/setup-tsconfig.js`, and `src/libs/utils/routing.ts`). The only literal `redcow` occurrences in `src/` are inside the `redcow` **brand asset folder** itself (`src/assets/redcow/content/data.ts`) plus one code comment — each brand has its own `src/assets/<brand>/content/data.ts`, so no cross-file string replacement is required. The `sed` step can be dropped.
+2. **Pruning non-target brand asset folders:** This was a **bundle-size** optimisation, not correctness. Note that `src/libs/utils/routing.ts` uses `import.meta.glob('/src/assets/*/images/*', { eager: true })`, which eagerly bundles **every** brand's images into **every** build. With Git-integration builds (no prune step), each brand deploy would ship all brands' images. **Recommended fix:** scope the glob to the active brand so pruning is unnecessary, e.g. build the glob path from `PUBLIC_BRAND` (or filter the glob result to keys starting with `/src/assets/${brand}/`). If that refactor is deferred, add a `prebuild` npm script that removes other `src/assets/*` folders based on `PUBLIC_BRAND` before `astro build`.
+
+### Preview deployments (optional)
+Pushes to non-`main` branches / PRs produce Cloudflare **preview** deployments automatically. Configure the same build/runtime vars for the "Preview" environment if you want working previews.
+
+### First-deploy prerequisites
+Before the first push-to-deploy: the sending domain must be **onboarded in Email Service** (Section 5a) and the `send_email` binding + `EMAIL_*` vars must exist on each project, otherwise the booking endpoint's emails will fail at runtime.
 
 ---
 
@@ -191,8 +202,8 @@ Replace the Netlify deploy step. Two viable models:
 
 | Variable | Type | Where on Cloudflare |
 |----------|------|---------------------|
-| `PUBLIC_BRAND` | build-time (client) | Pages build env var / CI env (per brand) |
-| `PUBLIC_SITE_URL` | build-time (client) | Pages build env var / CI env |
+| `PUBLIC_BRAND` | build-time (client) | Pages project build env var (per brand) |
+| `PUBLIC_SITE_URL` | build-time (client) | Pages project build env var (per brand) |
 | `ALLOWED_ORIGINS` | runtime (server secret) | Pages project secret / `.dev.vars` |
 | `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` | runtime (server) | Pages env vars / `.dev.vars` (`EMAIL_FROM` must be on the onboarded domain) |
 | `EMAIL` (send_email binding) | runtime binding | `wrangler.toml` `[[send_email]]` + Pages → Functions → Bindings (not `astro:env`) |
@@ -220,7 +231,7 @@ Replace the Netlify deploy step. Two viable models:
 6. [ ] Rewrite email libs to `env.EMAIL.send(...)`; pass the binding from `locals.runtime.env` through the helpers; keep HTML generation.
 7. [ ] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
 8. [ ] Update `.gitignore` (`.wrangler/`, `.dev.vars`; drop `.netlify/`).
-9. [ ] Rewrite the deploy workflow to use `cloudflare/wrangler-action`; swap secrets (no email API key needed).
+9. [ ] **Delete `.github/workflow/deploy.yaml`.** Connect the repo to Cloudflare Pages (one project per brand, production branch `main`); set build command `npm run build`, output `dist`, and per-project build vars, runtime vars, and the `send_email` binding (Section 7).
 10. [ ] Configure Cloudflare Pages project(s), build env vars, runtime `EMAIL_*` vars, and the `send_email` binding per brand.
 11. [ ] `npm run build` locally, then `wrangler pages dev ./dist` to smoke-test the booking endpoint + emails.
 12. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
@@ -234,7 +245,8 @@ Replace the Netlify deploy step. Two viable models:
 |------|--------|------|
 | Adapter swap + `wrangler.toml` | Low | Low |
 | Email migration (nodemailer → Cloudflare Email Service `send_email` binding) | **Medium** | **Medium** (domain onboarding + deliverability + arbitrary-recipient rule) |
-| CI/CD workflow rewrite | Low–Medium | Low |
+| Deployment via Pages Git integration (delete GH Actions workflow) | Low | Low |
+| Whitelabel: scope image glob to active brand (replaces prune step) | Low–Medium | Medium (bundle size / build config per brand) |
 | Rate limiter runtime fix (+ optional KV) | Low (Medium if KV) | Low |
 | Client IP header reorder | Low | Low |
 | Whitelabel build env wiring | Low | Medium (must set `PUBLIC_BRAND` per brand build) |
