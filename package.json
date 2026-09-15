@@ -25,6 +25,7 @@
     },
     "devDependencies": {
         "@types/nodemailer": "^7.0.5",
-        "dotenv": "^16.4.5"
+        "dotenv": "^16.4.5",
+        "wrangler": "^4.131.2"
     }
 }
