@@ -42,26 +42,26 @@ export const businessInfo: BusinessInfo = {
 };
 
 export const openingHours: OpeningHoursDay[] = [
-  {
-    day: "Monday",
-    barHours: "Closed",
-    foodHours: "Closed",
-  },
-  {
-    day: "Tue - Thur",
-    barHours: "12 noon - 11pm",
-    foodHours: "12 noon - 8pm",
-  },
-  {
-    day: "Fri - Sat",
-    barHours: "12 noon - Late",
-    foodHours: "12 noon - 9pm",
-  },
-  {
-    day: "Sunday",
-    barHours: "12 noon - 6pm",
-    foodHours: "12 noon - 4pm",
-  },
+    {
+        day: "Monday",
+        barHours: "12 noon - 10pm",
+        foodHours: "12 noon - 7pm",
+    },
+    {
+        day: "Tue - Thur",
+        barHours: "12 noon - 11pm",
+        foodHours: "12 noon - 8pm",
+    },
+    {
+        day: "Fri - Sat",
+        barHours: "12 noon - Late",
+        foodHours: "12 noon - 9pm",
+    },
+    {
+        day: "Sunday",
+        barHours: "12 noon - 6pm",
+        foodHours: "12 noon - 4pm",
+    },
 ];
 
 export const mainNavigation: NavigationLink[] = [
@@ -81,6 +81,7 @@ export const footerNavigation = {
         { text: "Lunch", href: "/menus/menu.pdf" },
         { text: "Evening", href: "/menus/menu.pdf" },
         { text: "Sunday Lunch", href: "/menus/sunday-lunch-menu.pdf" },
+        { text: "Festive Menu", href: "/menus/festive-menu.pdf" },
         { text: "Wine List", href: "/menus/wine-list.pdf" },
     ],
     other: [
@@ -238,6 +239,10 @@ export const pages: Page[] = [
                     {
                         text: "Sunday Menu",
                         href: "/menus/sunday-lunch-menu.pdf",
+                    },
+                    {
+                        text: "Festive Menu",
+                        href: "/menus/festive-menu.pdf",
                     },
                     { text: "Wine Menu", href: "/menus/wine-list.pdf" },
                 ],
