@@ -1,4 +1,4 @@
-import type { FormData } from "@/libs/types/constants";
+import type { FormData } from "@/libs/types";
 
 export function adminBookingHtml(data: FormData) {
     return `
