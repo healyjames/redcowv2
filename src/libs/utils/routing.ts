@@ -1,6 +1,6 @@
 import type { ComponentConfig, Page } from '@/libs/types';
 
-const images = import.meta.glob<{ default: ImageMetadata }>('@brand/images/*.{jpg,jpeg,png,webp,avif,svg}', { eager: true });
+const images = import.meta.glob<{ default: ImageMetadata }>('@brand/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
 
 const imagesByName = new Map(
   Object.entries(images).map(([path, module]) => [path.split('/').pop() ?? path, module.default])

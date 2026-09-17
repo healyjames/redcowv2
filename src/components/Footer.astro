@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import Separator from "../components/Separator.astro";
 import Logo from "@brand/logo/black.svg"
 import { contact, socialLinks, footerNavigation, businessInfo } from "@brand/content";
@@ -171,13 +170,7 @@ const currentYear = new Date().getFullYear();
     
     <div class="footer-logo-wrapper">
       <div>
-        <Image
-          src={Logo}
-          alt="Red Cow Logo"
-          loading="lazy"
-          decoding="async"
-          class="footer-logo"
-        />
+        <Logo class="footer-logo" width={600} height={358} />
       </div>
       <div class="footer-social">
         {socialLinks.map(social => (

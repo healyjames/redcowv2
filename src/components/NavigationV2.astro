@@ -1,6 +1,5 @@
 ---
-import { Image } from "astro:assets";
-import logoEmblem from "@brand/logo/emblem.svg";
+import LogoEmblem from "@brand/logo/emblem.svg";
 ---
 <style>
   .logo-container {
@@ -65,12 +64,7 @@ import logoEmblem from "@brand/logo/emblem.svg";
 </style>
 <div class="logo-container">
   <a href="/" aria-label="Homepage">
-    <Image 
-      src={logoEmblem} 
-      alt="The Red Cow Nantwich Emblem"
-      width="200"
-      class="logo-image"
-    />
+    <LogoEmblem class="logo-image" width={200} />
   </a>
 </div>
 
