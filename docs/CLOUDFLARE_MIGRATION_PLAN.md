@@ -58,11 +58,11 @@ Cloudflare runs your server code on the **Workers runtime** (`workerd`), not Nod
 
 ## 4. Astro Config Changes (`astro.config.ts`) — mostly done
 
-- ✅ Adapter swapped to `import cloudflare from "@astrojs/cloudflare"` / `adapter: cloudflare()`.
+- ✅ Adapter swapped to `import cloudflare from "@astrojs/cloudflare"`, with `configPath` pointing at the active brand's wrangler config (Section 5).
 - ✅ Keep `output: "static"` — only `prerender = false` routes become Worker routes.
 - ✅ Keep the `@brand` / `@` Vite aliases. Note `astro.config.ts` reads `process.env.PUBLIC_BRAND` **at config load**, so `PUBLIC_BRAND` must exist in the *build* environment (see Section 7).
 - ✅ `SMTP_*` dropped from `env.schema`. The Email Service binding is **not** an `astro:env` variable — it is a per-request runtime binding read from `locals.runtime.env.EMAIL`.
-- ⚠️ **Still missing:** `EMAIL_ADMIN`. The schema currently declares `ALLOWED_ORIGINS`, `EMAIL_FROM_NAME` and `EMAIL_FROM` only, but Section 6.1 needs an admin recipient. Add it as a server field.
+- ✅ `EMAIL_ADMIN` added as a server field, alongside `ALLOWED_ORIGINS`, `EMAIL_FROM_NAME` and `EMAIL_FROM`.
 - `access: "secret"` on these fields only tells Astro to read them from the server runtime env rather than inlining them; it does **not** mean they must be stored as Cloudflare secrets. `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` and `ALLOWED_ORIGINS` are non-sensitive brand config and are better placed in per-brand `vars` in the wrangler config (Section 5).
 - `import.meta.env.DEV` (in `clientIp.ts`) is resolved by Vite at build time, so it is unaffected by the runtime change.
 
@@ -90,54 +90,68 @@ The original plan called for `cloudflare({ platformProxy: { enabled: true } })`.
 
 Configuring bindings in the dashboard instead is not a viable alternative: once the Worker is deployed with `wrangler deploy` (which is the default deploy command for Workers Builds), the wrangler config is the source of truth and a deploy overwrites dashboard-side binding edits.
 
-### `wrangler.jsonc` — new file in repo root
+### `src/assets/<brand>/wrangler.jsonc` — one per brand
 
-Use **one Worker per brand, expressed as a wrangler environment**, so the whitelabel config lives in the repo and is reviewable, rather than being duplicated by hand across N dashboard projects. Wrangler config has **no variable interpolation**; `[env.*]` blocks are the supported mechanism for this.
+Use **one config file per brand**, living alongside that brand's other assets, each a standalone Worker definition. Wrangler config has **no variable interpolation**, so the brand list is an explicit set of files rather than anything computed. Keeping it in the brand folder means everything brand-specific — content, images, menus, fonts, and now infrastructure — sits in one directory.
+
+The live example is `src/assets/redcow/wrangler.jsonc`:
 
 ```jsonc
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "venue-site",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "redcow",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "./dist", "binding": "ASSETS" },
-
-  "env": {
-    "redcow": {
-      "vars": {
-        "EMAIL_FROM": "bookings@redcow.example",
-        "EMAIL_FROM_NAME": "The Red Cow",
-        "EMAIL_ADMIN": "manager@redcow.example",
-        "ALLOWED_ORIGINS": "https://redcow.example"
-      },
-      "send_email": [
-        { "name": "EMAIL", "allowed_sender_addresses": ["bookings@redcow.example"] }
-      ],
-      "routes": [{ "pattern": "redcow.example", "custom_domain": true }]
-    },
-
-    "<brand-2>": {
-      "vars": { "EMAIL_FROM": "…", "EMAIL_FROM_NAME": "…", "EMAIL_ADMIN": "…", "ALLOWED_ORIGINS": "…" },
-      "send_email": [{ "name": "EMAIL", "allowed_sender_addresses": ["…"] }],
-      "routes": [{ "pattern": "…", "custom_domain": true }]
-    }
-  }
+  "vars": {
+    "EMAIL_FROM": "info@redcownantwich.co.uk",
+    "EMAIL_FROM_NAME": "The Red Cow",
+    "EMAIL_ADMIN": "info@redcownantwich.co.uk",
+    "ALLOWED_ORIGINS": "https://redcownantwich.co.uk"
+  },
+  "send_email": [
+    { "name": "EMAIL", "allowed_sender_addresses": ["info@redcownantwich.co.uk"] }
+  ],
+  "routes": [{ "pattern": "redcownantwich.co.uk", "custom_domain": true }]
 }
 ```
 
-**Three rules that bite:**
+**Why per-file rather than `[env.*]` blocks:** a wrangler *environment* deploys as `<top-level-name>-<env-name>`, so `env.redcow` would produce a Worker called `venue-site-redcow`, not `redcow`. Separate files give each brand its own top-level `name`, and sidestep the rule that `vars` and bindings are non-inheritable across environments. The cost is repeating `compatibility_date` / `compatibility_flags` per file.
 
-- **Worker naming.** An environment deploys as `<top-level-name>-<env-name>` — the example above produces `venue-site-redcow`. The docs state an environment cannot fully override `name`, so pick a top-level name that reads well when suffixed. Confirm the real target before wiring anything up:
-  ```sh
-  npx wrangler deploy --dry-run --env redcow
-  ```
-- **`vars`, bindings and secrets are non-inheritable.** Nothing falls through from the top level into an environment — every brand block must repeat them in full. Top-level `vars`/`send_email` would apply only to a nameless default deploy.
-- **`PUBLIC_BRAND` does not belong here.** It is inlined at build time, and wrangler `vars` are runtime-only. It must be a *build* variable (Section 7).
+**One variable drives everything.** `astro.config.ts` already reads `PUBLIC_BRAND`, and now passes it to the adapter:
 
-**Selecting a brand locally:** the Cloudflare Vite plugin reads the `CLOUDFLARE_ENV` environment variable at dev and build time. `CLOUDFLARE_ENV=redcow npm run dev` picks that brand's block. It has no effect on `wrangler deploy`, which uses `--env`.
+```ts
+adapter: cloudflare({
+    configPath: `./src/assets/${brand}/wrangler.jsonc`,
+}),
+```
+
+So `PUBLIC_BRAND` selects the asset alias, the tsconfig/menu setup, *and* the Worker config — no second `CLOUDFLARE_ENV` variable to keep in sync.
+
+> ⚠️ **`configPath` must be a relative path.** The adapter resolves it with `new URL(configPath, config.root)` (`dist/index.js` ~line 332). On Windows an absolute path such as `C:\…` from `path.resolve()` is parsed as URL scheme `c:` and the build dies with *"The URL must be of scheme file"* during the `astro:config:setup` hook. Use forward slashes and a leading `./`.
+
+**Why a non-root location is safe here:** wrangler resolves relative paths *inside* a config file against that file's own directory, but this config has none — `main` is a bare package specifier injected by the adapter, and there is no `assets.directory`. The only path that needed adjusting was `$schema`.
+
+**Do not hand-write `main` or `assets`.** Verified in `node_modules/@astrojs/cloudflare/dist/wrangler.js`: the adapter's config customizer fills in `main: "@astrojs/cloudflare/entrypoints/server"`, `assets.binding: "ASSETS"`, a default `compatibility_date`, a `SESSION` KV binding and an `IMAGES` binding whenever they are absent, and appends `nodejs_als` unless an ALS-capable flag (`nodejs_compat` counts) is already present. Duplicating those by hand just risks drift.
+
+Consequence: a brand config is **not independently deployable** as written — the auto-filled fields are injected by the Vite plugin at build time, so `wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc` alone fails with *"Missing entry-point to Worker script or to assets directory"*. `@cloudflare/vite-plugin` writes each Worker to its own `dist/` subdirectory with a generated `wrangler.json`. **Confirm the correct deploy command against a successful build** before configuring Workers Builds.
+
+**Validating a brand file** without a full build — supply throwaway assets to satisfy the entry-point check:
+
+```sh
+npx wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc --assets ./public
+```
+
+This prints the resolved bindings; `src/assets/redcow/wrangler.jsonc` has been confirmed to produce `env.EMAIL` (Send Email, senders restricted to `info@redcownantwich.co.uk`) plus the four `vars`.
+
+**`PUBLIC_BRAND` does not belong in this file.** It is inlined at build time, and wrangler `vars` are runtime-only. It must be a *build* variable (Section 7).
 
 Confirm the final bundle no longer pulls in `nodemailer` before relying on `nodejs_compat`.
+
+### Adding a brand
+
+1. Copy `src/assets/redcow/wrangler.jsonc` → `src/assets/<brand>/wrangler.jsonc`; set `name`, `vars`, `allowed_sender_addresses` and `routes`.
+2. Onboard that brand's sending domain in Email Service (Section 5a).
+3. Create a Worker in Workers Builds with build variable `PUBLIC_BRAND=<brand>` (Section 7).
 
 > **Restriction note:** A binding with **no** `destination_address` / `allowed_destination_addresses` can send to any *verified destination address* **before** domain onboarding, and to **any** recipient **after** the sending domain is onboarded. Because the booking flow emails **arbitrary customer addresses** (the confirmation email), the sending domain **must be onboarded** (see Section 5a) — do **not** lock the binding to a fixed `destination_address`. `allowed_sender_addresses` (shown above) constrains the *from* address only and is safe to use.
 
@@ -148,7 +162,7 @@ The booking endpoint sends **two** emails: an **admin notification** (fixed inte
 **One-time setup (per brand / sending domain):**
 1. In the Cloudflare dashboard, open **Email Service** and **onboard the sending domain** (add the required SPF/DKIM/DMARC DNS records and verify). The domain **must be on Cloudflare DNS**. This is mandatory to email arbitrary customer addresses — without onboarding you can only send to individually *verified destination addresses*, which is fine for the admin email but **not** for customer confirmations.
 2. Ensure the `from` address (`EMAIL_FROM`) belongs to that onboarded domain.
-3. Add the `send_email` binding to the brand's environment block in `wrangler.jsonc` (Section 5). There is no dashboard equivalent for this binding.
+3. Add the `send_email` binding to that brand's `src/assets/<brand>/wrangler.jsonc` (Section 5). There is no dashboard equivalent for this binding.
 4. Be aware of platform limits: up to **50 recipients** combined across `to`/`cc`/`bcc` per message, **5 MiB** max message size, and a **conservative starting daily quota** that grows with good sending reputation (request increases via support if needed).
 
 **Binding API (used in the rewritten email libs):**
@@ -176,7 +190,7 @@ const { messageId } = await env.EMAIL.send({
 - Keep `dist/`, `.astro/`, `tsconfig.json` entries.
 
 ### `.dev.vars` (local secrets, git-ignored)
-Cloudflare's local equivalent of `.env` for server values during local development. With per-brand `vars` in `wrangler.jsonc` this is now only needed for values that must *not* be committed; use `.dev.vars.<env>` to override a specific brand. See Section 9 for how the email binding behaves locally.
+Cloudflare's local equivalent of `.env` for server values during local development. With per-brand `vars` committed in each brand's wrangler config, this is now only needed for values that must *not* be committed. See Section 9 for how the email binding behaves locally.
 
 ---
 
@@ -213,7 +227,7 @@ headers.get("true-client-ip") ||
 `src/libs/utils/rateLimiter.ts` uses a module-level `Map` + top-level `setInterval`. On the Workers runtime:
 - Top-level `setInterval` is not supported the same way and global state is per-isolate and non-durable, so limits are best-effort only (this is already true on Netlify Functions).
 - Remove the top-level `setInterval` (do lazy cleanup inside `checkRateLimit`) to avoid runtime warnings/errors.
-- For real distributed rate limiting, back it with **Cloudflare KV** (or the Rate Limiting binding / Durable Objects) and add the binding to **each** brand's `env.<brand>` block in `wrangler.jsonc` — bindings are not inherited from the top level. Optional but recommended for production.
+- For real distributed rate limiting, back it with **Cloudflare KV** (or the Rate Limiting binding / Durable Objects) and add the binding to **every** `src/assets/<brand>/wrangler.jsonc`. Optional but recommended for production.
 
 ### 6.4 `robots.txt` endpoint
 `src/pages/robots.txt.ts` uses only the standard `site` object — no change needed.
@@ -225,23 +239,23 @@ headers.get("true-client-ip") ||
 **No GitHub Actions CI/CD.** Cloudflare **Workers Builds** connects each Worker directly to the GitHub repo and builds + deploys on every push to `main`. **Delete `.github/workflow/deploy.yaml`** entirely.
 
 ### Setup (per brand)
-Create **one Worker per brand**, each connected to the **same repo** with **production branch = `main`**, and each pointed at its own wrangler environment. Under the Worker's **Settings → Build**:
+Create **one Worker per brand**, each connected to the **same repo** with **production branch = `main`**. Under the Worker's **Settings → Build**:
 
-| Setting | Value |
+| Setting | Value (for `redcow`) |
 |---|---|
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy --env <brand>` |
+| Deploy command | `npx wrangler deploy -c src/assets/redcow/wrangler.jsonc` ⚠️ unconfirmed — see Section 5 |
 | Production branch | `main` |
-| Build variables | `PUBLIC_BRAND=<brand>`, `PUBLIC_SITE_URL=…`, `NODE_VERSION=20` |
+| Build variables | `PUBLIC_BRAND=redcow`, `PUBLIC_SITE_URL=https://redcownantwich.co.uk`, `NODE_VERSION=20` |
 
-The deploy command's `--env` flag is what makes one repo fan out into N differently-configured Workers. A single push to `main` triggers every connected Worker; each rebuilds with its own `PUBLIC_BRAND` and deploys with its own `vars`, `send_email` binding and routes from `wrangler.jsonc`.
+`PUBLIC_BRAND` is the only thing that differs structurally: it selects the brand assets at build time *and*, via `configPath` in `astro.config.ts`, the matching `src/assets/<brand>/wrangler.jsonc`. A single push to `main` triggers every connected Worker; each rebuilds for its own brand and deploys with its own `vars`, `send_email` binding and route.
 
 ### Where each kind of config lives
 
 - **Build variables (dashboard, per Worker):** `PUBLIC_BRAND`, `PUBLIC_SITE_URL`, `NODE_VERSION`. These are build-only and are **not** available at runtime — which is correct, since Astro inlines `PUBLIC_*` into the bundle. They cannot come from wrangler `vars`.
-- **Runtime vars (`wrangler.jsonc`, per environment):** `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN`, `ALLOWED_ORIGINS`. Non-sensitive brand config, better in the repo than duplicated across dashboards.
-- **Bindings (`wrangler.jsonc`, per environment):** `send_email` as `EMAIL`.
-- **Secrets (dashboard or `wrangler secret put --env <brand>`):** none required today. Anything genuinely sensitive added later goes here, never in `wrangler.jsonc`.
+- **Runtime vars (`src/assets/<brand>/wrangler.jsonc`):** `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN`, `ALLOWED_ORIGINS`. Non-sensitive brand config, better in the repo than duplicated across dashboards.
+- **Bindings (`src/assets/<brand>/wrangler.jsonc`):** `send_email` as `EMAIL`.
+- **Secrets (dashboard or `wrangler secret put -c src/assets/<brand>/wrangler.jsonc`):** none required today. Anything genuinely sensitive added later goes here, never in the committed config.
 
 ### Whitelabel theming without the workflow
 The old `.github/workflow/deploy.yaml` did two brand steps that must now be handled by the build itself:
@@ -250,7 +264,7 @@ The old `.github/workflow/deploy.yaml` did two brand steps that must now be hand
 2. **Pruning non-target brand asset folders:** This was a **bundle-size** optimisation, not correctness. Note that `src/libs/utils/routing.ts` uses `import.meta.glob('/src/assets/*/images/*', { eager: true })`, which eagerly bundles **every** brand's images into **every** build. With Git-integration builds (no prune step), each brand deploy would ship all brands' images — and on Workers this counts against the Worker size limit, so it matters more than it did on Netlify. **Recommended fix:** scope the glob to the active brand so pruning is unnecessary, e.g. build the glob path from `PUBLIC_BRAND` (or filter the glob result to keys starting with `/src/assets/${brand}/`). If that refactor is deferred, add a `prebuild` npm script that removes other `src/assets/*` folders based on `PUBLIC_BRAND` before `astro build`.
 
 ### Preview deployments (optional)
-Workers Builds can build non-production branches too. Set the Worker's **non-production branch deploy command** to `npx wrangler versions upload --env <brand>`, which uploads a new version and returns a preview URL without promoting it to production. Confirm the behaviour on the first PR before relying on it.
+Workers Builds can build non-production branches too. Set the Worker's **non-production branch deploy command** to `npx wrangler versions upload -c src/assets/<brand>/wrangler.jsonc`, which uploads a new version and returns a preview URL without promoting it to production. Confirm the behaviour on the first PR before relying on it.
 
 ### First-deploy prerequisites
 Before the first push-to-deploy: the sending domain must be **onboarded in Email Service** (Section 5a), and each brand's environment block must carry its `send_email` binding and `EMAIL_*` vars, otherwise the booking endpoint's emails will fail at runtime.
@@ -263,10 +277,10 @@ Before the first push-to-deploy: the sending domain must be **onboarded in Email
 |----------|------|-----------------|---------|
 | `PUBLIC_BRAND` | build-time | Worker → Settings → Build → **build variables** (per brand) | `astro.config.ts` (`process.env`), `astro:env/client` |
 | `PUBLIC_SITE_URL` | build-time | Worker → Settings → Build → **build variables** (per brand) | `astro.config.ts` (`site`), `astro:env/client` |
-| `ALLOWED_ORIGINS` | runtime | `wrangler.jsonc` → `env.<brand>.vars` | `astro:env/server` |
-| `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` | runtime | `wrangler.jsonc` → `env.<brand>.vars` (`EMAIL_FROM` must be on the onboarded domain) | `astro:env/server` |
-| `EMAIL` (send_email binding) | runtime binding | `wrangler.jsonc` → `env.<brand>.send_email` — **no dashboard option** | `locals.runtime.env.EMAIL` (not `astro:env`) |
-| *(future secrets)* | runtime secret | `npx wrangler secret put <NAME> --env <brand>` or dashboard | `astro:env/server` |
+| `ALLOWED_ORIGINS` | runtime | `src/assets/<brand>/wrangler.jsonc` → `vars` | `astro:env/server` |
+| `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` | runtime | `src/assets/<brand>/wrangler.jsonc` → `vars` (`EMAIL_FROM` must be on the onboarded domain) | `astro:env/server` |
+| `EMAIL` (send_email binding) | runtime binding | `src/assets/<brand>/wrangler.jsonc` → `send_email` — **no dashboard option** | `locals.runtime.env.EMAIL` (not `astro:env`) |
+| *(future secrets)* | runtime secret | `npx wrangler secret put <NAME> -c src/assets/<brand>/wrangler.jsonc` or dashboard | `astro:env/server` |
 | ~~`SMTP_HOST/PORT/SECURE/USER/PASS/FROM_NAME/FROM_EMAIL/ADMIN_EMAIL`~~ | removed | — | replaced by the `send_email` binding + `EMAIL_*` addressing vars |
 
 Two directions the wires cannot cross:
@@ -274,14 +288,14 @@ Two directions the wires cannot cross:
 - `PUBLIC_*` values are **inlined into the bundle at build time**, so they must exist in the *build* environment. Wrangler `vars` are runtime-only and arrive too late.
 - Build variables are **not** available at runtime, so the `EMAIL_*` / `ALLOWED_ORIGINS` values cannot be set there.
 
-Locally, `CLOUDFLARE_ENV=<brand>` selects the wrangler environment, and `PUBLIC_BRAND` comes from `.env` via `dotenv` as it does today.
+Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the wrangler config, via `configPath` in `astro.config.ts`. There is no second brand variable.
 
 ---
 
 ## 9. Local Development
 
 - `npm run dev` runs inside `workerd` via `@cloudflare/vite-plugin` — bindings and `locals.runtime` are real, so the booking endpoint can be exercised without a separate `wrangler dev` step. (This is what replaced `platformProxy`; see Section 4.)
-- Select the brand with `CLOUDFLARE_ENV=<brand> npm run dev`, alongside the `PUBLIC_BRAND` your `.env` already provides. Keep the two in sync or the site will render one brand while emailing as another.
+- The brand comes from `PUBLIC_BRAND` in `.env` — it picks the assets *and* the `src/assets/<brand>/wrangler.jsonc` the dev runtime loads. Nothing else to set.
 - ⚠️ **Email is not emulated.** Cloudflare's docs state that local development against Email Service uses **remote bindings** — the mail is genuinely delivered, not logged. Consequences:
   - Mark the binding `"remote": true` for local use, and note the adapter exposes a `remoteBindings` option (Section 4). Verify the exact wiring on first run.
   - Use a throwaway recipient while testing the customer confirmation path. There is no dry-run mode.
@@ -295,17 +309,18 @@ Locally, `CLOUDFLARE_ENV=<brand>` selects the wrangler environment, and `PUBLIC_
 2. [x] `npm remove @astrojs/netlify`.
 3. [x] `npm install @astrojs/cloudflare` and `npm install -D wrangler @cloudflare/workers-types`.
 4. [ ] `npm remove nodemailer @types/nodemailer` (once Section 6.1 lands — `@types/nodemailer` is still in `package.json`).
-5. [x] Update `astro.config.ts` adapter and drop `SMTP_*` from the `astro:env` schema. **Remaining:** add `EMAIL_ADMIN` (Section 4).
-6. [ ] Add `wrangler.jsonc` with `main`, `assets`, `nodejs_compat`, and one `env.<brand>` block per brand carrying `vars`, `send_email` and `routes` (Section 5). Check the resulting Worker name with `npx wrangler deploy --dry-run --env <brand>`.
-7. [ ] Rewrite email libs to `env.EMAIL.send(...)`; pass the binding from `locals.runtime.env` through the helpers; keep HTML generation.
-8. [ ] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
-9. [ ] Update `.gitignore` (`.wrangler/`, `.dev.vars*`; drop `.netlify/`).
-10. [ ] Scope the `import.meta.glob` in `routing.ts` to the active brand (Section 7) so each Worker ships only its own images.
-11. [ ] **Delete `.github/workflow/deploy.yaml`.**
-12. [ ] Create one **Worker per brand** in Workers Builds, all on the same repo and `main`: build `npm run build`, deploy `npx wrangler deploy --env <brand>`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
-13. [ ] `CLOUDFLARE_ENV=<brand> npm run dev` to smoke-test the booking endpoint + emails — **using a throwaway recipient**, since local email sends for real (Section 9).
-14. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
-15. [ ] Update `README.md` with Cloudflare deploy/dev instructions.
+5. [x] Update `astro.config.ts`: adapter + `configPath`, `SMTP_*` dropped from the `astro:env` schema, `EMAIL_ADMIN` added.
+6. [x] Add `src/assets/redcow/wrangler.jsonc` (`nodejs_compat`, `vars`, `send_email`, `routes`) and wire `configPath` in `astro.config.ts` — bindings verified with `npx wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc --assets ./public`, and config resolution verified by running the build.
+7. [ ] Rewrite email libs to `env.EMAIL.send(...)`; pass the binding from `locals.runtime.env` through the helpers; keep HTML generation. **Currently blocks the build** — 6 files still import `SMTP_*` from `astro:env/server`.
+8. [ ] Replace `SMTP_FROM_NAME` in `src/layouts/base.astro` (title suffix) with a brand value — it is not an email concern.
+9. [ ] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
+10. [x] Update `.gitignore` (`.wrangler/`, `.dev.vars*`; dropped `.netlify/`).
+11. [ ] Scope the `import.meta.glob` in `routing.ts` to the active brand (Section 7) so each Worker ships only its own images.
+12. [ ] **Delete `.github/workflow/deploy.yaml`.**
+13. [ ] Settle the deploy command against a successful build (Section 5), then create one **Worker per brand** in Workers Builds: build `npm run build`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
+14. [ ] `npm run dev` to smoke-test the booking endpoint + emails — **using a throwaway recipient**, since local email sends for real (Section 9).
+15. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
+16. [ ] Update `README.md` with Cloudflare deploy/dev instructions.
 
 ---
 
@@ -313,7 +328,7 @@ Locally, `CLOUDFLARE_ENV=<brand>` selects the wrangler environment, and `PUBLIC_
 
 | Item | Effort | Risk |
 |------|--------|------|
-| Adapter swap + `wrangler.jsonc` with per-brand environments | Low | Low |
+| Adapter swap + per-brand `src/assets/<brand>/wrangler.jsonc` | Low | Low |
 | Email migration (nodemailer → Cloudflare Email Service `send_email` binding) | **Medium** | **Medium** (domain onboarding + deliverability + arbitrary-recipient rule + local sends are real) |
 | Deployment via Workers Builds (delete GH Actions workflow) | Low | Low |
 | Whitelabel: scope image glob to active brand (replaces prune step) | Low–Medium | Medium (bundle size / build config per brand) |
