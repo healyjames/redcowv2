@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "redcow",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "vars": {
+    "EMAIL_FROM": "info@redcownantwich.co.uk",
+    "EMAIL_FROM_NAME": "The Red Cow",
+    "EMAIL_ADMIN": "info@redcownantwich.co.uk",
+    "ALLOWED_ORIGINS": "https://redcownantwich.co.uk"
+  },
+
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": ["info@redcownantwich.co.uk"]
+    }
+  ],
+
+  "routes": [
+    {
+      "pattern": "redcownantwich.co.uk",
+      "custom_domain": true
+    }
+  ]
+}
