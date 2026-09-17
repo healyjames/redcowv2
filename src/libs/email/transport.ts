@@ -1,18 +1,21 @@
-import nodemailer from "nodemailer";
-import {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_SECURE,
-    SMTP_USER,
-    SMTP_PASS,
-} from "astro:env/server";
+import { EMAIL_FROM, EMAIL_FROM_NAME } from "astro:env/server";
 
-export const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT),
-    secure: SMTP_SECURE === "true",
-    auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-    },
-});
+type SendEmailOptions = {
+    mailer: SendEmail;
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+    replyTo?: string;
+};
+
+export function sendEmail({ mailer, to, subject, html, text, replyTo }: SendEmailOptions) {
+    return mailer.send({
+        from: { name: EMAIL_FROM_NAME, email: EMAIL_FROM },
+        to,
+        subject,
+        html,
+        text,
+        ...(replyTo ? { replyTo } : {}),
+    });
+}
