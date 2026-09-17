@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
+import { execFileSync } from "node:child_process";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -20,6 +21,25 @@ tsconfig.compilerOptions.paths["@brand/*"] = [`src/assets/${brand}/*`];
 writeFileSync(targetPath, JSON.stringify(tsconfig, null, 4) + "\n");
 
 console.log(`Generated tsconfig.json with @brand -> src/assets/${brand}`);
+
+const wranglerConfig = `src/assets/${brand}/wrangler.jsonc`;
+
+if (!existsSync(resolve(wranglerConfig))) {
+  console.error(`Error: no wrangler config found at ${wranglerConfig}`);
+  process.exit(1);
+}
+
+try {
+  execFileSync(
+    "npx",
+    ["wrangler", "types", "src/worker-configuration.d.ts", "-c", wranglerConfig],
+    { stdio: "pipe", shell: true }
+  );
+  console.log(`Generated src/worker-configuration.d.ts from ${wranglerConfig}`);
+} catch (error) {
+  console.error(`Error generating worker types: ${error.message}`);
+  process.exit(1);
+}
 
 const menusSource = resolve(`src/assets/${brand}/menus`);
 const menusTarget = resolve("public/menus");

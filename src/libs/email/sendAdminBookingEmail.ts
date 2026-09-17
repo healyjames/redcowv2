@@ -1,16 +1,17 @@
 import type { FormData } from "@/libs/types";
-import { transporter } from "./transport";
+import { sendEmail } from "./transport";
 import { adminBookingHtml } from "./templates/admin";
-import {
-    SMTP_FROM_NAME,
-    SMTP_FROM_EMAIL,
-    SMTP_ADMIN_EMAIL,
-} from "astro:env/server";
+import { EMAIL_ADMIN } from "astro:env/server";
 
-export async function sendAdminBookingEmail(data: FormData) {
-    return transporter.sendMail({
-        from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
-        to: SMTP_ADMIN_EMAIL,
+type SendAdminBookingEmailOptions = {
+    mailer: SendEmail;
+    data: FormData;
+};
+
+export function sendAdminBookingEmail({ mailer, data }: SendAdminBookingEmailOptions) {
+    return sendEmail({
+        mailer,
+        to: EMAIL_ADMIN,
         replyTo: data.email,
         subject: `New Room Booking: ${data.date} (x${data.guests})`,
         html: adminBookingHtml(data),

@@ -1,18 +1,21 @@
 import type { ComponentConfig, Page } from '@/libs/types';
-import { PUBLIC_BRAND as brand } from "astro:env/client";
 
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const images = import.meta.glob<{ default: ImageMetadata }>('@brand/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+
+const imagesByName = new Map(
+  Object.entries(images).map(([path, module]) => [path.split('/').pop() ?? path, module.default])
+);
 
 export function loadImage(path: string) {
-  const image = images[`/src/assets/${brand}/images/${path}`];
+  const image = imagesByName.get(path);
 
   if (!image) {
-    console.error(`Failed to load image: ${path}. Looking for key: ${image}`);
-    console.error('Available images:', Object.keys(images).filter(k => k.includes(brand)));
+    console.error(`Failed to load image: ${path}`);
+    console.error('Available images:', [...imagesByName.keys()]);
     return null;
   }
 
-  return image.default;
+  return image;
 }
 
 export function resolveComponentProps(config: ComponentConfig) {

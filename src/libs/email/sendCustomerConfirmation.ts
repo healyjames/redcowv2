@@ -1,12 +1,15 @@
-// src/libs/email/sendCustomerConfirmation.ts
-import type { FormData } from "@/libs/types/constants";
-import { transporter } from "./transport";
+import type { FormData } from "@/libs/types";
+import { sendEmail } from "./transport";
 import { customerConfirmationHtml } from "./templates/customer";
-import { SMTP_FROM_NAME, SMTP_FROM_EMAIL } from "astro:env/server";
 
-export async function sendCustomerConfirmation(data: FormData) {
-    return transporter.sendMail({
-        from: `"${SMTP_FROM_NAME}" <${SMTP_FROM_EMAIL}>`,
+type SendCustomerConfirmationOptions = {
+    mailer: SendEmail;
+    data: FormData;
+};
+
+export function sendCustomerConfirmation({ mailer, data }: SendCustomerConfirmationOptions) {
+    return sendEmail({
+        mailer,
         to: data.email,
         subject: "Booking request received - please await confirmation",
         html: customerConfirmationHtml(data),

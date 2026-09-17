@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import logoEmblem from "@brand/logo/emblem.svg";
+import LogoEmblem from "@brand/logo/emblem.svg";
 ---
 <style>
   .mobile-logo {
@@ -23,11 +23,6 @@ import logoEmblem from "@brand/logo/emblem.svg";
 </style>
 <div class="mobile-logo">
   <a href="/" aria-label="Homepage">
-    <Image 
-      src={logoEmblem} 
-      alt="The Red Cow Nantwich Emblem"
-      width="160"
-      class="mobile-logo-image"
-    />
+    <LogoEmblem class="mobile-logo-image" width={160} />
   </a>
 </div>

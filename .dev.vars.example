@@ -1,0 +1,18 @@
+# Template for local runtime overrides.
+#
+# Copy this to `src/assets/<brand>/.dev.vars` — NOT the repo root. Wrangler
+# resolves `.dev.vars` relative to the wrangler config file, which lives in
+# the brand folder. A root copy is silently ignored.
+#
+#   cp .dev.vars.example src/assets/redcow/.dev.vars
+#
+# These override the `vars` committed in that brand's wrangler.jsonc.
+
+# Required for local dev: the committed value is the brand's production
+# domain, so the booking endpoint returns 403 "Invalid origin" without this.
+ALLOWED_ORIGINS=http://localhost:4321,http://localhost:3000
+
+# Optional. Local email is simulated by miniflare and written to
+# .wrangler/tmp/email/ rather than delivered, so this is only needed if you
+# enable remote bindings ("remote": true on send_email in wrangler.jsonc).
+# EMAIL_ADMIN=you@example.com

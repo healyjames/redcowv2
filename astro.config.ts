@@ -1,5 +1,5 @@
 import { defineConfig, envField } from "astro/config";
-import netlify from "@astrojs/netlify";
+import cloudflare from "@astrojs/cloudflare";
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import path from "node:path";
@@ -22,7 +22,9 @@ export default defineConfig({
     site: process.env.PUBLIC_SITE_URL,
     integrations: [react(), sitemap()],
     output: "static",
-    adapter: netlify(),
+    adapter: cloudflare({
+        configPath: `./src/assets/${brand}/wrangler.jsonc`,
+    }),
 
     env: {
         schema: {
@@ -31,36 +33,15 @@ export default defineConfig({
                 context: "server",
                 access: "secret",
             }),
-            SMTP_HOST: envField.string({
+            EMAIL_FROM_NAME: envField.string({
                 context: "server",
                 access: "secret",
             }),
-            SMTP_PORT: envField.string({
+            EMAIL_FROM: envField.string({
                 context: "server",
                 access: "secret",
             }),
-            SMTP_SECURE: envField.string({
-                context: "server",
-                access: "secret",
-                default: "false",
-            }),
-            SMTP_USER: envField.string({
-                context: "server",
-                access: "secret",
-            }),
-            SMTP_PASS: envField.string({
-                context: "server",
-                access: "secret",
-            }),
-            SMTP_FROM_NAME: envField.string({
-                context: "server",
-                access: "secret",
-            }),
-            SMTP_FROM_EMAIL: envField.string({
-                context: "server",
-                access: "secret",
-            }),
-            SMTP_ADMIN_EMAIL: envField.string({
+            EMAIL_ADMIN: envField.string({
                 context: "server",
                 access: "secret",
             }),

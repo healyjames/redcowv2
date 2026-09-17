@@ -1,13 +1,110 @@
-# Astro with Tailwind
+# Venue site
+
+A whitelabel Astro site for hospitality venues. One codebase, one deployed Worker per brand.
+
+Astro 7 (static output) with React islands, TypeScript, and a single server endpoint for bookings. Deployed to **Cloudflare Workers**.
+
+## Getting started
+
+Requires Node 20.
 
 ```sh
-npm create astro@latest -- --template with-tailwindcss
+npm install
+cp .env.example .env                                    # set PUBLIC_BRAND
+cp .dev.vars.example src/assets/redcow/.dev.vars        # local origin override
+npm run dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/with-tailwindcss/devcontainer.json)
+`.dev.vars` must sit **beside the brand's wrangler config**, not at the repo root — wrangler resolves it relative to that file. Without it the booking endpoint returns `403 Invalid origin` locally, because the committed `ALLOWED_ORIGINS` is the production domain.
 
-Astro comes with [Tailwind](https://tailwindcss.com) support out of the box. This example showcases how to style your Astro project with Tailwind.
+## How the whitelabel works
 
-For complete setup instructions, please see our [Tailwind Integration Guide](https://docs.astro.build/en/guides/integrations-guide/tailwind).
+Everything brand-specific lives in one folder:
+
+```
+src/assets/<brand>/
+├── content/data.ts      business info, pages, opening hours
+├── images/              brand photography
+├── menus/               PDFs, copied to public/menus by `npm run setup`
+├── styles/theme.css     brand theme
+├── logo/ fonts/ favicon.svg
+└── wrangler.jsonc       Worker name, routes, runtime vars, email binding
+```
+
+`PUBLIC_BRAND` selects the brand and drives everything else: the `@brand` Vite alias, the generated `tsconfig.json`, the menu copy, the image glob, and which `wrangler.jsonc` the adapter loads. There is no second brand variable.
+
+## Scripts
+
+| Script | Does |
+|---|---|
+| `npm run dev` | Runs `setup`, then Astro dev inside `workerd` — real bindings, locally simulated |
+| `npm run build` | Runs `setup`, then builds to `dist/` |
+| `npm run setup` | Writes `tsconfig.json`, copies brand menus, regenerates `src/worker-configuration.d.ts` |
+| `npx astro check` | Typecheck |
+| `npx astro dev stop` | Stops the dev server and clears its tracked process |
+
+### If the dev server won't start
+
+Astro tracks the dev server by PID, and that state can go stale after a crash or a killed terminal — you get `Dev server already running at http://localhost:4321 (pid …)` while nothing is actually listening, and `curl` returns nothing. Clear it with:
+
+```sh
+npx astro dev stop
+```
+
+`npx astro dev status` shows what Astro currently thinks is running, and `npx astro dev logs` tails the server output when it's running detached.
+
+## Configuration
+
+| Where | What | Notes |
+|---|---|---|
+| `.env` | `PUBLIC_BRAND`, `PUBLIC_SITE_URL` | Build-time; inlined into the bundle |
+| `src/assets/<brand>/wrangler.jsonc` | `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN`, `ALLOWED_ORIGINS`, routes, `send_email` binding | Runtime; committed, non-sensitive |
+| `src/assets/<brand>/.dev.vars` | Local overrides | Git-ignored |
+| Worker → Settings → Build | `PUBLIC_BRAND`, `PUBLIC_SITE_URL`, `NODE_VERSION` | Build variables, per Worker |
+
+Build-time and runtime values cannot substitute for each other: `PUBLIC_*` is inlined at build time, and wrangler `vars` only exist at runtime.
+
+## Email
+
+Bookings send two emails (admin notification, customer confirmation) through the **Cloudflare Email Service** `send_email` binding — no SMTP, no API key. The sending domain must be onboarded in Email Service before customer confirmations to arbitrary addresses will work.
+
+### Testing email locally is safe
+
+`npm run dev` does **not** send real email. The `send_email` binding runs against miniflare's local simulation, which writes each message to disk instead of delivering it:
+
+```
+.wrangler/tmp/email/miniflare-<id>/email-html/<id>@<domain>.html
+.wrangler/tmp/email/miniflare-<id>/email-text/<id>@<domain>.txt
+```
+
+Open the `.html` file in a browser to review the rendered template — the easiest way to iterate on email design. The dev server also logs a summary (`send_email binding called with MessageBuilder: From / To / Subject`) plus the file paths.
+
+This works **before** the sending domain is onboarded, so the whole booking flow can be tested on day one.
+
+> Local simulation applies because the binding has no `"remote": true` in `wrangler.jsonc`. If you ever add that flag — or run a command that forces remote bindings — sends become real and go to real inboxes. Set a throwaway `EMAIL_ADMIN` in `.dev.vars` before doing so.
+
+**Field names are not validated.** The booking payload is cast, not parsed, so a mismatched field name renders as `undefined` in customer-facing email rather than failing. The expected fields are `firstname`, `surname`, `guests`, `date`, `room`, `nights`, `number` (not `phone`), `email`, `additionaltext`. Check a captured `.html` after changing the form.
+
+## Deploying
+
+Each brand is a separate Worker in Cloudflare **Workers Builds**, all connected to this repo on `main`:
+
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy -c dist/server/wrangler.json` |
+| Build variables | `PUBLIC_BRAND`, `PUBLIC_SITE_URL`, `NODE_VERSION=20` |
+
+The deploy config is generated by the build, so the path is the same for every brand — `PUBLIC_BRAND` already chose which brand it describes.
+
+## Adding a brand
+
+1. Copy `src/assets/redcow/` to `src/assets/<brand>/` and replace the content, images, menus and theme.
+2. Update `wrangler.jsonc` in the new folder: `name`, `vars`, `allowed_sender_addresses`, `routes`.
+3. Onboard the sending domain in Cloudflare Email Service.
+4. Create a Worker in Workers Builds with `PUBLIC_BRAND=<brand>`.
+
+## Further reading
+
+- `docs/CLOUDFLARE_MIGRATION_PLAN.md` — why the architecture is what it is, with the platform gotchas
+- `docs/CLOUDFLARE_SITE_SETUP_GUIDE.md` — Cloudflare dashboard walkthrough
