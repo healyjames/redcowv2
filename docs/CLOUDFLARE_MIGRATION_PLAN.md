@@ -133,7 +133,15 @@ So `PUBLIC_BRAND` selects the asset alias, the tsconfig/menu setup, *and* the Wo
 
 **Do not hand-write `main` or `assets`.** Verified in `node_modules/@astrojs/cloudflare/dist/wrangler.js`: the adapter's config customizer fills in `main: "@astrojs/cloudflare/entrypoints/server"`, `assets.binding: "ASSETS"`, a default `compatibility_date`, a `SESSION` KV binding and an `IMAGES` binding whenever they are absent, and appends `nodejs_als` unless an ALS-capable flag (`nodejs_compat` counts) is already present. Duplicating those by hand just risks drift.
 
-Consequence: a brand config is **not independently deployable** as written — the auto-filled fields are injected by the Vite plugin at build time, so `wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc` alone fails with *"Missing entry-point to Worker script or to assets directory"*. `@cloudflare/vite-plugin` writes each Worker to its own `dist/` subdirectory with a generated `wrangler.json`. **Confirm the correct deploy command against a successful build** before configuring Workers Builds.
+Consequence: a brand config is **not independently deployable** as written — the auto-filled fields are injected by the Vite plugin at build time, so `wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc` alone fails with *"Missing entry-point to Worker script or to assets directory"*.
+
+**✅ Resolved — the deploy command is:**
+
+```sh
+npx wrangler deploy -c dist/server/wrangler.json
+```
+
+The build writes a fully-resolved config to `dist/server/wrangler.json`, merging the brand file with the adapter's injected fields (`main: "entry.mjs"`, `assets.directory: "../client"`, the `SESSION` KV and `IMAGES` bindings). The path is the same for every brand, because `configPath` already selected the brand at build time. Verified by dry-run: `name: "redcow"`, route `redcownantwich.co.uk`, and bindings `SESSION`, `EMAIL`, `IMAGES`, `ASSETS` plus the four vars.
 
 **Validating a brand file** without a full build — supply throwaway assets to satisfy the entry-point check:
 
@@ -196,37 +204,33 @@ Cloudflare's local equivalent of `.env` for server values during local developme
 
 ## 6. Code Changes
 
-### 6.1 Email sending (required)
-- Rewrite `src/libs/email/transport.ts`, `sendEmailWithSmtp.ts`, `sendAdminBookingEmail`, and `sendCustomerConfirmation` to use the **`send_email` binding** (`env.EMAIL.send({...})`) instead of `nodemailer.createTransport`.
-- **Signature change:** unlike SMTP config (read from `astro:env/server` at module load), the binding is a per-request runtime object. The helpers must **receive the binding** as an argument, e.g. `sendAdminBookingEmail(emailBinding, data)`. Update the booking route to pull it from `locals`:
-  ```ts
-  export const POST: APIRoute = async ({ request, locals }) => {
-      const email = locals.runtime.env.EMAIL; // send_email binding
-      ...
-      await Promise.all([
-          sendAdminBookingEmail(email, transformedData),
-          sendCustomerConfirmation(email, transformedData),
-      ]);
-  };
-  ```
-- Map the old `nodemailer` fields to the binding: `from` → `"${EMAIL_FROM_NAME} <${EMAIL_FROM}>"`, `to`, `replyTo`, `subject`, `text`, `html`. `sendMail` returns `info.messageId`; the binding returns `{ messageId }`.
-- **Keep** `generateEmailHtml` / `generateEmailHTML` unchanged — HTML body generation is provider-agnostic and reusable.
-- Delete the `SMTP_*` imports from `astro:env/server`; replace with `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` (still `astro:env` server vars).
-- Wrap `env.EMAIL.send(...)` in `try/catch` — errors throw with `.code` / `.message`; the route already re-throws email failures as a 500.
+### 6.1 Email sending — ✅ done
 
-### 6.2 Client IP (recommended)
-`src/libs/utils/clientIp.ts` — reorder so **`cf-connecting-ip`** is the primary source on Cloudflare, and drop/deprioritise the Netlify `x-nf-client-connection-ip` header:
-```ts
-headers.get("cf-connecting-ip") ||
-(headers.get("x-forwarded-for") || "").split(",")[0]?.trim() ||
-headers.get("true-client-ip") ||
-(import.meta.env.DEV ? "127.0.0.1" : "unknown")
-```
+- `src/libs/email/transport.ts` now exports a single `sendEmail({ mailer, to, subject, html, text, replyTo })` helper that calls `mailer.send(...)` and applies the `from` address from `EMAIL_FROM_NAME` / `EMAIL_FROM`. The binding's `from` accepts an `EmailAddress` object (`{ name, email }`), so no `"Name" <addr>` string assembly is needed.
+- `sendAdminBookingEmail` and `sendCustomerConfirmation` take an options object containing the `mailer` binding and the booking `data`, and delegate to `sendEmail`.
+- `sendEmailWithSmtp.ts` was **deleted** — it was unreferenced dead code duplicating `sendAdminBookingEmail` via nodemailer.
+- `generateEmailHtml` and the `templates/*` HTML builders are unchanged.
+- `nodemailer` and `@types/nodemailer` removed from `package.json`; `dist/` confirmed free of any nodemailer reference.
 
-### 6.3 Rate limiter (note / recommended)
-`src/libs/utils/rateLimiter.ts` uses a module-level `Map` + top-level `setInterval`. On the Workers runtime:
-- Top-level `setInterval` is not supported the same way and global state is per-isolate and non-durable, so limits are best-effort only (this is already true on Netlify Functions).
-- Remove the top-level `setInterval` (do lazy cleanup inside `checkRateLimit`) to avoid runtime warnings/errors.
+> ⚠️ **`Astro.locals.runtime.env` no longer exists.** The plan originally specified it, but in `@astrojs/cloudflare` v14 `Runtime` is typed as `{ cfContext: ExecutionContext }` and `locals.runtime.env` is a getter that **throws**: *"Astro.locals.runtime.env has been removed in Astro v6. Use `import { env } from "cloudflare:workers"` instead."* (`dist/utils/cf-helpers.js`). The booking route therefore does:
+> ```ts
+> import { env } from "cloudflare:workers";
+> ...
+> const mailer = env.EMAIL;
+> ```
+> Because `env` is available at module scope, threading the binding through arguments is no longer *required* — it is kept because it leaves the helpers pure and testable.
+
+**Typing the binding.** `env` is typed by a global `Env` interface that `wrangler types` generates. `npm run setup` now regenerates `src/worker-configuration.d.ts` from the active brand's wrangler config (via `scripts/setup-tsconfig.js`), so `env.EMAIL` is `SendEmail` and the four `vars` are typed literals. The file is git-ignored — it is brand-specific and derived.
+
+**Error handling** stays in the booking route, which already wraps both sends in `try/catch` and re-throws as a 500.
+
+### 6.2 Client IP — ✅ done
+`src/libs/utils/clientIp.ts` now reads **`cf-connecting-ip`** first; the Netlify `x-nf-client-connection-ip` header has been removed.
+
+### 6.3 Rate limiter — ✅ done
+`src/libs/utils/rateLimiter.ts` uses a module-level `Map`. On the Workers runtime global state is per-isolate and non-durable, so limits are best-effort only (this was already true on Netlify Functions).
+- The top-level `setInterval` has been removed in favour of a `pruneExpired(now)` pass inside `checkRateLimit`.
+- Entries are now replaced rather than mutated in place.
 - For real distributed rate limiting, back it with **Cloudflare KV** (or the Rate Limiting binding / Durable Objects) and add the binding to **every** `src/assets/<brand>/wrangler.jsonc`. Optional but recommended for production.
 
 ### 6.4 `robots.txt` endpoint
@@ -244,7 +248,7 @@ Create **one Worker per brand**, each connected to the **same repo** with **prod
 | Setting | Value (for `redcow`) |
 |---|---|
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy -c src/assets/redcow/wrangler.jsonc` ⚠️ unconfirmed — see Section 5 |
+| Deploy command | `npx wrangler deploy -c dist/server/wrangler.json` (same for every brand) |
 | Production branch | `main` |
 | Build variables | `PUBLIC_BRAND=redcow`, `PUBLIC_SITE_URL=https://redcownantwich.co.uk`, `NODE_VERSION=20` |
 
@@ -308,16 +312,16 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 1. [ ] Onboard the sending domain in **Cloudflare Email Service** (domain on Cloudflare DNS + SPF/DKIM/DMARC + verify) so customer confirmations to arbitrary addresses are allowed.
 2. [x] `npm remove @astrojs/netlify`.
 3. [x] `npm install @astrojs/cloudflare` and `npm install -D wrangler @cloudflare/workers-types`.
-4. [ ] `npm remove nodemailer @types/nodemailer` (once Section 6.1 lands — `@types/nodemailer` is still in `package.json`).
+4. [x] `npm remove nodemailer @types/nodemailer`.
 5. [x] Update `astro.config.ts`: adapter + `configPath`, `SMTP_*` dropped from the `astro:env` schema, `EMAIL_ADMIN` added.
 6. [x] Add `src/assets/redcow/wrangler.jsonc` (`nodejs_compat`, `vars`, `send_email`, `routes`) and wire `configPath` in `astro.config.ts` — bindings verified with `npx wrangler deploy --dry-run -c src/assets/redcow/wrangler.jsonc --assets ./public`, and config resolution verified by running the build.
-7. [ ] Rewrite email libs to `env.EMAIL.send(...)`; pass the binding from `locals.runtime.env` through the helpers; keep HTML generation. **Currently blocks the build** — 6 files still import `SMTP_*` from `astro:env/server`.
-8. [ ] Replace `SMTP_FROM_NAME` in `src/layouts/base.astro` (title suffix) with a brand value — it is not an email concern.
-9. [ ] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
+7. [x] Rewrite email libs to `mailer.send(...)` with the binding from `cloudflare:workers`; keep HTML generation. Build and `astro check` both clean.
+8. [x] Replace `SMTP_FROM_NAME` in `src/layouts/base.astro` with `businessInfo.name` from `@brand/content/data`.
+9. [x] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
 10. [x] Update `.gitignore` (`.wrangler/`, `.dev.vars*`; dropped `.netlify/`).
 11. [ ] Scope the `import.meta.glob` in `routing.ts` to the active brand (Section 7) so each Worker ships only its own images.
 12. [ ] **Delete `.github/workflow/deploy.yaml`.**
-13. [ ] Settle the deploy command against a successful build (Section 5), then create one **Worker per brand** in Workers Builds: build `npm run build`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
+13. [ ] Create one **Worker per brand** in Workers Builds: build `npm run build`, deploy `npx wrangler deploy -c dist/server/wrangler.json`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
 14. [ ] `npm run dev` to smoke-test the booking endpoint + emails — **using a throwaway recipient**, since local email sends for real (Section 9).
 15. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
 16. [ ] Update `README.md` with Cloudflare deploy/dev instructions.
