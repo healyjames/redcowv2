@@ -189,16 +189,14 @@ const { messageId } = await env.EMAIL.send({
 
 **Accessing the binding in Astro:** the Cloudflare adapter exposes runtime bindings on `Astro.locals.runtime.env`, **not** through `astro:env`. So the booking route must read the binding from `locals` and pass it into the email helpers (see Section 6.1).
 
-### `.gitignore`
-- Replace `.netlify/` with Cloudflare/Wrangler artefacts:
-  ```
-  .wrangler/
-  .dev.vars
-  ```
-- Keep `dist/`, `.astro/`, `tsconfig.json` entries.
+### `.gitignore` — ✅ done
+`.netlify/` replaced with `.wrangler/`, `.dev.vars`, `src/assets/*/.dev.vars` and the generated `src/worker-configuration.d.ts`. Also added `public/menus/`, which `npm run setup` generates from the active brand and was previously neither tracked nor ignored. `.env.example` and `.dev.vars.example` are committed as templates.
 
-### `.dev.vars` (local secrets, git-ignored)
-Cloudflare's local equivalent of `.env` for server values during local development. With per-brand `vars` committed in each brand's wrangler config, this is now only needed for values that must *not* be committed. See Section 9 for how the email binding behaves locally.
+### `.dev.vars` (local overrides, git-ignored)
+
+> ⚠️ **It must live beside the wrangler config: `src/assets/<brand>/.dev.vars`.** Wrangler resolves `.dev.vars` relative to the config file, and the config now lives in the brand folder. A copy at the repo root is **silently ignored** — verified: the booking endpoint still returned `403 Invalid origin` with a root `.dev.vars`, and only started working once the file was moved next to `wrangler.jsonc`.
+
+**Local dev needs one.** `ALLOWED_ORIGINS` is committed as the brand's *production* domain, so without an override the booking endpoint rejects `http://localhost:4321` with `403 Invalid origin`. This is a behaviour change from the Netlify setup, where the value came from `.env`. `.dev.vars.example` at the repo root is the template; copy it into the brand folder.
 
 ---
 
@@ -265,7 +263,15 @@ Create **one Worker per brand**, each connected to the **same repo** with **prod
 The old `.github/workflow/deploy.yaml` did two brand steps that must now be handled by the build itself:
 
 1. **`sed` replace of `redcow` → brand:** **Not needed for correctness.** Brand selection is already driven by `PUBLIC_BRAND` at build time (`astro.config.ts` `@brand` alias, `scripts/setup-tsconfig.js`, and `src/libs/utils/routing.ts`). The only literal `redcow` occurrences in `src/` are inside the `redcow` **brand asset folder** itself (`src/assets/redcow/content/data.ts`) plus one code comment — each brand has its own `src/assets/<brand>/content/data.ts`, so no cross-file string replacement is required. The `sed` step can be dropped.
-2. **Pruning non-target brand asset folders:** This was a **bundle-size** optimisation, not correctness. Note that `src/libs/utils/routing.ts` uses `import.meta.glob('/src/assets/*/images/*', { eager: true })`, which eagerly bundles **every** brand's images into **every** build. With Git-integration builds (no prune step), each brand deploy would ship all brands' images — and on Workers this counts against the Worker size limit, so it matters more than it did on Netlify. **Recommended fix:** scope the glob to the active brand so pruning is unnecessary, e.g. build the glob path from `PUBLIC_BRAND` (or filter the glob result to keys starting with `/src/assets/${brand}/`). If that refactor is deferred, add a `prebuild` npm script that removes other `src/assets/*` folders based on `PUBLIC_BRAND` before `astro build`.
+2. **Pruning non-target brand asset folders — ✅ no longer needed.** `src/libs/utils/routing.ts` used `import.meta.glob('/src/assets/*/images/*', { eager: true })`, whose `*` in the brand position matched **every** brand. Eager globs emit every matched file as a static asset regardless of whether any page renders it, so each brand's deploy shipped all brands' images — confirmed in a real build as 10 duplicated basenames in `dist/client/_astro`. These are static assets, not Worker script, so this was never a size-limit problem: the defect was that **each brand's domain publicly served every other brand's imagery**, breaking the whitelabel boundary.
+
+   **Fix applied:** the glob now uses the `@brand` Vite alias, which `astro.config.ts` already resolves from `PUBLIC_BRAND`:
+
+   ```ts
+   import.meta.glob('@brand/images/*.{jpg,jpeg,png,webp,avif}', { eager: true })
+   ```
+
+   Vite supports alias paths in glob patterns, and this works under Astro 7's rolldown-vite (verified by build and by dev server). Lookups go through a basename→`ImageMetadata` map so the code does not depend on the shape of alias-resolved glob keys. `routing.ts` no longer imports `PUBLIC_BRAND` from `astro:env/client` at all — brand selection is now purely the build-time alias. A `prebuild` prune step is unnecessary.
 
 ### Preview deployments (optional)
 Workers Builds can build non-production branches too. Set the Worker's **non-production branch deploy command** to `npx wrangler versions upload -c src/assets/<brand>/wrangler.jsonc`, which uploads a new version and returns a preview URL without promoting it to production. Confirm the behaviour on the first PR before relying on it.
@@ -303,7 +309,7 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 - ⚠️ **Email is not emulated.** Cloudflare's docs state that local development against Email Service uses **remote bindings** — the mail is genuinely delivered, not logged. Consequences:
   - Mark the binding `"remote": true` for local use, and note the adapter exposes a `remoteBindings` option (Section 4). Verify the exact wiring on first run.
   - Use a throwaway recipient while testing the customer confirmation path. There is no dry-run mode.
-- `.dev.vars` (or `.dev.vars.<brand>`) overrides runtime values locally for anything you do not want committed.
+- `src/assets/<brand>/.dev.vars` overrides runtime values locally — **required** for the booking endpoint to accept localhost origins (Section 5). Not the repo root; see the warning there.
 
 ---
 
@@ -319,12 +325,12 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 8. [x] Replace `SMTP_FROM_NAME` in `src/layouts/base.astro` with `businessInfo.name` from `@brand/content/data`.
 9. [x] Update `clientIp.ts` to prefer `cf-connecting-ip`; remove top-level `setInterval` in `rateLimiter.ts`.
 10. [x] Update `.gitignore` (`.wrangler/`, `.dev.vars*`; dropped `.netlify/`).
-11. [ ] Scope the `import.meta.glob` in `routing.ts` to the active brand (Section 7) so each Worker ships only its own images.
-12. [ ] **Delete `.github/workflow/deploy.yaml`.**
+11. [x] Scope the `import.meta.glob` in `routing.ts` to the active brand via the `@brand` alias (Section 7) — verified: only the active brand's images ship, and no cross-brand paths appear in dev or build output.
+12. [x] **Delete `.github/workflow/deploy.yaml`** (done in commit e32ba76).
 13. [ ] Create one **Worker per brand** in Workers Builds: build `npm run build`, deploy `npx wrangler deploy -c dist/server/wrangler.json`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
 14. [ ] `npm run dev` to smoke-test the booking endpoint + emails — **using a throwaway recipient**, since local email sends for real (Section 9).
 15. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
-16. [ ] Update `README.md` with Cloudflare deploy/dev instructions.
+16. [x] Update `README.md` with Cloudflare deploy/dev instructions; add `.env.example` and `.dev.vars.example`.
 
 ---
 
