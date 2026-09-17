@@ -61,7 +61,7 @@ Cloudflare runs your server code on the **Workers runtime** (`workerd`), not Nod
 - ✅ Adapter swapped to `import cloudflare from "@astrojs/cloudflare"`, with `configPath` pointing at the active brand's wrangler config (Section 5).
 - ✅ Keep `output: "static"` — only `prerender = false` routes become Worker routes.
 - ✅ Keep the `@brand` / `@` Vite aliases. Note `astro.config.ts` reads `process.env.PUBLIC_BRAND` **at config load**, so `PUBLIC_BRAND` must exist in the *build* environment (see Section 7).
-- ✅ `SMTP_*` dropped from `env.schema`. The Email Service binding is **not** an `astro:env` variable — it is a per-request runtime binding read from `locals.runtime.env.EMAIL`.
+- ✅ `SMTP_*` dropped from `env.schema`. The Email Service binding is **not** an `astro:env` variable — it is a runtime binding read as `env.EMAIL` from `cloudflare:workers` (see the warning in Section 6.1).
 - ✅ `EMAIL_ADMIN` added as a server field, alongside `ALLOWED_ORIGINS`, `EMAIL_FROM_NAME` and `EMAIL_FROM`.
 - `access: "secret"` on these fields only tells Astro to read them from the server runtime env rather than inlining them; it does **not** mean they must be stored as Cloudflare secrets. `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` and `ALLOWED_ORIGINS` are non-sensitive brand config and are better placed in per-brand `vars` in the wrangler config (Section 5).
 - `import.meta.env.DEV` (in `clientIp.ts`) is resolved by Vite at build time, so it is unaffected by the runtime change.
@@ -71,7 +71,7 @@ Cloudflare runs your server code on the **Workers runtime** (`workerd`), not Nod
 The original plan called for `cloudflare({ platformProxy: { enabled: true } })`. **That option no longer exists** — omitting it is correct, and there is nothing to replace it with.
 
 - **What it did:** in the older Pages-era adapter (v9–v11), `astro dev` ran in **Node.js**, not `workerd`. Cloudflare bindings do not exist in Node, so the adapter used Wrangler's `getPlatformProxy()` to stand up a background `workerd` instance and proxy `locals.runtime.env` into the Node dev server. It was opt-in because it added startup cost and only approximated the real runtime.
-- **What changed:** `@astrojs/cloudflare` v14 is built on **`@cloudflare/vite-plugin`**, which runs your dev code *inside* `workerd` itself. Bindings, `nodejs_compat` behaviour and `locals.runtime` are the real thing in `astro dev`, so there is no proxy to enable.
+- **What changed:** `@astrojs/cloudflare` v14 is built on **`@cloudflare/vite-plugin`**, which runs your dev code *inside* `workerd` itself. Bindings and `nodejs_compat` behaviour are the real thing in `astro dev`, so there is no proxy to enable. (The `locals.runtime` accessor was removed at the same time — Section 6.1.)
 - **Verify:** the adapter's `Options` type (`node_modules/@astrojs/cloudflare/dist/index.d.ts`) accepts `imageService`, `sessionKVBindingName`, `imagesBindingName`, `prerenderEnvironment`, `experimental`, plus `configPath`, `remoteBindings`, `persistState`, `auxiliaryWorkers` and `inspectorPort` passed through to the Vite plugin. There is no `platformProxy` key — passing it would be a type error.
 - **Two options worth knowing about here:**
   - `configPath` — points the adapter at a non-default wrangler config file.
@@ -187,7 +187,7 @@ const { messageId } = await env.EMAIL.send({
 // Errors throw with .code and .message — wrap in try/catch.
 ```
 
-**Accessing the binding in Astro:** the Cloudflare adapter exposes runtime bindings on `Astro.locals.runtime.env`, **not** through `astro:env`. So the booking route must read the binding from `locals` and pass it into the email helpers (see Section 6.1).
+**Accessing the binding in Astro:** runtime bindings are **not** exposed through `astro:env`. In adapter v14 they are read from the `cloudflare:workers` module — `import { env } from "cloudflare:workers"`, then `env.EMAIL`. (`Astro.locals.runtime.env` is removed and throws; see Section 6.1.)
 
 ### `.gitignore` — ✅ done
 `.netlify/` replaced with `.wrangler/`, `.dev.vars`, `src/assets/*/.dev.vars` and the generated `src/worker-configuration.d.ts`. Also added `public/menus/`, which `npm run setup` generates from the active brand and was previously neither tracked nor ignored. `.env.example` and `.dev.vars.example` are committed as templates.
@@ -289,7 +289,7 @@ Before the first push-to-deploy: the sending domain must be **onboarded in Email
 | `PUBLIC_SITE_URL` | build-time | Worker → Settings → Build → **build variables** (per brand) | `astro.config.ts` (`site`), `astro:env/client` |
 | `ALLOWED_ORIGINS` | runtime | `src/assets/<brand>/wrangler.jsonc` → `vars` | `astro:env/server` |
 | `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_ADMIN` | runtime | `src/assets/<brand>/wrangler.jsonc` → `vars` (`EMAIL_FROM` must be on the onboarded domain) | `astro:env/server` |
-| `EMAIL` (send_email binding) | runtime binding | `src/assets/<brand>/wrangler.jsonc` → `send_email` — **no dashboard option** | `locals.runtime.env.EMAIL` (not `astro:env`) |
+| `EMAIL` (send_email binding) | runtime binding | `src/assets/<brand>/wrangler.jsonc` → `send_email` — **no dashboard option** | `env.EMAIL` from `cloudflare:workers` (not `astro:env`) |
 | *(future secrets)* | runtime secret | `npx wrangler secret put <NAME> -c src/assets/<brand>/wrangler.jsonc` or dashboard | `astro:env/server` |
 | ~~`SMTP_HOST/PORT/SECURE/USER/PASS/FROM_NAME/FROM_EMAIL/ADMIN_EMAIL`~~ | removed | — | replaced by the `send_email` binding + `EMAIL_*` addressing vars |
 
@@ -304,7 +304,7 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 
 ## 9. Local Development
 
-- `npm run dev` runs inside `workerd` via `@cloudflare/vite-plugin` — bindings and `locals.runtime` are real, so the booking endpoint can be exercised without a separate `wrangler dev` step. (This is what replaced `platformProxy`; see Section 4.)
+- `npm run dev` runs inside `workerd` via `@cloudflare/vite-plugin` — the bindings from the brand's wrangler config are real, so the booking endpoint can be exercised without a separate `wrangler dev` step. (This is what replaced `platformProxy`; see Section 4.)
 - The brand comes from `PUBLIC_BRAND` in `.env` — it picks the assets *and* the `src/assets/<brand>/wrangler.jsonc` the dev runtime loads. Nothing else to set.
 - ⚠️ **Email is not emulated.** Cloudflare's docs state that local development against Email Service uses **remote bindings** — the mail is genuinely delivered, not logged. Consequences:
   - Mark the binding `"remote": true` for local use, and note the adapter exposes a `remoteBindings` option (Section 4). Verify the exact wiring on first run.
