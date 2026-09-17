@@ -4,7 +4,8 @@ import { validateRequest } from "@/libs/utils/validateRequest";
 import { checkHoneypot } from "@/libs/utils/honeyPot";
 import { sendAdminBookingEmail } from "@/libs/email/sendAdminBookingEmail";
 import { sendCustomerConfirmation } from "@/libs/email/sendCustomerConfirmation";
-import { SMTP_ADMIN_EMAIL } from "astro:env/server";
+import { EMAIL_ADMIN } from "astro:env/server";
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
@@ -21,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         console.log(`[Booking API ${requestId}] Parsing request body`);
-        const data = await request.json();
+        const data = (await request.json()) as FormData;
 
         console.log(`[Booking API ${requestId}] Checking honeypot field`);
         if (checkHoneypot(data)) {
@@ -67,12 +68,13 @@ export const POST: APIRoute = async ({ request }) => {
         console.log(`[Booking API ${requestId}] Booking date formatted: ${transformedData.date}`);
 
         console.log(`[Booking API ${requestId}] Sending emails (admin + customer confirmation)`);
+        const mailer = env.EMAIL;
         try {
             await Promise.all([
-                sendAdminBookingEmail(transformedData),
-                sendCustomerConfirmation(transformedData),
+                sendAdminBookingEmail({ mailer, data: transformedData }),
+                sendCustomerConfirmation({ mailer, data: transformedData }),
             ]);
-            console.log(`[Booking API ${requestId}] Emails sent successfully to ${transformedData.email} and admin (${SMTP_ADMIN_EMAIL})`);
+            console.log(`[Booking API ${requestId}] Emails sent successfully to ${transformedData.email} and admin (${EMAIL_ADMIN})`);
         } catch (emailError) {
             console.error(`[Booking API ${requestId}] Email sending failed:`, emailError);
             throw new Error(`Email delivery failed: ${emailError instanceof Error ? emailError.message : "Unknown error"}`);
