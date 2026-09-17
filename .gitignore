@@ -28,6 +28,7 @@ pnpm-debug.log*
 
 # cloudflare / wrangler
 .wrangler/
+src/worker-configuration.d.ts
 
 # ai temp files
 claude/
