@@ -8,40 +8,31 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_WINDOW_MS = 45000; // 45 seconds
 const RATE_LIMIT_MAX = 3;
 
-// Clean up old entries periodically
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of rateLimitStore.entries()) {
+function pruneExpired(now: number) {
+    rateLimitStore.forEach((entry, key) => {
         if (entry.resetAt < now) {
             rateLimitStore.delete(key);
         }
-    }
-}, 60000); // Clean every minute
+    });
+}
 
 export async function checkRateLimit(ip: string) {
     const key = `rl:booking:${ip}`;
     const now = Date.now();
 
-    let entry = rateLimitStore.get(key);
+    pruneExpired(now);
 
-    // If no entry or expired, create new
-    if (!entry || entry.resetAt < now) {
-        entry = {
-            count: 1,
-            resetAt: now + RATE_LIMIT_WINDOW_MS,
-        };
-        rateLimitStore.set(key, entry);
-    } else {
-        entry.count++;
-    }
+    const existing = rateLimitStore.get(key);
+    const entry: RateLimitEntry = existing
+        ? { count: existing.count + 1, resetAt: existing.resetAt }
+        : { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
 
-    const exceeded = entry.count > RATE_LIMIT_MAX;
-    const resetIn = Math.ceil((entry.resetAt - now) / 1000);
+    rateLimitStore.set(key, entry);
 
     return {
-        exceeded,
+        exceeded: entry.count > RATE_LIMIT_MAX,
         count: entry.count,
         remaining: Math.max(0, RATE_LIMIT_MAX - entry.count),
-        resetIn,
+        resetIn: Math.ceil((entry.resetAt - now) / 1000),
     };
 }
