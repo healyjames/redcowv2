@@ -31,6 +31,14 @@ export default defineConfig({
                 context: "server",
                 access: "secret",
             }),
+            EMAIL_FROM_NAME: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            EMAIL_FROM: envField.string({
+                context: "server",
+                access: "secret",
+            }),
 
             // Client
             PUBLIC_BRAND: envField.string({
