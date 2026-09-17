@@ -306,9 +306,10 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 
 - `npm run dev` runs inside `workerd` via `@cloudflare/vite-plugin` — the bindings from the brand's wrangler config are real, so the booking endpoint can be exercised without a separate `wrangler dev` step. (This is what replaced `platformProxy`; see Section 4.)
 - The brand comes from `PUBLIC_BRAND` in `.env` — it picks the assets *and* the `src/assets/<brand>/wrangler.jsonc` the dev runtime loads. Nothing else to set.
-- ⚠️ **Email is not emulated.** Cloudflare's docs state that local development against Email Service uses **remote bindings** — the mail is genuinely delivered, not logged. Consequences:
-  - Mark the binding `"remote": true` for local use, and note the adapter exposes a `remoteBindings` option (Section 4). Verify the exact wiring on first run.
-  - Use a throwaway recipient while testing the customer confirmation path. There is no dry-run mode.
+- ✅ **Email IS emulated locally — verified by running it.** An earlier revision of this plan claimed the opposite, based on Cloudflare's get-started page stating that `wrangler dev` uses remote bindings. That describes their documented walkthrough, not the default here. In wrangler the `send_email` binding is `local-and-remote`, and with no `"remote": true` in the brand config, local dev uses **miniflare's simulation**, which writes each message to `.wrangler/tmp/email/miniflare-<id>/email-{html,text}/` instead of delivering it.
+  - A local booking POST returns `{"success":true}` and both messages land on disk, with a `send_email binding called with MessageBuilder:` log line naming the From/To/Subject and file paths.
+  - This works **before** the sending domain is onboarded, so the booking flow can be smoke-tested without waiting on Email Service.
+  - Sends only become real if the binding is marked `"remote": true` (or `remoteBindings` forces it — Section 4). Use a throwaway `EMAIL_ADMIN` before doing that.
 - `src/assets/<brand>/.dev.vars` overrides runtime values locally — **required** for the booking endpoint to accept localhost origins (Section 5). Not the repo root; see the warning there.
 
 ---
@@ -328,7 +329,7 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 11. [x] Scope the `import.meta.glob` in `routing.ts` to the active brand via the `@brand` alias (Section 7) — verified: only the active brand's images ship, and no cross-brand paths appear in dev or build output.
 12. [x] **Delete `.github/workflow/deploy.yaml`** (done in commit e32ba76).
 13. [ ] Create one **Worker per brand** in Workers Builds: build `npm run build`, deploy `npx wrangler deploy -c dist/server/wrangler.json`, build variables `PUBLIC_BRAND` / `PUBLIC_SITE_URL` / `NODE_VERSION` (Section 7).
-14. [ ] `npm run dev` to smoke-test the booking endpoint + emails — **using a throwaway recipient**, since local email sends for real (Section 9).
+14. [x] `npm run dev` smoke-test — verified: `/` and `/rooms/book` return 200, `POST /api/booking` returns `{"success":true}`, and both emails render with real data and no `undefined` values. Local sends are simulated to `.wrangler/tmp/email/`, not delivered (Section 9).
 15. [ ] Deploy, verify: static pages, booking POST, **admin + customer email delivery**, `robots.txt`, sitemap, and per-brand assets/menus.
 16. [x] Update `README.md` with Cloudflare deploy/dev instructions; add `.env.example` and `.dev.vars.example`.
 
@@ -339,7 +340,7 @@ Locally, `PUBLIC_BRAND` in `.env` selects everything — brand assets *and* the 
 | Item | Effort | Risk |
 |------|--------|------|
 | Adapter swap + per-brand `src/assets/<brand>/wrangler.jsonc` | Low | Low |
-| Email migration (nodemailer → Cloudflare Email Service `send_email` binding) | **Medium** | **Medium** (domain onboarding + deliverability + arbitrary-recipient rule + local sends are real) |
+| Email migration (nodemailer → Cloudflare Email Service `send_email` binding) | **Medium** | **Medium** (domain onboarding + deliverability + arbitrary-recipient rule) |
 | Deployment via Workers Builds (delete GH Actions workflow) | Low | Low |
 | Whitelabel: scope image glob to active brand (replaces prune step) | Low–Medium | Medium (bundle size / build config per brand) |
 | Rate limiter runtime fix (+ optional KV) | Low (Medium if KV) | Low |

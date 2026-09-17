@@ -37,10 +37,21 @@ src/assets/<brand>/
 
 | Script | Does |
 |---|---|
-| `npm run dev` | Runs `setup`, then Astro dev inside `workerd` — bindings are real, not mocked |
+| `npm run dev` | Runs `setup`, then Astro dev inside `workerd` — real bindings, locally simulated |
 | `npm run build` | Runs `setup`, then builds to `dist/` |
 | `npm run setup` | Writes `tsconfig.json`, copies brand menus, regenerates `src/worker-configuration.d.ts` |
 | `npx astro check` | Typecheck |
+| `npx astro dev stop` | Stops the dev server and clears its tracked process |
+
+### If the dev server won't start
+
+Astro tracks the dev server by PID, and that state can go stale after a crash or a killed terminal — you get `Dev server already running at http://localhost:4321 (pid …)` while nothing is actually listening, and `curl` returns nothing. Clear it with:
+
+```sh
+npx astro dev stop
+```
+
+`npx astro dev status` shows what Astro currently thinks is running, and `npx astro dev logs` tails the server output when it's running detached.
 
 ## Configuration
 
@@ -57,7 +68,22 @@ Build-time and runtime values cannot substitute for each other: `PUBLIC_*` is in
 
 Bookings send two emails (admin notification, customer confirmation) through the **Cloudflare Email Service** `send_email` binding — no SMTP, no API key. The sending domain must be onboarded in Email Service before customer confirmations to arbitrary addresses will work.
 
-> **Local sends are real.** Cloudflare does not emulate Email Service; `npm run dev` connects to the live service. Use a throwaway `EMAIL_ADMIN` in `.dev.vars` when testing.
+### Testing email locally is safe
+
+`npm run dev` does **not** send real email. The `send_email` binding runs against miniflare's local simulation, which writes each message to disk instead of delivering it:
+
+```
+.wrangler/tmp/email/miniflare-<id>/email-html/<id>@<domain>.html
+.wrangler/tmp/email/miniflare-<id>/email-text/<id>@<domain>.txt
+```
+
+Open the `.html` file in a browser to review the rendered template — the easiest way to iterate on email design. The dev server also logs a summary (`send_email binding called with MessageBuilder: From / To / Subject`) plus the file paths.
+
+This works **before** the sending domain is onboarded, so the whole booking flow can be tested on day one.
+
+> Local simulation applies because the binding has no `"remote": true` in `wrangler.jsonc`. If you ever add that flag — or run a command that forces remote bindings — sends become real and go to real inboxes. Set a throwaway `EMAIL_ADMIN` in `.dev.vars` before doing so.
+
+**Field names are not validated.** The booking payload is cast, not parsed, so a mismatched field name renders as `undefined` in customer-facing email rather than failing. The expected fields are `firstname`, `surname`, `guests`, `date`, `room`, `nights`, `number` (not `phone`), `email`, `additionaltext`. Check a captured `.html` after changing the form.
 
 ## Deploying
 
