@@ -22,7 +22,9 @@ export default defineConfig({
     site: process.env.PUBLIC_SITE_URL,
     integrations: [react(), sitemap()],
     output: "static",
-    adapter: cloudflare(),
+    adapter: cloudflare({
+        configPath: `./src/assets/${brand}/wrangler.jsonc`,
+    }),
 
     env: {
         schema: {
@@ -36,6 +38,10 @@ export default defineConfig({
                 access: "secret",
             }),
             EMAIL_FROM: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            EMAIL_ADMIN: envField.string({
                 context: "server",
                 access: "secret",
             }),
