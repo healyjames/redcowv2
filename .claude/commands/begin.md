@@ -13,6 +13,7 @@ Before starting new work, verify git state:
 
 ```bash
 git status
+git branch --show-current
 ```
 
 **If uncommitted changes:**
@@ -24,24 +25,70 @@ Commit, stash, or discard before starting new work? (y/n)
 
 Wait for user to resolve before proceeding.
 
-**If not on dev or a feature branch:**
+**If on main with no local commits ahead of origin/main:**
+
+Check if the task description contains a ticket ID (e.g., `PROJ-1234`):
+
+- **ticket found:** Offer to create a feature branch automatically:
+
+  ```
+  You're on main. Want me to create a feature branch from this ticket? (y/n)
+  ```
+
+  If yes, run `/branch <TICKET-ID>` to pull latest main and create the branch, then continue with Step 1.
+  If no, remind them they'll need to create a branch before committing:
+
+  ```
+  Reminder: You'll need to create a feature branch before any commits.
+  I'll start the research and planning — you can create the branch when ready.
+  ```
+
+- **No ticket:** Remind the user to create a branch:
+
+  ```
+  You're on main with no feature branch. I'll start research and planning,
+  but you'll need to create a feature branch before any commits.
+  (Tip: use /branch <TICKET-ID> if you have a ticket)
+  ```
+
+**If not on main or a feature branch:**
 
 ```
-Warning: Currently on branch '<branch-name>', not dev.
-Switch to dev before starting new work? (y/n)
+Warning: Currently on branch '<branch-name>', not main.
+Switch to main before starting new work? (y/n)
 ```
-
-Note: The main branch for this repo is `dev`, not `main`.
 
 ## Step 1: Generate Task Slug
 
-Generate a kebab-case slug from the task description.
+Generate a folder name for this task:
 
-- Remove common words (the, a, an, to, for, etc.)
-- Lowercase and hyphenate
-- Keep it short but descriptive
-- **Validate:** only lowercase alphanumeric and hyphens, max 50 chars
-- **Reject:** any path separators (/, \, ..)
+1. **Check for a ticket ID** — look at the current branch name (`git branch --show-current`) or the task description for a pattern like `BOARD-123` (e.g., `PROJ-1234`).
+
+2. **If ticket ID found:**
+
+   - Generate a kebab-case slug from the task description
+   - Combine: `<TICKET-ID>-<slug>` (e.g., `PROJ-1234-update-media-rules`)
+
+3. **If NO ticket ID found** — prompt the user:
+
+   ```
+   No ticket found. What type of task is this?
+   1. bugfix
+   2. housekeeping
+   3. spike
+   4. refactor
+
+   Or type a ticket ID (e.g., PROJ-1234) to use instead.
+   (Tip: type 'ticket' to create a ticket first via /ticket)
+   ```
+
+   **STOP and wait for user response.**
+
+   - If they provide a ticket ID → use `<TICKET-ID>-<slug>` format
+   - If they type `ticket` → run `/ticket`, then resume with the created ticket ID
+   - If they pick a task type → use `<task-type>-<slug>` format (e.g., `bugfix-search-ranking-issue`)
+
+4. **Validate:** only lowercase alphanumeric and hyphens, max 60 chars. **Reject:** any path separators (/, \, ..)
 
 Present to user:
 
@@ -77,21 +124,32 @@ Do not overwrite existing plans.
 mkdir -p .claude/temp/<slug>
 ```
 
-## Step 3: Research Phase (Optional Jira/Memory Integration)
+### Create status.md
 
-**Jira Integration (optional):**
-If the task references a Jira ticket or the branch name contains a ticket ID, attempt to fetch ticket details using /jira. If Jira credentials are not configured, skip this step and continue.
+After creating the directory, create `.claude/temp/<slug>/status.md` using the template defined in `/status` ("Creating status.md" section).
 
-**Memory MCP Integration (optional):**
-If Memory MCP is configured, search for relevant context using `search_nodes`. If Memory MCP is not available, skip this step - the research phase will gather context from the codebase directly.
+- Set `work_status` to `research` (about to start research phase)
+- Set `task_type` based on Step 1 result (ticket → `feature`, or the chosen type)
+- Set `ticket` and `ticket_url` if a ticket ID is available
+- Set `branch` from `git branch --show-current`
+- Set `created` to today's date
+- If a ticket tracker is configured, fetch ticket status for `ticket_status`. If not configured, set to `—`
+- Set `fix_version` to `null`
+- Set `name` to a human-readable version of the task description
+- Set `summary` to a one-line summary of the task
+
+## Step 3: Research Phase
+
+**Ticket Tracker:** none is configured for this project (see `.claude/docs/workflow-config.md`).
+If the task or branch name happens to include a ticket-ID-shaped prefix, treat it as plain context
+only — there's no API to fetch details from. Skip straight to the researcher.
 
 Use the `researcher` agent to explore the codebase.
 
 Provide the agent with:
 
 - The task description
-- Any Jira context (if available)
-- Any Memory context (if available)
+- Any ticket context (if available)
 - Output path: `.claude/temp/<slug>/research.md`
 
 The researcher will:
@@ -115,29 +173,14 @@ The planner will:
 
 - Break work into subtasks (small, committable steps)
 - Define goals and files for each subtask
+- Capture acceptance criteria (drafting them and confirming with you if the ticket has none)
 - Create trackable checklists
+
+Then the plan is verified (the `verify-plan` skill) before signoff.
 
 ## Step 5: Signoff
 
-Present a summary to the user:
-
-```markdown
-## Research Complete
-
-<key findings from research.md>
-
-## Plan Summary
-
-<number> subtasks planned:
-
-1. <subtask 1 title>
-2. <subtask 2 title>
-3. ...
-
-**Approve?** (y/go, or provide feedback)
-```
-
-**STOP and wait for explicit user approval.**
+Run /signoff to present the research and plan for user approval. This will show the user clickable file paths and wait for their response.
 
 Do NOT proceed without signoff.
 
@@ -146,7 +189,7 @@ Do NOT proceed without signoff.
 - NEVER skip research or planning phases
 - NEVER proceed past signoff without explicit approval
 - If research or planning raises questions, ask them before signoff
-- Jira and Memory MCP are optional enhancements - proceed without them if unavailable
+- The ticket tracker is an optional enhancement - proceed without it if unavailable
 
 ## Tracking
 

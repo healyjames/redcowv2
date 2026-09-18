@@ -66,13 +66,13 @@ One-line description of what this does and why it exists.
 
 \`\`\`bash
 
-# Prerequisites: Node 22+, pnpm
+# Prerequisites: Node LTS, npm
 
-pnpm install
-pnpm dev
+npm install
+npm run dev
 \`\`\`
 
-Open [http://localhost:3000](http://localhost:3000)
+Open the local Astro dev server URL printed in the terminal.
 
 ## What It Does
 
@@ -87,10 +87,9 @@ Brief explanation (2-3 paragraphs max) of:
 ### Basic Example
 
 \`\`\`typescript
-import { createClient } from "@example/sdk";
+import { formatMenuPrice } from "@/libs/utils/formatMenuPrice";
 
-const client = createClient({ apiKey: process.env.API_KEY });
-const result = await client.doThing({ input: "value" });
+const price = formatMenuPrice(1250); // "£12.50"
 \`\`\`
 
 ### Common Patterns
@@ -99,39 +98,82 @@ Show 2-3 real-world usage patterns with code.
 
 ## Configuration
 
-| Variable    | Required | Default | Description                 |
-| ----------- | -------- | ------- | --------------------------- |
-| `API_KEY`   | Yes      | -       | Your API key from dashboard |
-| `LOG_LEVEL` | No       | `info`  | Logging verbosity           |
-| `CACHE_TTL` | No       | `3600`  | Cache duration in seconds   |
+| Variable       | Required | Default | Description                          |
+| -------------- | -------- | ------- | ------------------------------------- |
+| `SMTP_HOST`    | Yes      | -       | Outbound mail host for booking emails |
+| `SMTP_USER`    | Yes      | -       | Mail account username                 |
+| `SMTP_PASS`    | Yes      | -       | Mail account password/app token       |
 
-See [.env.example](.env.example) for all options.
+See `.dev.vars.example` (Cloudflare Workers local env) for all options. Never commit `.dev.vars`.
 
 ## Development
 
 \`\`\`bash
-pnpm install # Install dependencies
-pnpm dev # Start dev server
-pnpm test # Run tests
-pnpm build # Production build
+npm install # Install dependencies
+npm run dev # Start Astro dev server (runs setup + astro dev)
+npm run build # Production build (runs setup + astro build)
+npm run preview # Preview the built output
 \`\`\`
 
 ### Project Structure
 
 \`\`\`
 src/
-├── pages/ # Base pages for Astrojs site
-├── components/ # AstroJS components
-├──├── client/ # React/NextJS typescript client side components
-├── assets/ # Assets per client
-└── libs/ # Helper and utility functions
+├── pages/ # Astro pages + API routes (src/pages/api)
+├── components/ # Astro + React island components (src/components/client)
+├── layouts/ # Shared Astro layouts
+├── libs/ # email, types, utils — framework-agnostic logic
+└── assets/<brand>/ # Per-tenant content, images, fonts, menus, styles, wrangler.jsonc
 \`\`\`
+
+## Testing
+
+No test script is configured yet. See `.claude/docs/testing.md` for the plan to add Vitest +
+React Testing Library as devDependencies. Until then, verify with `npm run build` and manual
+checks (`/run`).
 
 ## Deployment
 
-Deployed via push to `main` branch through Netlify
+Deploys to Cloudflare Workers via `wrangler`, one worker per brand (each brand folder under
+`src/assets/<brand>` carries its own `wrangler.jsonc`). Describe the actual deploy trigger here
+once CI is set up (no `.github/workflows/` exist yet).
 
-- **Production**: Merges to `main` deploy automatically
+## Architecture
+
+Brief overview. See `.claude/docs/architecture.md` for the vertical-slice/feature-folder
+convention and the multi-tenant brand model. Link to ADRs for decisions.
+
+\`\`\`mermaid
+graph LR
+A[Browser] --> B[Astro + Cloudflare Worker]
+B --> C[Static pages per brand]
+B --> D[API routes: src/pages/api]
+D --> E[Booking email via src/libs/email]
+\`\`\`
+
+## Troubleshooting
+
+### Common Issues
+
+**Dev server port already in use**
+\`\`\`bash
+# Astro will pick the next free port automatically; check the terminal output
+\`\`\`
+
+**Missing brand assets**
+Check `src/assets/<brand>/` has the expected `content`, `images`, `fonts`, `logo`, `menus`, and
+`styles` folders, and that `.dev.vars` exists for that brand if it needs secrets locally.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) if present, otherwise ask the repo owner.
+
+## License
+
+Specify the actual license for this project.
+```
+
+---
 
 ## API Documentation
 
@@ -235,7 +277,7 @@ Capture the "why" behind technical decisions. Store in `docs/adr/`.
 ### Template
 
 ```markdown
-# ADR-001: Use PostgreSQL for primary database
+# ADR-001: Serve each brand as its own Cloudflare Worker
 
 ## Status
 
@@ -243,38 +285,41 @@ Accepted
 
 ## Context
 
-We need a primary database for the application. Options considered:
+This is a multi-tenant, whitelabel restaurant site — the same Astro codebase serves several
+brands (e.g. `redcow`, `whitelabel`) from `src/assets/<brand>`. Options considered:
 
-- PostgreSQL
-- MySQL
-- MongoDB
+- One deployment that switches brand at request time
+- One Cloudflare Worker per brand, each with its own `wrangler.jsonc`
+- Separate repos per brand
 
 Key requirements:
 
-- ACID compliance for financial transactions
-- JSON support for flexible schemas
-- Strong ecosystem and tooling
+- Brand-specific content, fonts, and menus must not leak across tenants
+- Deploys must be independent (one brand's release shouldn't require redeploying all brands)
+- Minimal duplication of shared logic (`src/libs`, `src/components`)
 
 ## Decision
 
-Use PostgreSQL with Prisma ORM.
+One Astro codebase, one Cloudflare Worker per brand, each brand folder owning its own
+`wrangler.jsonc` and assets under `src/assets/<brand>`.
 
 ## Consequences
 
 ### Positive
 
-- ACID compliance ensures data integrity
-- JSONB columns allow schema flexibility where needed
-- Excellent TypeScript support via Prisma
+- Brands deploy and scale independently
+- Shared logic in `src/libs`/`src/components` still applies to all brands
+- Clear ownership boundary per brand folder
 
 ### Negative
 
-- Team has more MySQL experience (learning curve)
-- Slightly more complex local setup than SQLite
+- Adding a new brand means wiring a new `wrangler.jsonc` and asset folder
+- Some build-time config (`tsconfig.json`'s `@brand/*` alias) is generated per active brand via
+  `scripts/setup-tsconfig.js`, which adds a step before dev/build
 
 ### Neutral
 
-- Will use RDS Aurora PostgreSQL in production
+- Cross-brand regressions must be checked manually until multi-brand test coverage exists
 ```
 
 ### When to Write an ADR
@@ -344,6 +389,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## Environment Documentation
+
+This project uses Cloudflare Workers' `.dev.vars` for local secrets (per the root and per-brand,
+e.g. `src/assets/redcow/.dev.vars`), not a plain `.env`. Document all variables in
+`.dev.vars.example`:
+
+```bash
+# .dev.vars.example
+# Copy to .dev.vars (and/or src/assets/<brand>/.dev.vars) and fill in values.
+# Never commit .dev.vars — it's gitignored.
+
+# =============================================================================
+# Required — booking confirmation email (src/libs/email)
+# =============================================================================
+
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=bookings@example.com
+SMTP_PASS=
+
+# =============================================================================
+# Optional
+# =============================================================================
+
+# Which brand's assets to build against locally (see scripts/setup-tsconfig.js)
+BRAND=redcow
+```
+
+---
+
 ## Mermaid Diagrams
 
 Use Mermaid for architecture and flow diagrams. Keep them simple.
@@ -383,15 +458,14 @@ end
 \`\`\`mermaid
 sequenceDiagram
 participant U as User
-participant A as API
-participant D as Database
-participant Q as Queue
+participant W as Cloudflare Worker (Astro)
+participant E as Email (src/libs/email)
 
-    U->>A: POST /orders
-    A->>D: Insert order
-    A->>Q: Enqueue fulfillment
-    A->>U: 201 Created
-    Q->>D: Update status
+    U->>W: POST /api/booking
+    W->>W: Validate payload
+    W->>E: sendBookingConfirmation()
+    E->>U: Confirmation email
+    W->>U: 200 OK
 
 \`\`\`
 ```
@@ -407,52 +481,41 @@ participant Q as Queue
 
 ## Code Comments
 
-### When to Comment
+This project's rule (`.claude/docs/coding.md`, from `CLAUDE.md`) is stricter than most: **code
+should be self-documenting — no comments unless they explain something genuinely non-obvious**.
+In practice that means almost exclusively:
 
-- **Complex algorithms** - Explain the approach
-- **Workarounds** - Link to issue/ticket
-- **Security-sensitive** - Explain why it's done this way
-- **Regex** - Always explain regex patterns
-- **Performance** - Why this optimization matters
-- **Non-obvious behavior** - Side effects, edge cases
+- **Regex** - always explain the pattern
+- **Third-party quirks** - e.g. why a font is loaded from an Adobe stylesheet, or a workaround for
+  a specific dependency's behavior
 
 ### When NOT to Comment
 
 - Obvious code
 - Repeating what TypeScript types already say
 - Commented-out code (delete it)
+- Explaining *what* the code does — if it needs that, restructure it to be self-explanatory
+  instead (early returns, named functions, composition) rather than adding a comment
 - TODO without issue link
 
 ### Examples
 
 ```typescript
-// ✅ Good - explains non-obvious behavior
-/**
- * Calculates shipping cost with promotional discounts.
- * Discount applies only to orders over £50, and only
- * for UK destinations (per marketing campaign Q1-2024).
- * @throws {UnsupportedDestinationError} For non-UK addresses
- */
-function calculateShipping(order: Order): Money { ... }
-
 // ✅ Good - explains regex
 // Matches UK postcodes: "SW1A 1AA", "M1 1AA", "B33 8TH"
 // Format: area (1-2 letters) + district (1-2 digits) + space + sector + unit
 const UK_POSTCODE = /^[A-Z]{1,2}\d{1,2}\s?\d[A-Z]{2}$/i;
 
-// ✅ Good - links to issue for workaround
-// HACK: Safari doesn't support scroll-margin with sticky headers
-// See: https://github.com/example/repo/issues/123
-if (isSafari) {
-  element.scrollIntoView({ block: "center" });
-}
+// ✅ Good - explains a third-party import that isn't self-evident
+// Loaded from the brand's Adobe Fonts kit; see src/assets/<brand>/fonts
+import "@brand/fonts/fonts.css";
 
 // ❌ Bad - states the obvious
-/** Gets user by ID */
-function getUserById(id: string): User { ... }
+/** Gets a booking by ID */
+function getBookingById(id: string): Booking { ... }
 
 // ❌ Bad - repeats the type
-/** @param name - The user's name */
+/** @param name - The guest's name */
 function greet(name: string) { ... }
 ```
 

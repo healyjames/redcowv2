@@ -75,3 +75,39 @@ Keep docs concise. Do not write the same thing in multiple ways. If it is intend
 
 All claude files should be treated as living files. That means claude and claude agents should keep them up to date i.e. when we update our tech stack, update the .claude/docs/app-details.md file. Or something that has been added to learnings.md might be important enough to include in the main .claude.md
 Remember these are shared by all developers. You should always prompt the developer when you intend to update a claude file for permissions.
+
+# Working agreements
+
+- Never commit or push without explicit user approval — suggest a commit message; the user commits (see Git Operations Policy above). A commit-guard hook (`.claude/hooks/commit-guard.sh`, wired in `.claude/settings.json`) enforces this deterministically for `git commit`/`git push`.
+- Never fetch or read **production** secret values — reading credentials is dev/test only; adding secrets to any environment is fine.
+- If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill/command/agent.
+- When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
+
+## Where the depth lives
+
+This file stays lightweight on purpose. The review/security/testing/planning rubrics live in
+`.claude/skills/` — commands invoke them; you don't need to invoke skills directly. Project-specific
+detail is in:
+
+- `@.claude/docs/workflow-config.md` — detected stack, commands, git/branch convention, installed modules
+- `@.claude/docs/architecture.md` — vertical-slice/feature-folder layout, multi-tenant brand boundaries
+- `@.claude/docs/testing.md` — TDD + Vitest/React Testing Library plan and coverage philosophy
+- `@.claude/docs/coding.md` — the expanded coding rules (builds on the Coding guidelines section above)
+
+# Forge Workflow
+
+This project uses [forge-workflow](https://github.com/HansonWK/forge-workflow) for structured
+research → plan → dev → review → PR cycles. Entry points:
+
+| Command | Purpose |
+| --- | --- |
+| `/begin <task>` | Start new work — research, plan, and signoff |
+| `/next` | Execute the next subtask cycle (dev, review, present) |
+| `/resume` / `/status` | Resume or check progress on an existing plan |
+| `/pr` | Final checks and prepare a pull request |
+| `/audit` / `/audit-fix` | Deep multi-dimension audit of this app, and fixing one dimension |
+| `/workflow` | Show the full command reference |
+| `/install` | Re-run to add a skipped module (e.g. observability) later |
+
+Working directories: research/plan/status files live in `.claude/temp/`; project docs Claude
+maintains live in `.claude/docs/`; audit output lives in `.claude/audit/<date>/`.

@@ -1,100 +1,200 @@
 ---
 description: Show current plan status and progress
+argument-hint: <ticket-number> optional
 ---
 
-# Plan Status
+# Status
 
-Show the current state of the active plan without executing anything.
+Show the status of work tracked in `.claude/temp/` by reading `status.md` files.
 
-## Instructions
+Two modes:
 
-### 1. Find Active Plan
+- `/status <ticket-or-slug>` — show and update status for a specific task
+- `/status` (no params) — scan all tasks and show a dashboard
 
-Search for plans with Status: `IN_PROGRESS` or `READY`:
+## Arguments
 
-```bash
-find temp -name "plan.md" 2>/dev/null
+$ARGUMENTS — Optional: ticket ID (e.g., a manually-typed prefix) or folder slug to check a specific task.
+
+---
+
+## Ticket Tracker
+
+None is configured for this project (see `.claude/docs/workflow-config.md`) — there's no
+`ticket-tracker` agent to fetch status or fix-version from. `ticket_status` and `fix_version`
+always show `—` / `null`. If a `TICKET-ID` segment is present in a folder/branch name it's shown
+as plain text only. Don't prompt to set one up — this was a deliberate choice, not a gap.
+
+---
+
+## Mode 1: Single Task — `/status <ticket-or-slug>`
+
+### 1. Find the folder
+
+Search `.claude/temp/` for a directory matching the argument:
+
+- If argument looks like a ticket ID (e.g., `PROJ-1234`), match directories starting with that ID
+- Otherwise, match directories containing the argument as a substring
+
+If no match:
+
 ```
-
-If no plans found:
-
-```
-No plans found.
+No task folder found matching '<argument>'.
 Run /begin to start new work.
 ```
 
-If no active plans (all COMPLETE or ABORTED):
+If multiple matches, list them and ask user to pick.
 
-```
-No active plans.
+### 2. Read status.md
 
-Completed plans:
-- <plan-name> (COMPLETE)
+Read `.claude/temp/<folder>/status.md`. If it doesn't exist, create one with defaults (see "Creating status.md" below).
 
-Run /begin to start new work, or /resume to view completed plans.
-```
+### 3. Update from external sources
 
-### 2. Parse Current Plan
+**Git info:**
 
-Read plan.md and extract:
+- Check if the branch from status.md exists: `git branch --list <branch>`
+- Check if branch is merged to main: `git branch --merged main | grep <branch>`
+- If merged and work_status isn't `merged` or `done`, update work_status to `merged`
+- Get merged date if available: `git log main --oneline --merges --grep="<branch>" --format="%ai" | head -1`
 
-- Plan name (directory name)
-- Task description
-- Branch name
-- Status
-- Total subtasks
-- Current subtask (first with incomplete checklist)
-- Progress per subtask
+No ticket tracker is configured — `ticket_status` and `fix_version` stay `—` / `null`.
 
-### 3. Display Status
+### 4. Write updated status.md
+
+Save changes back to the file.
+
+### 5. Display
 
 ```markdown
-## Plan: <plan-name>
+## Status: <name>
 
-**Task:** <task description>
-**Branch:** <branch-name>
-**Status:** <IN_PROGRESS|READY>
+| Field         | Value                   |
+| ------------- | ----------------------- |
+| Ticket        | <ticket> (<ticket_url>)  |
+| Task Type     | <task_type>             |
+| Branch        | <branch>                |
+| Work Status   | <work_status>           |
+| Ticket Status | <ticket_status or —>    |
+| Fix Version   | <fix_version or —>      |
+| Created       | <created>               |
+| Merged        | <merged_date or —>      |
 
-### Progress: Subtask <current> of <total>
+### Summary
 
-### Current Subtask
+<summary text>
 
-**<N>. <subtask title>**
+### Plan Progress
 
-- [x] Dev
-- [x] Review
-- [ ] Present ← current phase
-- [ ] Accept
-
-### All Subtasks
-
-| #   | Title   | Status      |
-| --- | ------- | ----------- |
-| 1   | <title> | Done        |
-| 2   | <title> | In Progress |
-| 3   | <title> | Pending     |
-| 4   | <title> | Pending     |
-
-### Next Action
-
-Run `/next` to continue with <current phase> phase.
+<if plan.md exists, show subtask progress: for each subtask, its title and which of Dev/Review/Present are checked>
 ```
 
-## Multiple Plans
+---
 
-If multiple active plans found, list them:
+## Mode 2: Dashboard — `/status` (no params)
+
+### 1. Scan all folders
+
+```bash
+ls -d .claude/temp/*/ 2>/dev/null
+```
+
+For each directory, check if `status.md` exists. Skip directories without one (they're not tracked tasks — e.g., standalone files or non-task folders).
+
+### 2. Update incomplete tasks
+
+For each status.md where work_status is NOT `done`, `complete`, or `cancelled`:
+
+- Run the same git checks as Mode 1
+- Update the status.md file
+
+### 3. Display dashboard
+
+```markdown
+## Task Dashboard
+
+| Ticket    | Task                       | Work Status | Ticket Status | Fix Version |
+| --------- | -------------------------- | ------------ | -------------- | ----------- |
+| —         | update-booking-form         | merged      | —              | —           |
+| —         | bugfix-menu-price-rounding  | in-progress | —              | —           |
+| —         | housekeeping-brand-cleanup  | done        | —              | —           |
+
+### Summary
+
+- **Active:** <N> tasks in progress
+- **Review/Merged:** <N> tasks awaiting QA or merge
+- **Complete:** <N> tasks done or cancelled
+
+<N> tasks are marked done/cancelled and could be cleaned up.
+Would you like to review any of these for deletion?
+```
+
+Wait for user response. If they say yes, list the done/cancelled folders and let them pick which to delete. Do NOT auto-delete.
+
+---
+
+## Creating status.md
+
+When a status.md needs to be created (either by /status or by other commands like /begin), use this template:
+
+```yaml
+---
+name: <human-readable task name>
+ticket: <TICKET-ID or null>
+ticket_url: <full ticket URL or null>
+branch: <branch name from git or null>
+task_type: <feature | bugfix | housekeeping | spike | refactor>
+created: <YYYY-MM-DD>
+---
+
+## Status
+- ticket_status: <from ticket tracker or —>
+- work_status: <research | planning | in-progress | review | merged | done | cancelled>
+- fix_version: <from ticket tracker or null>
+- merged_date: <YYYY-MM-DD or null>
+
+## Summary
+<one-line summary of the task>
+```
+
+### Work status values
+
+- `research` — research phase started
+- `planning` — plan created
+- `in-progress` — dev work underway
+- `review` — code review phase
+- `merged` — PR merged to main
+- `done` — ticket closed / QA passed
+- `cancelled` — work abandoned
+
+### Determining task_type
+
+- If a ticket exists → `feature` (default, unless ticket type says otherwise)
+- If folder starts with `bugfix-` → `bugfix`
+- If folder starts with `housekeeping-` → `housekeeping`
+- If folder starts with `spike-` → `spike`
+- If folder starts with `refactor-` → `refactor`
+- Otherwise → infer from folder name or ask
+
+---
+
+## Updating status.md
+
+When updating status.md from other commands (/dev, /review, /pr), only update the specific field that changed. Read the file, find the line, replace the value. Do not rewrite the entire file.
+
+Example — updating work_status:
 
 ```
-Multiple active plans found:
-
-1. <plan-name> (IN_PROGRESS - Subtask 2/4)
-2. <plan-name> (READY - not started)
-
-Run /resume to select a plan, or /next to continue most recent.
+Find: `- work_status: <old-value>`
+Replace: `- work_status: <new-value>`
 ```
+
+---
 
 ## Rules
 
-- This command is read-only - it never modifies anything
-- Always show clear next action
-- If plan state is unclear, suggest /resume to reset context
+- No ticket tracker is configured for this project — never block on it, never prompt to set one up
+- Never auto-delete folders — always let the user decide
+- Update status.md files in-place, don't recreate them
+- If a status.md is malformed, fix it rather than erroring
+- Show clear, actionable output — the user should know what to do next
