@@ -45,17 +45,10 @@
   [Container API](https://docs.astro.build/en/reference/container-reference/) only for components
   with real conditional rendering logic worth asserting on.
 
-> **Action required (not a workflow-config change):** these are not yet installed. Add as
-> devDependencies before the test suite can run:
->
-> ```bash
-> npm install -D vitest @testing-library/react @testing-library/dom @testing-library/jest-dom jsdom
-> ```
->
-> Then add a `test` script to `package.json` (e.g. `"test": "vitest run"`) and a `vitest.config.ts`
-> (environment: `jsdom`, with a `test/environment` override or per-file `// @vitest-environment
-> node` for API-route/lib tests that don't need the DOM). This is intentionally left for a
-> follow-up commit — `/install` does not run `npm install`.
+Installed: `vitest.config.ts` (jsdom default environment, `@` alias to `src`) and
+`vitest.setup.ts` (`@testing-library/jest-dom/vitest` matchers), run via `npm test`. For
+API-route/lib tests that don't need the DOM, add a per-file `// @vitest-environment node`
+comment at the top of the test file.
 
 ## UI components
 

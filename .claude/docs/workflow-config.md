@@ -9,8 +9,7 @@
 - Package manager: npm (`package-lock.json`)
 
 ## Commands
-- Test: not configured (no test runner installed yet — see `.claude/docs/testing.md` for the plan
-  to add Vitest + React Testing Library)
+- Test: `npm test` (Vitest + React Testing Library — see `.claude/docs/testing.md`)
 - Lint: not configured
 - Format: not configured
 - Format check: not configured
@@ -20,9 +19,6 @@
 
 ## Ticket Tracker
 - System: None
-- Note: no ticket-tracker integration is configured. The branch convention below still uses a
-  `TICKET-ID` segment, but it's optional and set manually by the developer (there's no system to
-  validate or fetch it from). Commands fall back gracefully when it's absent.
 
 ## Git
 - Hosting: GitHub (`healyjames/redcowv2`)
