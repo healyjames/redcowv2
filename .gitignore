@@ -37,3 +37,6 @@ src/worker-configuration.d.ts
 
 # ai temp files
 claude/
+.claude/.forge/
+.claude/temp/
+.claude/settings.local.json

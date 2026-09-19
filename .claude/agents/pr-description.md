@@ -19,19 +19,26 @@ Generate comprehensive pull request descriptions that help reviewers understand 
 
 ## Process
 
-1. **Analyze branch changes** - `git diff dev...HEAD`
-2. **List modified files** - `git diff dev...HEAD --name-only`
-3. **Review commit history** - `git log dev..HEAD --oneline`
-4. **Fetch linked issues (if available)** - Use GitHub MCP to get issue details
+1. **Analyze branch changes** - `git diff main...HEAD`
+2. **List modified files** - `git diff main...HEAD --name-only`
+3. **Review commit history** - `git log main..HEAD --oneline`
+4. **Fetch linked issues (if available)** - Use GitHub MCP / `gh` to get issue details if a GitHub issue number is referenced
 5. **Assess PR size** - Small, Medium, or Large
 6. **Identify breaking changes** - API changes, migrations needed
 7. **Generate appropriate template** - Based on size and type
 
-### Jira Ticket Linking (if available)
+### Ticket Linking (optional, manual)
 
-If you have access to the user Jira ticket, then please add a link and whether the PR fully mathes the ticket description.
+This project has no ticket-tracker integration configured — there's no Jira or GitHub Issues
+workflow wired up. Branches follow `<TICKET-ID>-<kebab-case-summary>` where `TICKET-ID` is
+optional and set manually by the developer (it may be absent, e.g. `bugfix-search-ranking-issue`).
 
-This enriches the PR description with proper issue context.
+- If the branch name happens to start with something ticket-shaped (e.g. `PROJ-1234-...`),
+  include it as plain text context at the top of the PR body — don't assume a system or generate
+  a tracker link, since none is configured.
+- If the developer mentions a GitHub issue number in conversation, use an auto-closing reference
+  in the body — e.g. `Closes #123`.
+- Otherwise, skip ticket linking entirely; the Summary/Context sections carry the "why".
 
 ## PR Size Assessment
 
@@ -56,6 +63,8 @@ This enriches the PR description with proper issue context.
 ### Small PR (1-3 files)
 
 ```markdown
+[ticket reference, if the branch name has one, or "Closes #123" if applicable — otherwise omit]
+
 ## Summary
 
 [1-2 sentences on what this does and why]
@@ -67,8 +76,8 @@ This enriches the PR description with proper issue context.
 
 ## Testing
 
-- [ ] Tests pass locally
-- [ ] Manual testing performed
+- [ ] `npm run build` succeeds
+- [ ] Manual testing performed (no test runner configured yet — see `.claude/docs/testing.md`)
 
 [If UI change: screenshot or "N/A"]
 ```
@@ -96,9 +105,8 @@ Closes #123
 
 ### Automated
 
-- [ ] Unit tests added/updated
-- [ ] Integration tests pass
-- [ ] E2E tests pass (if applicable)
+- [ ] `npm run build` succeeds
+- [ ] Vitest unit tests added/updated (once Vitest lands — see `.claude/docs/testing.md`; until then, note "N/A — test runner not yet installed")
 
 ### Manual Testing
 
@@ -166,9 +174,8 @@ Relates to #123
 
 ### Automated
 
-- [ ] Unit tests added/updated
-- [ ] Integration tests pass
-- [ ] E2E tests pass
+- [ ] `npm run build` succeeds
+- [ ] Vitest unit tests added/updated (once installed — see `.claude/docs/testing.md`)
 
 ### Manual Testing
 
@@ -247,13 +254,13 @@ When analyzing commits to build the PR description:
 
 ```bash
 # Get all commits on branch
-git log dev..HEAD --oneline
+git log main..HEAD --oneline
 
 # Get detailed commit messages
-git log dev..HEAD --format="%B---"
+git log main..HEAD --format="%B---"
 
 # Get files changed with stats
-git diff dev...HEAD --stat
+git diff main...HEAD --stat
 ```
 
 Look for:

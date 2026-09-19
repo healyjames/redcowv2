@@ -15,10 +15,16 @@ Check if `/security` has been run for this plan:
 
 ```
 Security audit not run. Consider running /security first.
+Note this is not neccisary for every PR, so use discretion
 Continue with PR anyway? (y/n)
 ```
 
 If user declines, stop and let them run `/security`.
+
+For **large or high-stakes** change sets, also consider `/double-check` — an independent second
+opinion from a different AI CLI (the `double-check` skill) — before opening the PR. If the change is
+large or mixes concerns, consider `/slice` first (the `slicing` skill) — it may want to be a stack of
+smaller PRs.
 
 ## Step 2: Verify Plan Complete
 
@@ -43,7 +49,7 @@ Run /next to continue.
 
 ```bash
 git status
-git log dev..HEAD --oneline
+git log main..HEAD --oneline
 ```
 
 Ensure:
@@ -59,23 +65,47 @@ Warning: Uncommitted changes detected.
 Commit or stash before opening PR? (y/n)
 ```
 
-## Step 5: Generate PR Description
+## Step 4: Generate PR Description
 
-Use `pr-description` agent with context:
+Use the `pr-description` agent to generate the description, following this structure. No ticket
+tracker is configured for this project, so lead with the problem statement directly rather than a
+ticket reference — include a `TICKET-ID` line only if the branch name actually has one typed
+manually.
 
-- Task description from plan metadata
-- All commit titles and goals
-- Summary of what was built
+**Template:**
 
-## Step 6: Present for Approval
+```markdown
+[<TICKET-ID>: if the branch name has one — otherwise omit this line entirely]
+
+## Problem
+
+<1-3 sentences explaining what was wrong or what needed to change and why>
+
+## Changes
+
+<Bulleted list of what was actually changed>
+
+## Test plan
+
+<Bulleted checklist of how to verify the changes>
+```
+
+**Where to get the information:**
+
+- **Ticket ID** (optional): only if the branch name has one typed manually — no tracker to fetch it from
+- **Problem**: from research.md or task description — what was the user trying to solve?
+- **Changes**: from git diff and plan subtasks
+- **Test plan**: from test cases written (if Vitest has been added — see `.claude/docs/testing.md`) and manual verification steps
+
+## Step 5: Present for Approval
 
 ```markdown
 ## Pull Request Preview
 
-**Title:** <generated title>
+**Title:** [<TICKET-ID>: ]<short description>  (omit the ticket segment if there isn't one)
 
 **Description:**
-<generated description>
+<generated description using template above>
 
 ---
 
@@ -89,22 +119,31 @@ If user provides feedback:
 - Adjust title/description
 - Present again
 
-## Step 7: Create PR
+## Step 6: Create PR
 
-After approval:
+After approval, open the PR/MR in the browser so the user can make final edits before submitting, using the configured git hosting and default branch (see `.claude/docs/workflow-config.md`):
 
 ```bash
-gh pr create --title "<title>" --body "<description>" --web
+# GitHub (default). For GitLab use `glab mr create`; for Bitbucket, open the compare URL.
+gh pr create --base <default-branch> --title "<title>" --body "<description>" --web
 ```
 
-## Step 8: Update Plan
+**IMPORTANT:** Always open the PR in the browser (GitHub's `--web`, or the platform equivalent) rather than submitting it directly. The user reviews and makes final edits before clicking "Create" on the hosting site. Do NOT create the PR without opening it for review.
+
+## Step 7: Update Plan and Status
 
 Update plan.md:
 
 - Set Status to `COMPLETE`
 - Add PR link if desired
 
-## Step 9: Report
+Update `status.md` in the same task directory:
+
+- Set `work_status` to `merged`
+- Set `merged_date` to today's date
+- Add the PR URL as a new line: `- pr_url: <url>`
+
+## Step 8: Report
 
 ```
 PR created: <url>
