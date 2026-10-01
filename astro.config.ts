@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const brand = process.env.PUBLIC_BRAND;
+const { fonts } = await import(`./src/assets/${brand}/fonts/config.ts`);
 
 export default defineConfig({
     vite: {
@@ -18,7 +19,7 @@ export default defineConfig({
             },
         },
     },
-
+    fonts,
     site: process.env.PUBLIC_SITE_URL,
     integrations: [react(), sitemap()],
     output: "static",
