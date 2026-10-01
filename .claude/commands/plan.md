@@ -30,40 +30,33 @@ If no plan exists, run the `planner` agent to create the implementation plan:
 4. Creates trackable checklists
 5. At any point where there are unknowns or clarifications needed, pause to prompt the user for more information
 
-## Optional Integrations
+## Ticket Tracker
 
-### Memory MCP (if configured)
-
-Before spawning the planner agent, briefly check Memory MCP for planning-relevant context:
-
-```
-Use `search_nodes` with: architecture, decision, constraint, preference
-Pass any relevant memories to the planner agent in the prompt.
-```
-
-If Memory MCP is not available, skip this step - the planner will work from research.md.
-
-### Jira (if configured)
-
-If a Jira ticket is referenced or can be derived from the branch name, fetch ticket details using /jira. If Jira credentials are not configured, skip this step.
+None is configured for this project. If a ticket-ID-shaped prefix can be derived from the branch
+name, treat it as plain context only — there is no system to fetch details from.
 
 ## Testing
 
 For large tasks, add unit-test subtasks where appropriate, as their own subtasks.
 For small tasks, add a final unit-test subtask to add unit tests at the end.
 
+No test runner is installed yet (see `.claude/docs/testing.md` — Vitest + React Testing Library
+are the plan, not yet added as devDependencies). Write test subtasks assuming Vitest lands first;
+if it hasn't by the time the subtask executes, the subtask should note that and fall back to
+`npm run build` + manual verification rather than skipping verification entirely.
+
+## Verify the plan
+
+For non-trivial tasks, apply the **`verify-plan` skill** before signoff: critique the plan against
+research and the acceptance criteria and fix gaps. If there are **no** acceptance criteria (none on
+the ticket and none in the plan), draft a testable set and ask the user whether to add them to the
+ticket (best — testers can verify later) or keep them local to the plan; record them in plan.md
+either way.
+
 ## After Planning
 
-```
-Plan created: .claude/temp/<slug>/plan.md
-
-<N> subtasks planned:
-1. <subtask 1 title>
-2. <subtask 2 title>
-...
-
-Run /signoff to review and approve.
-```
+After the plan is verified, automatically run /signoff to present the research and plan for user
+approval. Do not ask the user to run /signoff manually.
 
 ## Rules
 
@@ -72,7 +65,8 @@ Run /signoff to review and approve.
 - Each subtask should be small and committable
 - Claude should NEVER commit without explicit user permission
 - After completing a subtask, suggest a commit message and wait for user to commit
-- Ask clarifying questions if approach is genuinely ambiguous
+- If the approach is genuinely ambiguous or decisions are needed, apply the `clarify` skill rather than guessing
+- For non-trivial work, apply the `slicing` skill to decide whether it's one PR or a stack; record slices in plan.md
 - Always check for a plan first and carry on from wherever we stopped work last
 - Always track the work we have done in the plan so we can stop and start work as needed
 - Stop and prompt the user rather than making assumptions on unknowns or areas of clarification

@@ -17,11 +17,18 @@ Output to the existing plan directory's research.md.
 
 ### If no plan directory
 
-Ask user for task slug or generate one, then create:
+Generate a slug using the same naming rules as `/begin` Step 1:
+
+- If ticket ID found (from branch or task description) → `<TICKET-ID>-<slug>`
+- If no ticket ID → prompt user for task type (bugfix/housekeeping/spike/refactor) or ticket ID, then use `<task-type>-<slug>`
+
+Ask user to confirm, then create:
 
 ```bash
 mkdir -p .claude/temp/<slug>
 ```
+
+After creating the directory, create `.claude/temp/<slug>/status.md` using the template from `/status` ("Creating status.md" section) with `work_status: research`.
 
 Output to `.claude/temp/<slug>/research.md`.
 
@@ -36,20 +43,12 @@ Output to `.claude/temp/<slug>/research.md`.
 
 ## Optional Integrations
 
-### Memory MCP (if configured)
+### Ticket Tracker
 
-Before spawning the researcher agent, briefly check Memory MCP for task-relevant context:
-
-```
-Use `search_nodes` with keywords from the task description.
-Pass any relevant memories to the researcher agent in the prompt.
-```
-
-If Memory MCP is not available, skip this step - the researcher will gather context from the codebase directly.
-
-### Jira (if configured)
-
-If the task references a Jira ticket or the branch name contains a ticket ID, attempt to fetch ticket details. If Jira credentials are not configured, skip this step.
+None is configured for this project. If the task or branch name has a ticket-ID-shaped prefix,
+treat it as plain context — there's no system to fetch details from. Since there's no ticket to
+carry acceptance criteria, note that the planning stage will draft them (see the `verify-plan`
+skill).
 
 ### GitHub (if referenced)
 
@@ -67,4 +66,4 @@ Run /plan to create implementation plan, or /begin to run full workflow.
 
 - Use the researcher agent - don't do manual research
 - Output must go to a plan directory
-- Ask clarifying questions if scope is genuinely unclear
+- If scope is genuinely unclear or there are decisions to make, apply the `clarify` skill (structured rounds) rather than guessing

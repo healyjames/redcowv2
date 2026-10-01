@@ -1,65 +1,95 @@
 ---
 name: test-writer
-description: Generate tests following black-box, behavior-focused testing philosophy using Jest + React Testing Library. Writes tests for Azure Functions, React components, hooks, and utilities.
+description: Generate tests following black-box, behavior-focused testing philosophy using Vitest + React Testing Library. Writes tests for Astro API routes, React island components, hooks, and utilities.
 tools: Read,Grep,Glob,Write,Edit,Bash
 model: sonnet
 ---
 
 # Test Writer Agent
 
-Generate tests for the ngw-app-ts monorepo following established patterns.
+Generate tests for the project following established patterns.
 
 ## Tech Stack
 
-- **Framework**: Jest (v29.7.0)
+- **Framework**: Vitest
 - **React Testing**: @testing-library/react, @testing-library/user-event
-- **Matchers**: @testing-library/jest-dom
-- **TypeScript**: Full type safety in tests
-- **Environment**: `jsdom` for React components, `node` for Azure Functions
+- **Matchers**: @testing-library/jest-dom (via `vitest.setup.ts`, extended with `expect.extend`)
+- **TypeScript**: Full type safety in tests, strict mode (`astro/tsconfigs/strict`)
+- **Environment**: `jsdom` for React island components and hooks, `node` for Astro API routes and
+  `src/libs/*` utilities
+
+> **Not yet installed:** `vitest`, `@testing-library/react`, `@testing-library/dom`,
+> `@testing-library/jest-dom`, and `jsdom` are not in `package.json` yet. See
+> `.claude/docs/testing.md` for the devDependency + config additions needed before these tests
+> can run. Write tests against this spec regardless — they'll run as soon as the tooling lands.
 
 ## Core Philosophy
 
-1. **Test behavior, not implementation** - Tests verify what code does, not how
-2. **Units of behavior** - A "unit" is a meaningful behavior, not a function/class
-3. **Mock at module level** - Use `jest.mock()` at top of file for external dependencies
-4. **Tests are documentation** - Tests communicate intent to future developers
-5. **AAA pattern** - Arrange, Act, Assert
+Follow the **`testing` skill** for the testing philosophy (black-box / behaviour-focused, tests as
+documentation, predict-then-verify, TDD). This agent adds the mechanics for this project's
+framework:
+
+- **Mock at module level** — `vi.mock(...)` at the top of the file, before imports are used
+- **AAA pattern** — Arrange, Act, Assert
+
+## Astro-specific notes
+
+This is an Astro 7 + React 19 islands app — most `.astro` files are server-rendered markup with no
+client-side logic, so they are **not** unit-test targets:
+
+- **`.astro` components** — don't unit test the markup directly. Extract any non-trivial logic
+  (data shaping, brand resolution, menu parsing) out of the frontmatter into a plain function in
+  `src/libs/utils` and test *that*. For a component whose template logic genuinely needs coverage,
+  use Astro's [Container API](https://docs.astro.build/en/reference/container-reference/)
+  (`experimental_AstroContainer`) to render it to a string and assert on the output — reserve this
+  for components with real conditional logic, not static markup.
+- **React island components** (`src/components/client/**`, e.g. `BookingForm`, `MobileNavigation`)
+  — test with React Testing Library exactly as any React component; these hydrate client-side so
+  standard RTL + jsdom applies directly.
+- **Astro API routes** (`src/pages/api/**`, e.g. `src/pages/api/booking`) — test the exported
+  `APIRoute` handler (`GET`/`POST`/etc.) directly by constructing a real `Request` and an
+  `APIContext`-shaped object; no framework test harness is needed.
+- **Multi-tenant brand logic** — anything that reads from `src/assets/<brand>` (content, menus,
+  styles per brand) should be tested against at least two brands (e.g. `redcow` and `whitelabel`)
+  to catch assumptions that only hold for one tenant.
+- Full page/navigation flows (e.g. a booking journey end-to-end) are out of scope for Vitest —
+  that's e2e territory (not yet set up); don't try to simulate a full Astro page render in a unit
+  test.
 
 ## Process
 
 1. **Read the source file** to understand the module
 2. **Check for existing tests** - extend rather than replace
-3. **Check for testUtils** - reuse factory functions if they exist
+3. **Check for test factories/utils** - reuse factory functions if they exist (e.g. under
+   `src/libs/*/test-utils.ts`, following this project's vertical-slice layout)
 4. **Identify test categories** - happy path, errors, edge cases
 5. **Write test names first** - they're documentation
 6. **Implement using AAA** - Arrange, Act, Assert
-7. **Run tests** to verify they pass
+7. **Run tests** to verify they pass (once Vitest is installed — see note above)
 
 ## Test File Location & Naming
 
-### React Components & Hooks (libs/ui, libs/storybook)
+Follow the project's vertical-slice layout — co-locate tests with the source they cover.
 
-Co-locate tests with source files:
+### React Island Components & Hooks
 
 ```
-ComponentName/
-├── ComponentName.tsx
-├── ComponentName.test.tsx
+src/components/client/BookingForm/
+├── BookingForm.tsx
+├── BookingForm.test.tsx
 └── index.ts
 ```
 
-### Azure Functions (apps/services/\*)
-
-Place tests in a `/test` folder:
+### Astro API Routes / `src/libs` Utilities
 
 ```
-service-name/
-├── src/
-│   └── functions/
-│       └── handler.ts
-└── test/
-    ├── handler.test.ts
-    └── testUtils.ts
+src/pages/api/booking/
+├── index.ts
+└── index.test.ts
+
+src/libs/utils/
+├── formatMenuPrice.ts
+└── formatMenuPrice.test.ts
 ```
 
 ### Naming Convention
@@ -70,31 +100,24 @@ service-name/
 ## Test Structure
 
 ```typescript
-import { functionUnderTest } from '../src/functions/handler';
-import { createMockContext, createMockRequest } from './testUtils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { functionUnderTest } from './handler';
+import { createRecord } from '../../libs/database';
 
 // Mocks at module level - BEFORE describe blocks
-jest.mock('@persimmonhomes/auth');
-jest.mock('@persimmonhomes/bluestone-adapter', () => ({
-  createDevelopment: jest.fn(),
-  getAttributeIdByName: jest.fn(),
+vi.mock('../../libs/database', () => ({
+  createRecord: vi.fn(),
 }));
 
 describe('ModuleName', () => {
-  // Shared variables
-  let context: InvocationContext;
-  let mockCallback: jest.Mock;
-
-  // Mock data - keep close to tests
   const mockData = {
     id: 'test-123',
     name: 'Test Item',
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    // Reset mocks to default behavior
-    (mockedFunction as jest.Mock).mockReturnValue(defaultValue);
+    vi.clearAllMocks();
+    vi.mocked(createRecord).mockResolvedValue(mockData);
   });
 
   it('should describe expected behavior', () => {
@@ -114,41 +137,36 @@ describe('ModuleName', () => {
 
 ### Module-Level Mocks
 
-Always place `jest.mock()` at the top of the file, before imports are used:
+Always place `vi.mock()` at the top of the file:
 
 ```typescript
 // Simple mock - auto-mocks all exports
-jest.mock('@persimmonhomes/auth');
+vi.mock('../../libs/email/sendConfirmation');
 
 // Mock with specific implementation
-jest.mock('@persimmonhomes/bluestone-adapter', () => ({
-  createDevelopment: jest.fn(),
-  createPhase: jest.fn(),
-  getAttributeIdByName: jest.fn().mockImplementation((name) => {
-    if (name === 'Product Type') return 'mock-product-type-id';
-    return null;
-  }),
+vi.mock('../../libs/database', () => ({
+  createRecord: vi.fn(),
+  findById: vi.fn(),
 }));
-
-// Mock internal module
-jest.mock('../src/libs/notifications');
 ```
 
-### React Component Mocks
+Use `vi.mocked(fn)` for typed access to a mocked import, rather than casting `as jest.Mock`:
 
 ```typescript
-jest.mock('../PriceFilterBoxes/PriceFilterBoxes', () => ({
-  __esModule: true,
-  default: ({ onChange }: { onChange: (value: number | null) => void }) => (
-    <div data-testid="price-filter-boxes">
-      <button onClick={() => onChange(200000)}>£200,000</button>
-    </div>
-  ),
-}));
+import { createRecord } from '../../libs/database';
 
-jest.mock('../../atoms/Icon/Icon', () => ({
-  __esModule: true,
-  default: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
+vi.mock('../../libs/database');
+
+vi.mocked(createRecord).mockResolvedValue({ id: 'item-123' });
+```
+
+### React Island Component Mocks
+
+```typescript
+vi.mock('../MobileNavigation/MobileNavigation', () => ({
+  default: ({ onToggle }: { onToggle: () => void }) => (
+    <button data-testid="mobile-nav-toggle" onClick={onToggle} />
+  ),
 }));
 ```
 
@@ -158,10 +176,8 @@ Always reset in `beforeEach`:
 
 ```typescript
 beforeEach(() => {
-  jest.clearAllMocks();
-  // Reset to default behavior
-  (authorizeRequest as jest.Mock).mockReturnValue({ isAuthorized: true });
-  (handleNotifications as jest.Mock).mockResolvedValue([]);
+  vi.clearAllMocks();
+  vi.mocked(sendConfirmationEmail).mockResolvedValue({ success: true });
 });
 ```
 
@@ -169,160 +185,110 @@ beforeEach(() => {
 
 ```typescript
 // Sync return
-(someFunction as jest.Mock).mockReturnValue(value);
+vi.mocked(someFunction).mockReturnValue(value);
 
 // Async return (resolved promise)
-(asyncFunction as jest.Mock).mockResolvedValue(value);
+vi.mocked(asyncFunction).mockResolvedValue(value);
 
 // Async rejection
-(asyncFunction as jest.Mock).mockRejectedValue(new Error('Test error'));
+vi.mocked(asyncFunction).mockRejectedValue(new Error('Test error'));
 
 // Different returns per call
-(someFunction as jest.Mock).mockReturnValueOnce(firstValue).mockReturnValueOnce(secondValue);
+vi.mocked(someFunction).mockReturnValueOnce(firstValue).mockReturnValueOnce(secondValue);
 ```
 
 ## Test Types
 
-### Azure Function Tests
+### Astro API Route Tests (`src/pages/api/**`)
 
-Use the testUtils factory functions for Azure Functions:
+Astro API routes export handlers typed as `APIRoute` and receive an `APIContext`. Build a real
+`Request` and a minimal context object rather than framework-specific req/res mocks:
 
 ```typescript
-import { HttpRequest, InvocationContext } from '@azure/functions';
-import { createDevelopment } from '../src/functions/createDevelopment';
-import { createMockContext, createMockRequest } from './testUtils';
-import { authorizeRequest } from '@persimmonhomes/auth';
-import { createDevelopment as createBluestoneDevelopment } from '@persimmonhomes/bluestone-adapter';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { POST } from './index';
+import { sendBookingConfirmation } from '../../../libs/email/sendBookingConfirmation';
 
-jest.mock('@persimmonhomes/auth');
-jest.mock('@persimmonhomes/bluestone-adapter', () => ({
-  createDevelopment: jest.fn(),
+vi.mock('../../../libs/email/sendBookingConfirmation', () => ({
+  sendBookingConfirmation: vi.fn(),
 }));
 
-describe('createDevelopment', () => {
-  let context: InvocationContext;
-  let req: HttpRequest & { json: jest.Mock };
+const buildContext = (body: unknown) => ({
+  request: new Request('http://localhost/api/booking', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  }),
+}) as Parameters<typeof POST>[0];
 
-  const mockDevelopment = {
-    name: 'Test Development',
-    location: 'Test Location',
-    number: 'DEV-001',
+describe('POST /api/booking', () => {
+  const mockBooking = {
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+    partySize: 4,
+    date: '2026-10-01',
   };
 
   beforeEach(() => {
-    context = createMockContext();
-    req = createMockRequest();
-    jest.clearAllMocks();
-    (authorizeRequest as jest.Mock).mockReturnValue({ isAuthorized: true });
+    vi.clearAllMocks();
+    vi.mocked(sendBookingConfirmation).mockResolvedValue({ success: true });
   });
 
-  it('should return 201 with valid data', async () => {
-    req.json.mockResolvedValue(mockDevelopment);
-    (createBluestoneDevelopment as jest.Mock).mockResolvedValue('dev-123');
+  it('returns 200 and sends a confirmation for a valid booking', async () => {
+    const response = await POST(buildContext(mockBooking));
 
-    const response = await createDevelopment(req, context);
-
-    expect(response.status).toBe(201);
-    expect(response.jsonBody).toMatchObject({
-      name: mockDevelopment.name,
-      location: mockDevelopment.location,
-    });
+    expect(response.status).toBe(200);
+    expect(sendBookingConfirmation).toHaveBeenCalledWith(
+      expect.objectContaining({ email: mockBooking.email }),
+    );
   });
 
-  it('should return 401 if not authorized', async () => {
-    (authorizeRequest as jest.Mock).mockReturnValue({
-      isAuthorized: false,
-      response: { status: 401 },
-    });
-
-    const response = await createDevelopment(req, context);
-
-    expect(response.status).toBe(401);
-  });
-
-  it('should return 400 for missing required fields', async () => {
-    req.json.mockResolvedValue({ name: 'Test' }); // missing location
-
-    const response = await createDevelopment(req, context);
+  it('returns 400 for missing required fields', async () => {
+    const response = await POST(buildContext({ name: 'Jane Doe' }));
 
     expect(response.status).toBe(400);
-    expect(response.jsonBody).toMatchObject({
-      error: expect.any(String),
-    });
   });
 
-  it('should return 500 on internal error', async () => {
-    req.json.mockResolvedValue(mockDevelopment);
-    (createBluestoneDevelopment as jest.Mock).mockRejectedValue(new Error('Database error'));
+  it('returns 500 when the confirmation email fails to send', async () => {
+    vi.mocked(sendBookingConfirmation).mockRejectedValue(new Error('SMTP error'));
 
-    const response = await createDevelopment(req, context);
+    const response = await POST(buildContext(mockBooking));
 
     expect(response.status).toBe(500);
-    expect(response.jsonBody).toMatchObject({
-      error: 'Internal server error',
-      details: 'Database error',
-    });
   });
 });
 ```
 
-### React Component Tests
+### React Island Component Tests
 
-Use React Testing Library - test like a user:
+Use React Testing Library — test like a user:
 
 ```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Filters, { FilterCategories } from './Filters';
+import BookingForm from './BookingForm';
 
-jest.mock('../PriceFilterBoxes/PriceFilterBoxes', () => ({
-  __esModule: true,
-  default: ({ onChange }: { onChange: (value: number | null) => void }) => (
-    <div data-testid="price-filter-boxes">
-      <button onClick={() => onChange(200000)}>£200,000</button>
-    </div>
-  ),
-}));
-
-describe('Filters Component', () => {
-  const mockApplyFilters = jest.fn();
-  const mockClearFilters = jest.fn();
-
-  const options: FilterCategories = {
-    availability: ['Available', 'Sold Out'],
-    bedrooms: [1, 2, 3, 4],
-    houseType: ['Detached', 'Semi-Detached'],
-    priceRange: { max: 700, min: 100 },
-    maxPrice: null,
-  };
+describe('BookingForm', () => {
+  const onSubmit = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  test('renders correctly with initial filters', () => {
-    render(<Filters applyFilters={mockApplyFilters} clearFilters={mockClearFilters} options={options} currentFilters={options} />);
+  it('renders the required fields', () => {
+    render(<BookingForm onSubmit={onSubmit} />);
 
-    expect(screen.getByText('Clear all')).toBeInTheDocument();
-    expect(screen.getByText('Availability')).toBeInTheDocument();
-    expect(screen.getByText('Bedrooms')).toBeInTheDocument();
+    expect(screen.getByLabelText('Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Party size')).toBeInTheDocument();
   });
 
-  test('handles applying filters correctly', () => {
-    render(<Filters applyFilters={mockApplyFilters} clearFilters={mockClearFilters} options={options} currentFilters={options} />);
+  it('submits the entered details', () => {
+    render(<BookingForm onSubmit={onSubmit} />);
 
-    fireEvent.click(screen.getByText('£200,000'));
-    fireEvent.click(screen.getByText('Apply Filters'));
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Jane Doe' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Book table' }));
 
-    expect(mockApplyFilters).toHaveBeenCalledWith(expect.objectContaining({ maxPrice: 200000 }));
-  });
-
-  test('handles checkbox interactions', () => {
-    render(<Filters applyFilters={mockApplyFilters} clearFilters={mockClearFilters} options={options} currentFilters={options} />);
-
-    const checkbox = screen.getByLabelText('Detached');
-    fireEvent.click(checkbox);
-
-    expect(checkbox).toBeChecked();
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: 'Jane Doe' }));
   });
 });
 ```
@@ -339,118 +305,48 @@ Use queries in this order (most to least preferred):
 ### Hook Tests
 
 ```typescript
+import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useCustomHook } from './useCustomHook';
+import { useBookingForm } from './useBookingForm';
 
-describe('useCustomHook', () => {
-  test('returns initial state', () => {
-    const { result } = renderHook(() => useCustomHook());
+describe('useBookingForm', () => {
+  it('returns initial state', () => {
+    const { result } = renderHook(() => useBookingForm());
 
-    expect(result.current.value).toBe(0);
+    expect(result.current.partySize).toBe(1);
   });
 
-  test('updates state on action', () => {
-    const { result } = renderHook(() => useCustomHook());
+  it('updates state on action', () => {
+    const { result } = renderHook(() => useBookingForm());
 
     act(() => {
-      result.current.increment();
+      result.current.setPartySize(4);
     });
 
-    expect(result.current.value).toBe(1);
+    expect(result.current.partySize).toBe(4);
   });
 });
 ```
 
-### Utility Function Tests
+### Utility Function Tests (`src/libs/utils`)
 
 ```typescript
-import { parsePrice } from './parsePrice';
+import { describe, it, expect } from 'vitest';
+import { formatMenuPrice } from './formatMenuPrice';
 
-describe('parsePrice', () => {
-  it('should parse valid price string', () => {
-    expect(parsePrice('£250,000')).toBe(250000);
+describe('formatMenuPrice', () => {
+  it('formats a valid price in pence', () => {
+    expect(formatMenuPrice(1250)).toBe('£12.50');
   });
 
-  it('should handle null input', () => {
-    expect(parsePrice(null)).toBeNull();
+  it('handles null input', () => {
+    expect(formatMenuPrice(null)).toBeNull();
   });
 
-  it('should handle undefined input', () => {
-    expect(parsePrice(undefined)).toBeNull();
-  });
-
-  it('should handle edge cases', () => {
-    expect(parsePrice('0')).toBe(0);
-    expect(parsePrice('')).toBeNull();
+  it('handles zero', () => {
+    expect(formatMenuPrice(0)).toBe('£0.00');
   });
 });
-```
-
-## Test Utilities (testUtils.ts)
-
-For Azure Functions, create a `testUtils.ts` in the `/test` folder:
-
-```typescript
-import type { HttpRequest, InvocationContext } from '@azure/functions';
-import { Brand } from '@persimmonhomes/types';
-
-export const createMockRequest = (
-  options: {
-    query?: Map<string, string>;
-    params?: Record<string, string>;
-    headers?: Map<string, string>;
-    method?: string;
-    brand?: Brand;
-    body?: any;
-  } = {},
-): HttpRequest => {
-  const query = new Map(options.query || []);
-  const body = options.body || {};
-  const method = options.method || 'GET';
-
-  if (options.brand) {
-    if (method === 'DELETE' || method === 'GET') {
-      query.set('brand', options.brand);
-    } else {
-      body.brand = options.brand;
-    }
-  }
-
-  return {
-    method,
-    url: 'http://test.com',
-    headers: options.headers || new Map([['x-api-key', 'valid-api-key']]),
-    query,
-    params: options.params || {},
-    body,
-    json: jest.fn().mockResolvedValue(body),
-  } as unknown as HttpRequest;
-};
-
-export const createMockContext = (): InvocationContext =>
-  ({
-    invocationId: 'test-id',
-    functionName: 'test-function',
-    log: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    info: jest.fn(),
-    trace: jest.fn(),
-    debug: jest.fn(),
-  } as unknown as InvocationContext);
-
-// Reusable mock data
-export const mockHouseType = {
-  id: 'ht-1',
-  objectID: 'ht-1',
-  name: 'Test House Type',
-  bedrooms: 4,
-  bathrooms: 2,
-  floorArea: 150,
-  brand: Brand.CHARLES_CHURCH,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
 ```
 
 ## Test Data
@@ -459,33 +355,28 @@ export const mockHouseType = {
 
 ```typescript
 // Bad
-const development = { name: 'foo', location: 'bar' };
+const booking = { name: 'foo', size: 1 };
 
 // Good
-const development = {
-  name: 'Riverside Gardens',
-  location: 'Manchester',
-  number: 'DEV-001',
+const booking = {
+  name: 'Jane Doe',
+  email: 'jane@example.com',
+  partySize: 4,
+  date: '2026-10-01',
 };
 ```
 
 ### Mock Data Objects
 
-Define mock data close to tests or in testUtils:
+Define mock data close to tests, or in a co-located `test-utils.ts` if shared across a slice's
+tests:
 
 ```typescript
-const mockDevelopment = {
-  id: 'dev-123',
-  name: 'Test Development',
-  location: 'Test Location',
-  number: 'DEV-001',
-};
-
-const mockPhase = {
-  name: 'Test Phase',
-  location: 'Test Location',
-  number: 'PH-001',
-  state: 'DRAFT',
+const mockBooking = {
+  id: 'booking-123',
+  name: 'Jane Doe',
+  partySize: 4,
+  status: 'confirmed',
 };
 ```
 
@@ -494,79 +385,79 @@ const mockPhase = {
 Always test failure paths:
 
 ```typescript
-describe('Handler', () => {
-  it('should return 500 when external service fails', async () => {
-    req.json.mockResolvedValue(mockDevelopment);
-    (externalService as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
+describe('POST /api/booking', () => {
+  it('returns 500 when the downstream service fails', async () => {
+    vi.mocked(sendBookingConfirmation).mockRejectedValue(new Error('Service unavailable'));
 
-    const response = await handler(req, context);
+    const response = await POST(buildContext(mockBooking));
 
     expect(response.status).toBe(500);
-    expect(response.jsonBody).toMatchObject({
-      error: 'Internal server error',
-      details: 'Service unavailable',
-    });
   });
 
-  it('should return 400 for validation errors', async () => {
-    req.json.mockResolvedValue({ invalidField: 'value' });
-
-    const response = await handler(req, context);
+  it('returns 400 for validation errors', async () => {
+    const response = await POST(buildContext({ invalidField: 'value' }));
 
     expect(response.status).toBe(400);
   });
 
-  it('should throw for invalid input', async () => {
-    await expect(validateInput(null)).rejects.toThrow('Input required');
+  it('throws for invalid input at a pure-function boundary', () => {
+    expect(() => formatMenuPrice(-1)).toThrow('Price cannot be negative');
   });
 });
 ```
 
 ## What NOT to Test
 
-- **Implementation details** - Private methods, internal state
-- **Framework code** - React's useState, Next.js routing
-- **Third-party libraries** - Trust they work
-- **Trivial code** - Simple getters, pass-through functions
-- **Type transformations** - TypeScript handles these
+- **Implementation details** - internal state, private helpers
+- **Framework code** - React's useState, Astro's rendering pipeline
+- **Third-party libraries** - trust they work (`@astrojs/*`, `astro`, `react`)
+- **Static `.astro` markup with no logic** - nothing to assert beyond "it renders"
+- **Trivial code** - simple getters, pass-through functions
+- **Type transformations** - TypeScript strict mode handles these
 
 ## Running Tests
+
+Once Vitest is installed (see `.claude/docs/testing.md`), the scripts will look like:
 
 ```bash
 # All tests
 npm run test
 
-# Specific package
-npx nx test product-service
-npx nx test ui
+# Specific file
+npm run test -- path/to/file.test.ts
 
 # Watch mode
-npx nx test ui --watch
+npm run test -- --watch
 
 # With coverage
-npm run test:coverage
+npm run test -- --coverage
 ```
+
+Until then, there is no test script — do not invent one; verify manually via `npm run build` and,
+where relevant, `/run`.
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern               | Problem                    | Instead                     |
+| Anti-Pattern              | Problem                     | Instead                     |
 | -------------------------- | -------------------------- | --------------------------- |
-| Testing implementation     | Breaks on refactor         | Test behavior and outputs   |
-| Snapshot everything        | Brittle, meaningless diffs | Assert on specific values   |
-| One giant test             | Hard to diagnose failures  | One behavior per test       |
-| Shared mutable state       | Flaky tests                | Fresh setup with beforeEach |
-| `test.only` committed      | Skips other tests          | CI should catch this        |
-| Testing CSS classes        | Brittle                    | Test visible behavior       |
-| Missing jest.clearAllMocks | Test contamination         | Always clear in beforeEach  |
+| Testing implementation     | Breaks on refactor          | Test behavior and outputs   |
+| Snapshot everything        | Brittle, meaningless diffs  | Assert on specific values   |
+| One giant test              | Hard to diagnose failures  | One behavior per test       |
+| Shared mutable state       | Flaky tests                 | Fresh setup with beforeEach |
+| `test.only`/`it.only` committed | Skips other tests      | CI should catch this        |
+| Testing CSS classes        | Brittle                     | Test visible behavior       |
+| Missing `vi.clearAllMocks` | Test contamination          | Always clear in beforeEach  |
+| Unit-testing static `.astro` markup | Nothing to assert on | Test extracted logic instead |
 
 ## Checklist
 
 When writing tests, ensure:
 
-- [ ] Mocks at module level (before describe)
-- [ ] `jest.clearAllMocks()` in beforeEach
+- [ ] Mocks at module level (before describe), using `vi.mock`
+- [ ] `vi.clearAllMocks()` in beforeEach
 - [ ] Test happy path
-- [ ] Test error cases (400, 401, 500 for APIs)
-- [ ] Test edge cases (null, undefined, empty)
+- [ ] Test error cases (400/500 for API routes, thrown errors for pure functions)
+- [ ] Test edge cases (null, undefined, empty, zero)
 - [ ] Descriptive test names
-- [ ] Tests pass: `npm run test`
+- [ ] Multi-tenant logic checked against more than one brand where relevant
+- [ ] Tests pass: `npm run test` (once Vitest is installed)
