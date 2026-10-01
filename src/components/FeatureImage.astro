@@ -79,9 +79,9 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
       src={image}
       widths={[768, 1080, 1920]}
       formats={['avif', 'webp']}
+      sizes="100vw"
       alt={alt}
-      loading="eager"
-      decoding="async"
+      priority
       class="feature-image"
     />
   </div>
