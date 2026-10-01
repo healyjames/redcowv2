@@ -137,6 +137,7 @@ export interface SimpleContentConfig {
   type: 'SimpleContent';
   heading?: string;
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  headingSize?: 'h3';
   text?: string | string[];
   cta?: {
     text: string;

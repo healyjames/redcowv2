@@ -30,6 +30,12 @@ const { cards } = Astro.props;
     gap: 1rem;
   }
 
+  .image-card-title {
+    font-size: 1.875rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+  }
+
   .image-card-content p {
     margin-top: 1rem;
   }
@@ -61,7 +67,7 @@ const { cards } = Astro.props;
       {cards.map((card) => (
         <div class="image-card">
           <div class="image-card-content">
-            <h3>{card.title}</h3>
+            <h2 class="image-card-title">{card.title}</h2>
             <p>{card.description}</p>
             <Picture
               src={card.image}
