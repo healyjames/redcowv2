@@ -27,6 +27,7 @@ export default defineConfig({
     },
     adapter: cloudflare({
         configPath: `./src/assets/${brand}/wrangler.jsonc`,
+        imageService: "compile",
     }),
 
     env: {

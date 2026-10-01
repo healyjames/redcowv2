@@ -71,9 +71,11 @@ const { cards } = Astro.props;
             <p>{card.description}</p>
             <Picture
               src={card.image}
-              widths={[480, 768, 1080, 1920]}
+              widths={[400, 600, 800, 1000, 1200]}
               formats={['avif', 'webp']}
-              sizes="100vw"
+              fallbackFormat="jpg"
+              sizes="(min-width: 1024px) 488px, (min-width: 768px) calc((100vw - 3rem) / 2), calc(100vw - 2rem)"
+              quality={75}
               alt={card.imageAlt}
               loading="lazy"
               decoding="async"

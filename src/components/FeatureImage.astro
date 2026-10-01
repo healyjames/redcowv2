@@ -77,8 +77,10 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
   <div class="feature-image-container">
     <Picture
       src={image}
-      widths={[768, 1080, 1920]}
+      widths={[480, 768, 1080, 1600, 1920]}
+      quality={75}
       formats={['avif', 'webp']}
+      fallbackFormat="jpg"
       sizes="100vw"
       alt={alt}
       priority
