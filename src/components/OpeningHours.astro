@@ -14,6 +14,8 @@ import { openingHours } from "@brand/content";
   }
 
   .day {
+    font-size: 1.5625rem;
+    line-height: 2.125rem;
     font-weight: 700;
   }
 
@@ -50,7 +52,7 @@ import { openingHours } from "@brand/content";
       justify-content: center;
     }
 
-    .hours-grid h4 {
+    .hours-grid .day {
       text-align: center;
     }
   }
@@ -67,7 +69,7 @@ import { openingHours } from "@brand/content";
     <div class="hours-grid">
       {openingHours.map(hours => (
         <div>
-          <h4 class="day">{hours.day}</h4>
+          <h3 class="day">{hours.day}</h3>
           <div class="times">
             <div>
               <p><strong>Bar</strong></p>

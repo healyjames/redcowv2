@@ -1,0 +1,111 @@
+---
+import { mainNavigation, socialLinks, businessInfo } from "@brand/content";
+import "./MobileNavigation.css";
+
+interface Props {
+  transparent?: boolean;
+}
+
+const { transparent = false } = Astro.props;
+
+const separatorAfter = (index: number) => {
+  if (index === socialLinks.length - 1) return "";
+  return index === socialLinks.length - 2 ? " & " : ", ";
+};
+---
+<nav
+  class:list={["mobile-nav", { "mobile-nav-transparent": transparent }]}
+  data-mobile-nav
+  data-transparent={transparent}
+>
+  <div class="mobile-nav-header">
+    <a href="/" class="mobile-nav-logo">{businessInfo.logoText}</a>
+    <button
+      class="mobile-menu-toggle"
+      type="button"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+      aria-controls="mobile-nav-content"
+      data-mobile-nav-toggle
+    >
+      <svg class="mobile-menu-icon" data-icon-open width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" x2="18" y1="20" y2="10"/>
+        <line x1="12" x2="12" y1="20" y2="4"/>
+        <line x1="6" x2="6" y1="20" y2="14"/>
+      </svg>
+      <svg data-icon-close hidden width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18"/>
+        <path d="m6 6 12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-nav-content" id="mobile-nav-content" data-mobile-nav-content hidden>
+    <ul class="mobile-nav-list">
+      {mainNavigation.map(link => (
+        <li class="mobile-nav-item">
+          <a href={link.href}>{link.text}</a>
+        </li>
+      ))}
+    </ul>
+    <div>
+      <a
+        href={businessInfo.reservationsUrl}
+        class="btn btn-primary reservation-button mobile-nav-reservation-button"
+      >
+        Reservations
+      </a>
+    </div>
+    <div class="mobile-nav-footer">
+      <ul class="mobile-nav-footer-top">
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <ul class="mobile-nav-footer-bottom">
+        <p>
+          Follow us on{" "}
+          {socialLinks.map((social, index) => (
+            <span>
+              <a href={social.url} target="_blank" rel="noopener noreferrer">{social.name}</a>{separatorAfter(index)}
+            </span>
+          ))}
+        </p>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const nav = document.querySelector<HTMLElement>("[data-mobile-nav]");
+  const toggle = nav?.querySelector<HTMLButtonElement>("[data-mobile-nav-toggle]");
+  const content = nav?.querySelector<HTMLElement>("[data-mobile-nav-content]");
+  const openIcon = nav?.querySelector<SVGElement>("[data-icon-open]");
+  const closeIcon = nav?.querySelector<SVGElement>("[data-icon-close]");
+  const isTransparent = nav?.dataset.transparent === "true";
+  const desktopQuery = window.matchMedia("(min-width: 768px)");
+
+  const setOpen = (open: boolean) => {
+    if (!nav || !toggle || !content || !openIcon || !closeIcon) return;
+    nav.classList.toggle("mobile-nav-open", open);
+    nav.classList.toggle("mobile-nav-transparent", isTransparent && !open);
+    content.hidden = !open;
+    openIcon.toggleAttribute("hidden", open);
+    closeIcon.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+
+  const isOpen = () => toggle?.getAttribute("aria-expanded") === "true";
+
+  toggle?.addEventListener("click", () => setOpen(!isOpen()));
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !isOpen()) return;
+    setOpen(false);
+    toggle?.focus();
+  });
+
+  desktopQuery.addEventListener("change", (event) => {
+    if (event.matches) setOpen(false);
+  });
+</script>

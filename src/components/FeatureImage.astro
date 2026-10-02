@@ -30,7 +30,7 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
       color: var(--background);
       font-size: 1.75rem;
       font-weight: normal;
-      font-family: 'PrimaryFont';
+      font-family: var(--font-primary);
       line-height: 2.5;
     }
     p {
@@ -77,11 +77,13 @@ const { image, title, text, alt = "", links = [] } = Astro.props;
   <div class="feature-image-container">
     <Picture
       src={image}
-      widths={[768, 1080, 1920]}
+      widths={[480, 768, 1080, 1600, 1920]}
+      quality={75}
       formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      sizes="100vw"
       alt={alt}
-      loading="eager"
-      decoding="async"
+      priority
       class="feature-image"
     />
   </div>

@@ -23,8 +23,11 @@ const { image, alt } = Astro.props;
   <div class="feature-image-container">
     <Picture
       src={image}
-      widths={[768, 1080, 1920]}
+      widths={[480, 768, 1080, 1600, 1920]}
+      sizes="100vw"
+      quality={75}
       formats={['avif', 'webp']}
+      fallbackFormat="jpg"
       alt={alt}
       loading="lazy"
       decoding="async"

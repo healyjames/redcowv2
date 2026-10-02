@@ -40,6 +40,8 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-heading {
+    font-size: 1.5625rem;
+    line-height: 2.125rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
   }
@@ -98,7 +100,7 @@ const currentYear = new Date().getFullYear();
       font-weight: bold;
       font-size: 1.1rem;
       letter-spacing: 0.1rem;
-      font-family: 'SecondaryFont';
+      font-family: var(--font-secondary);
     }
   }
 
@@ -149,19 +151,19 @@ const currentYear = new Date().getFullYear();
   <section class="footer-top">
     <div class="footer-links">
       <div>
-        <h4 class="footer-heading">About</h4>
+        <h2 class="footer-heading">About</h2>
         {footerNavigation.about.map(link => (
           <p><a href={link.href}>{link.text}</a></p>
         ))}
       </div>
       <div>
-        <h4 class="footer-heading">Menu</h4>
+        <h2 class="footer-heading">Menu</h2>
         {footerNavigation.menu.map(link => (
           <p><a href={link.href}>{link.text}</a></p>
         ))}
       </div>
       <div>
-        <h4 class="footer-heading">Other</h4>
+        <h2 class="footer-heading">Other</h2>
         {footerNavigation.other.map(link => (
           <p><a href={link.href}>{link.text}</a></p>
         ))}

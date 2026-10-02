@@ -2,6 +2,7 @@
 interface Props {
   heading?: string;
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  headingSize?: 'h3';
   text?: string | string[];
   cta?: {
     text: string;
@@ -13,6 +14,7 @@ interface Props {
 const {
   heading,
   headingLevel = 'h2',
+  headingSize,
   text,
   cta,
   className = 'simple-content'
@@ -22,11 +24,19 @@ const HeadingTag = headingLevel;
 const paragraphs = Array.isArray(text) ? text : [text];
 ---
 
+<style>
+  .heading-size-h3 {
+    font-size: 1.875rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+  }
+</style>
+
 <section class={className}>
   <div class="section-inner">
     <div>
       {heading && 
-        (<HeadingTag>{heading}</HeadingTag>) }
+        (<HeadingTag class={headingSize && `heading-size-${headingSize}`}>{heading}</HeadingTag>) }
         {paragraphs.map(paragraph => (
           <p set:html={paragraph} />
         ))}

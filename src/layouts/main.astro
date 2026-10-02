@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "./base.astro";
 import Navigation from "../components/MainNavigation.astro";
-import MobileNavigation from "../components/client/MobileNavigation/index";
+import MobileNavigation from "../components/MobileNavigation.astro";
 import Footer from "../components/Footer.astro";
 import OpeningHours from "../components/OpeningHours.astro";
 import Separator from "../components/Separator.astro";
@@ -10,10 +10,14 @@ import Banner from "../components/Banner.astro";
 const { content, transparentNavigation } = Astro.props;
 ---
 <BaseLayout content={content}>
-  <Banner text={"our brand new booking system is now live!"} link="/reservations" />
-  <Navigation transparent={transparentNavigation} />
-  <MobileNavigation transparent={transparentNavigation} client:load />
-  <slot />
+  <header>
+    <Banner text={"our brand new booking system is now live!"} link="/reservations" />
+    <Navigation transparent={transparentNavigation} />
+    <MobileNavigation transparent={transparentNavigation} />
+  </header>
+  <main>
+    <slot />
+  </main>
   <Separator />
   <OpeningHours />
   <Footer />

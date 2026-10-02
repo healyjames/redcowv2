@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import "../assets/global.css";
 import "@brand/styles/theme.css";
 import favicon from "@brand/favicon.svg";
@@ -9,9 +10,11 @@ const { content } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noai, noimageai, noarchive">
     <meta name="description" content={content.description}>
+    <Font cssVariable="--font-primary" preload />
+    <Font cssVariable="--font-secondary" preload />
     <link rel="icon" type="image/svg+xml" href={favicon.src} />
     <link rel="sitemap" href="/sitemap-0.xml" />
     <title>{content.title} | {businessInfo.name}</title>

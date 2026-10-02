@@ -33,7 +33,7 @@
   padding: 24px;
   box-shadow: -20px 20px 60px var(--background-darker), 20px -20px 60px white;
   margin-bottom: 32px;
-  font-family: 'SecondaryFont';
+  font-family: var(--font-secondary);
 }
 
 .calendar-header {
@@ -125,7 +125,7 @@
   padding: 32px;
   box-shadow: -20px 20px 60px var(--background-darker), 20px -20px 60px white;
   animation: slideIn 0.3s ease-out;
-  font-family: 'SecondaryFont';
+  font-family: var(--font-secondary);
 }
 
 @keyframes slideIn {
@@ -182,7 +182,7 @@
 .message {
   border-radius: 8px;
   margin-bottom: 20px;
-  font-family: 'SecondaryFont';
+  font-family: var(--font-secondary);
   padding: 1.5rem 2.5rem;
 }
 
